@@ -1,0 +1,89 @@
+099 - Puzzle_Pixel.rb
+
+X = false
+O = true
+CORRECT_PIXEL_PUZZLE = [X,O,O,O,X,
+                        O,X,X,X,O,
+                        O,X,O,X,O,
+                        O,X,X,X,O,
+                        X,O,O,O,X,
+                        X,X,O,X,X]
+
+
+BLANK_PXL_PZZLE = [X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X]
+
+
+S1_PXL_PZZLE =    [X,X,X,X,X,O,X,X,X,X,X,
+                   X,X,X,X,X,O,X,X,X,X,X,
+                   X,X,X,X,X,O,X,X,X,X,X,
+                   X,X,X,X,X,O,X,X,X,X,X,
+                   X,X,X,X,X,O,X,X,X,X,X,
+                   X,X,X,X,X,O,X,X,X,X,X,
+                   X,X,X,X,X,O,X,X,X,X,X,
+                   X,X,X,X,X,O,X,X,X,X,X,
+                   X,X,X,X,X,O,X,X,X,X,X,
+                   X,X,X,X,X,O,X,X,X,X,X,
+                   X,X,X,X,X,O,X,X,X,X,X]
+
+S2_PXL_PZZLE =    [X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,O,O,O,O,O,X,X,X,
+                   X,X,O,O,X,X,X,O,O,X,X,
+                   X,O,O,X,X,X,X,X,O,O,X,
+                   X,O,X,X,X,X,X,X,X,O,X,
+                   X,O,X,X,X,X,X,X,X,O,X,
+                   X,O,X,X,X,X,X,X,X,O,X,
+                   X,O,O,X,X,X,X,X,O,O,X,
+                   X,X,O,O,X,X,X,O,O,X,X,
+                   X,X,X,O,O,O,O,O,X,X,X,
+                   X,X,X,X,O,O,O,X,X,X,X]
+
+
+S3_PXL_PZZLE =    [O,O,O,O,O,O,O,O,O,O,X,
+                   O,O,O,O,O,O,O,O,O,O,X,
+                   O,O,O,O,O,O,X,X,X,X,X,
+                   O,O,O,O,O,O,X,X,X,X,X,
+                   O,O,O,O,O,O,X,X,X,X,X,
+                   O,O,O,O,O,O,X,X,X,X,X,
+                   O,O,O,O,O,O,X,X,X,X,X,
+                   O,O,O,O,O,O,X,X,X,X,X,
+                   O,O,O,O,O,O,X,X,X,X,X,
+                   O,O,O,O,O,O,X,X,X,X,X,
+                   O,O,O,O,O,O,X,X,X,X,X]
+
+
+S4_PXL_PZZLE =    [X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,O,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X,
+                   X,X,X,X,X,X,X,X,X,X,X]
+
+S5_PXL_PZZLE =    [X,X,O,O,O,O,O,O,O,X,X,
+                   X,O,O,X,X,X,X,X,O,O,X,
+                   O,O,X,O,O,O,O,O,X,O,O,
+                   O,X,O,O,X,X,X,O,O,X,O,
+                   O,X,O,X,X,X,X,X,O,X,O,
+                   O,X,O,X,X,X,X,X,O,X,O,
+                   O,X,O,X,X,X,X,X,O,X,O,
+                   O,X,O,O,X,X,X,O,O,X,O,
+                   O,O,X,O,O,O,O,O,X,O,O,
+                   X,O,O,X,X,X,X,X,O,O,X,
+                   X,X,O,O,O,O,O,O,O,X,X,
+                   X,X,X,X,O,O,O,X,X,X,X]
+
+                  Self-explanatory if you've beat the game.

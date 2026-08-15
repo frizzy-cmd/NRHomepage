@@ -1,0 +1,5 @@
+098 - Puzzle_Sokoban.rb
+
+CORRECT_RAM_POSITIONS = [[80, 59], [79, 63], [80, 65], [83, 59], [85, 61]]
+
+Ram (the animal) coordinates for the Sokoban puzzle in The Glen

@@ -1,0 +1,31 @@
+Switches for the mod menu.
+
+(Mapped from index 151 to 175)
+--------------------------------------------------------------------------------
+TRUE/FALSE SWITCHES
+151: PERMAFLAGS START HERE     -> Unknown
+152: Beat the game once        -> Flags that a standard ending was achieved
+153: Smashed bulb once         -> Flags that the sun was destroyed ending
+154: Saved world once          -> Flags that the sun was placed ending
+155: Talked to Rue first time  -> Niko met Rue for the first time
+156: know Rue's name           -> Niko explicitly knows Rue's name
+157: picked memory at title    -> I forgot what this does but im pretty sure that it means that you picked The World Machine at the main menu
+158: Blank/Reserved            (Keep false)
+159: Blank/Reserved            (Keep false)
+160: Beat Solstice             -> Beat solstice once
+161-174: Blank/Res             (Keep false)
+175: PERMAFLAGS END HERE       (Keep false)
+
+[Game var array] (Mapped from Index 76 to 100)
+--------------------------------------------------------------------------------
+76: START Index     -> Base var (0)
+77: val_cleared     -> Times game won (i think)
+78: val_rue         -> Times talked to Rue
+79-97: Blank/Res.   -> Hard-coded to 00 hex string filling.
+98: s_blockmove     -> Freezes movement of the player
+99: s_blocksave     -> Blocks the engine's saving functionality
+100: s_metalock     -> Kills the engine (overreaction but still unplayable)
+
+Not really confident for the game var array section..
+
+For easier usability with graphic user interface, try visiting Alula Editor! [https://kip.teaa.workers.dev/p-settings-generate]
