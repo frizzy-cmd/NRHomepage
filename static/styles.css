@@ -46,10 +46,10 @@ body.theme-barrens {
 /* REFUGE */
 body.theme-refuge {
     --bg-main: #240518;
-    --text-main: #ffd0e5;
-    --header-subtitle: #ff5588;
-    --header-shadow: #ff2255;
-    --link-color: #ff6699;
+    --text-main: #f0c0f0;
+    --header-subtitle: #fa9040;
+    --header-shadow: #fa7060;
+    --link-color: #f060f0;
     --msg-bg: rgba(58, 12, 32, 0.5);
     --msg-border: #ff3366;
     --msg-shadow: #ff3366;
@@ -66,10 +66,10 @@ body.theme-refuge {
 /* GLEN */
 body.theme-glen {
     --bg-main: #052015;
-    --text-main: #c0f0d0;
-    --header-subtitle: #40fa90;
-    --header-shadow: #20d070;
-    --link-color: #50f0a0;
+    --text-main: #f0c0f0;
+    --header-subtitle: #fa9040;
+    --header-shadow: #fa7060;
+    --link-color: #f060f0;
     --msg-bg: rgba(24, 48, 32, 0.5);
     --msg-border: #40fa90;
     --msg-shadow: #40fa90;
