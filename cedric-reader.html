@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="title" content="Cedric Reader">
+		<meta name="description" content="A OneShot save file inspector">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#5a207f">
+
+        <!-- OpenGraph/dc Metatags -->
+		<meta property="og:type" content="website">
+		<meta property="og:site_name" content="Cedric Reader by Kip">
+		<meta property="og:title" content="A save file inspector for the game, OneShot.">
+		<meta property="og:description" content="You can view your save file info here!">
+		<meta property="og:url" content="https://kip.teaa.workers.dev/cedric-reader">
+		<meta property="og:image" content="https://kip.teaa.workers.dev/static/img/cedric.png">
+
+		<link rel="icon" type="image/png" href="static/img/cedric3.png">
+		<link rel="stylesheet" href="static/styles.css">
+		<script src="static/js/theme-switcher.js"></script>
+		<script src="static/js/cedric-reader.js" defer></script>
+		<title>Cedric Reader - Main</title>
+
+		<style>
+			.drop-zone {
+				border: 3px dashed var(--box-border);
+				background: rgba(18, 6, 28, 0.6);
+				padding: 32px;
+				text-align: center;
+				border-radius: 6px;
+				cursor: pointer;
+				margin: 16px 0;
+			}
+			.drop-zone:hover, .drop-zone.dragover {
+				background: rgba(90, 32, 127, 0.3);
+				border-color: var(--header-subtitle);
+			}
+			.parsed-card {
+				background: rgba(20, 10, 30, 0.85);
+				border: 2px solid var(--box-border);
+				padding: 16px;
+				margin-top: 16px;
+				border-radius: 4px;
+				display: none;
+			}
+			.badge-flag {
+				display: inline-block;
+				padding: 4px 10px;
+				font-size: 11pt;
+				border-radius: 3px;
+				margin: 3px;
+				font-family: Terminus, monospace;
+			}
+			.badge-on {
+				background: #1b5e20;
+				color: #a5d6a7;
+			}
+			.badge-off {
+				background: #371a45;
+				color: #9e9e9e;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			<a href="index.html" style="text-decoration: none;">
+				<img id="logo" src="static/img/logo.png" alt="OneShot Logo" title="Go to Homepage">
+			</a>
+			<div id="subtitle">Cedric Reader™</div>
+		</div>
+
+		<div id="message">
+			<h3>What is Cedric Reader?</h3>
+            Cedric Reader is a web tool to inspect your OneShot save files, it's pretty straightforward, and pretty simple.
+            <br><br>
+			Drag & drop your <code>p-settings.dat</code> or <code>save.dat</code> file below to inspect.
+			<br><br>
+			All processing is done locally.
+		</div>
+
+		<div id="box">
+			<div class="drop-zone" id="dropZone">
+				<strong style="color: var(--header-subtitle); font-size: 16pt;">Drop your p-settings.dat or save.dat here</strong>
+				<p style="margin-top: 8px; font-size: 12pt; color: #aaa;">or click me to select a file</p>
+				<input type="file" id="fileInput" accept=".dat" style="display: none;">
+			</div>
+
+			<div class="parsed-card" id="parsedCard">
+				<h3 style="margin-top: 0;">Found:</h3>
+				<table id="parsedTable"></table>
+
+				<div id="flagsSection" style="margin-top: 20px;">
+					<h4>Switches/Flags</h4>
+					<div id="flagsContainer"></div>
+				</div>
+			</div>
+		</div>
+
+		<div id="footer">
+			This website was made by <a href="https://github.com/frizzy-cmd" target="_blank">Kip</a> | 
+            <a href="legal.html">Legal</a> | 
+			<a href="https://github.com/frizzy-cmd/AlulaEditor" target="_blank">Github Repository</a>
+
+			<div class="theme-picker">
+				<span>Theme: </span>
+				<select id="themeSelect" class="theme-dropdown">
+					<option value="theme-barrens">The Barrens [Purple]</option>
+					<option value="theme-refuge">The Refuge [Pink/red]</option>
+					<option value="theme-glen">The Glen [Green]</option>
+				</select>
+			</div>
+		</div>
+
+		<div id="sub-footer">
+			OneShot and its assets are property of Future Cat LLC.
+		</div>
+	</body>
+</html>

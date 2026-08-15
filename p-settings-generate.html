@@ -42,6 +42,7 @@
 		<!-- originally icon was in static but moved to static/img for organize -->
 		<link rel="stylesheet" href="static/styles.css">
 		<script src="static/js/p-settings-generate.js"></script>
+		<script src="static/js/theme-switcher.js"></script>
 		<title>Alula Editor - Mainr</title>
 	</head>
 	<body>
@@ -222,6 +223,14 @@
 			This website was made by <a href="https://github.com/frizzy-cmd" target="_blank">Kip</a> | 
             <a href="legal.html">Legal</a> | 
 			<a href="https://github.com/frizzy-cmd/AlulaEditor" target="_blank">Github Repository</a>
+
+			<div class="theme-picker">
+				<span>Theme: </span>
+				<select id="themeSelect" class="theme-dropdown">
+					<option value="theme-barrens">The Barrens (Purple)</option>
+					<option value="theme-refuge">The Refuge (Pink/Red)</option>
+					<option value="theme-glen">The Glen (Emerald Green)</option>
+				</select>
 		</div>
 
 		<div id="sub-footer">
