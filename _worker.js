@@ -1,4 +1,4 @@
-// _worker.js
+// _worker.js - Cloudflare Worker Backend with Fixes & Admin Purge Option
 
 export default {
 	async fetch(request, env, ctx) {
@@ -7,13 +7,10 @@ export default {
 		const method = request.method;
 
 		if (!path.startsWith('/api/')) {
-			if (env.ASSETS) {
-				return env.ASSETS.fetch(request);
-			}
+			if (env.ASSETS) return env.ASSETS.fetch(request);
 			return new Response('Asset Not Found', { status: 404 });
 		}
 
-		// get ip
 		const clientIP = request.headers.get('cf-connecting-ip') || '127.0.0.1';
 		const ipHash = await hashIP(clientIP);
 
@@ -24,91 +21,51 @@ export default {
 			'Content-Type': 'application/json'
 		};
 
-		if (method === 'OPTIONS') {
-			return new Response(null, { headers: corsHeaders });
-		}
+		if (method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
 		try {
-			// chgck user status
 			if (path === '/api/forum/user-status' && method === 'GET') {
-				const activeBan = await env.DB.prepare(
-					`SELECT * FROM moderation WHERE ip_hash = ? AND action_type = 'ban' ORDER BY created_at DESC LIMIT 1`
-				).bind(ipHash).first();
+				const activeBan = await env.DB.prepare(`SELECT * FROM moderation WHERE ip_hash = ? AND action_type = 'ban' ORDER BY created_at DESC LIMIT 1`).bind(ipHash).first();
+				if (activeBan) return new Response(JSON.stringify({ status: 'banned', reviewed: activeBan.created_at, reason: activeBan.reason }), { headers: corsHeaders });
 
-				if (activeBan) {
-					return new Response(JSON.stringify({ status: 'banned', reviewed: activeBan.created_at, reason: activeBan.reason }), { headers: corsHeaders });
-				}
+				const activeMute = await env.DB.prepare(`SELECT * FROM moderation WHERE ip_hash = ? AND action_type = 'mute' AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP) ORDER BY created_at DESC LIMIT 1`).bind(ipHash).first();
+				if (activeMute) return new Response(JSON.stringify({ status: 'muted', expires_at: activeMute.expires_at, reason: activeMute.reason }), { headers: corsHeaders });
 
-				const activeMute = await env.DB.prepare(
-					`SELECT * FROM moderation WHERE ip_hash = ? AND action_type = 'mute' AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP) ORDER BY created_at DESC LIMIT 1`
-				).bind(ipHash).first();
-
-				if (activeMute) {
-					return new Response(JSON.stringify({ status: 'muted', expires_at: activeMute.expires_at, reason: activeMute.reason }), { headers: corsHeaders });
-				}
-
-				const activeKick = await env.DB.prepare(
-					`SELECT * FROM moderation WHERE ip_hash = ? AND action_type = 'kick' ORDER BY created_at DESC LIMIT 1`
-				).bind(ipHash).first();
-
-				if (activeKick) {
-					return new Response(JSON.stringify({ status: 'kicked', reason: activeKick.reason }), { headers: corsHeaders });
-				}
+				const activeKick = await env.DB.prepare(`SELECT * FROM moderation WHERE ip_hash = ? AND action_type = 'kick' ORDER BY created_at DESC LIMIT 1`).bind(ipHash).first();
+				if (activeKick) return new Response(JSON.stringify({ status: 'kicked', reason: activeKick.reason }), { headers: corsHeaders });
 
 				return new Response(JSON.stringify({ status: 'ok', userIpHash: ipHash }), { headers: corsHeaders });
 			}
 
-			// fetch posts/cokmments
 			if (path === '/api/forum/posts' && method === 'GET') {
-				// hide mod deleted posts after 48 hrs
 				const posts = await env.DB.prepare(
 					`SELECT * FROM posts WHERE is_deleted = 0 OR (is_deleted = 1 AND created_at > datetime('now', '-2 days')) ORDER BY created_at DESC LIMIT 50`
 				).all();
 
-				const comments = await env.DB.prepare(
-					`SELECT * FROM comments ORDER BY created_at ASC`
-				).all();
+				const comments = await env.DB.prepare(`SELECT * FROM comments WHERE is_deleted = 0 ORDER BY created_at ASC`).all();
 
 				const sanitizedPosts = (posts.results || []).map(p => {
 					if (p.is_deleted) {
-						const isUserDel = p.deletion_reason === 'user_deleted';
 						return {
 							...p,
 							title: '[deleted]',
-							content: isUserDel ? '[Post deleted by original poster]' : '[Post removed by forum moderator]',
+							content: '[Post removed by forum moderator]',
 							images: '[]'
 						};
 					}
 					return p;
 				});
 
-				const sanitizedComments = (comments.results || []).map(c => {
-					if (c.is_deleted) {
-						const isUserDel = c.deletion_reason === 'user_deleted';
-						return {
-							...c,
-							content: isUserDel ? '[Comment deleted by original commenter]' : '[Comment deleted by forum moderator]'
-						};
-					}
-					return c;
-				});
-
 				return new Response(JSON.stringify({
 					userIpHash: ipHash,
 					posts: sanitizedPosts,
-					comments: sanitizedComments
+					comments: comments.results || []
 				}), { headers: corsHeaders });
 			}
 
-			// new post creation
 			if (path === '/api/forum/posts' && method === 'POST') {
-				const modCheck = await env.DB.prepare(
-					`SELECT action_type, reason FROM moderation WHERE ip_hash = ? AND (action_type = 'ban' OR (action_type = 'mute' AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)))`
-				).bind(ipHash).first();
-
-				if (modCheck) {
-					return new Response(JSON.stringify({ error: `Action restricted. Reason: ${modCheck.reason}` }), { status: 403, headers: corsHeaders });
-				}
+				const modCheck = await env.DB.prepare(`SELECT action_type, reason FROM moderation WHERE ip_hash = ? AND (action_type = 'ban' OR (action_type = 'mute' AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)))`).bind(ipHash).first();
+				if (modCheck) return new Response(JSON.stringify({ error: `Action restricted. Reason: ${modCheck.reason}` }), { status: 403, headers: corsHeaders });
 
 				const formData = await request.formData();
 				const author = formData.get('author') || 'Anonymous';
@@ -116,24 +73,15 @@ export default {
 				const content = formData.get('content') || '';
 				const imageFiles = formData.getAll('images');
 
-				if (!title.trim() || !content.trim()) {
-					return new Response(JSON.stringify({ error: 'Title and content are required!' }), { status: 400, headers: corsHeaders });
-				}
-
-				if (imageFiles.length > 2) {
-					return new Response(JSON.stringify({ error: 'Maximum 2 images allowed!' }), { status: 400, headers: corsHeaders });
-				}
+				if (!title.trim() || !content.trim()) return new Response(JSON.stringify({ error: 'Title and content required!' }), { status: 400, headers: corsHeaders });
+				if (imageFiles.length > 2) return new Response(JSON.stringify({ error: 'Maximum 2 images allowed!' }), { status: 400, headers: corsHeaders });
 
 				const allowedTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
 				const uploadedImageUrls = [];
 				for (const file of imageFiles) {
 					if (file && file.size > 0) {
-						if (!allowedTypes.includes(file.type)) {
-							return new Response(JSON.stringify({ error: 'Invalid image format!' }), { status: 400, headers: corsHeaders });
-						}
-						if (file.size > 2 * 1024 * 1024) {
-							return new Response(JSON.stringify({ error: 'Image size over 2MB limit!' }), { status: 400, headers: corsHeaders });
-						}
+						if (!allowedTypes.includes(file.type)) return new Response(JSON.stringify({ error: 'Invalid image format!' }), { status: 400, headers: corsHeaders });
+						if (file.size > 2 * 1024 * 1024) return new Response(JSON.stringify({ error: 'Image size over 2MB!' }), { status: 400, headers: corsHeaders });
 						const key = `uploads/${Date.now()}_${Math.random().toString(36).substring(7)}_${file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`;
 						await env.UPLOADS.put(key, file.stream(), { httpMetadata: { contentType: file.type } });
 						uploadedImageUrls.push(`/api/forum/images/${key}`);
@@ -144,48 +92,40 @@ export default {
 				const isAdmin = (adminKey && adminKey === env.ADMIN_SECRET) ? 1 : 0;
 				const id = 'post_' + Date.now();
 
-				await env.DB.prepare(
-					`INSERT INTO posts (id, author, title, content, images, ip_hash, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)`
-				).bind(id, author, title, content, JSON.stringify(uploadedImageUrls), ipHash, isAdmin).run();
+				await env.DB.prepare(`INSERT INTO posts (id, author, title, content, images, ip_hash, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(id, author, title, content, JSON.stringify(uploadedImageUrls), ipHash, isAdmin).run();
 
 				return new Response(JSON.stringify({ success: true, id }), { headers: corsHeaders });
 			}
 
-			// crate comment
 			if (path === '/api/forum/comments' && method === 'POST') {
 				const body = await request.json();
 				const { postId, author, content } = body;
 
-				if (!postId || !content.trim()) {
-					return new Response(JSON.stringify({ error: 'Missing comment content or postId' }), { status: 400, headers: corsHeaders });
-				}
+				if (!postId || !content.trim()) return new Response(JSON.stringify({ error: 'Content required' }), { status: 400, headers: corsHeaders });
 
 				const adminKey = request.headers.get('X-Admin-Key');
 				const isAdmin = (adminKey && adminKey === env.ADMIN_SECRET) ? 1 : 0;
 				const id = 'comment_' + Date.now();
 
-				await env.DB.prepare(
-					`INSERT INTO comments (id, post_id, author, content, ip_hash, is_admin) VALUES (?, ?, ?, ?, ?, ?)`
-				).bind(id, postId, author || 'Anonymous', content, ipHash, isAdmin).run();
+				await env.DB.prepare(`INSERT INTO comments (id, post_id, author, content, ip_hash, is_admin) VALUES (?, ?, ?, ?, ?, ?)`).bind(id, postId, author || 'Anonymous', content, ipHash, isAdmin).run();
 
 				return new Response(JSON.stringify({ success: true, id }), { headers: corsHeaders });
 			}
-
-			// delete post of own comment or post
+)
 			if (path === '/api/forum/delete-own' && method === 'POST') {
 				const body = await request.json();
 				const { type, id } = body;
 
 				if (type === 'post') {
-					await env.DB.prepare(`UPDATE posts SET is_deleted = 1, deletion_reason = 'user_deleted' WHERE id = ? AND ip_hash = ?`).bind(id, ipHash).run();
+					await env.DB.prepare(`DELETE FROM posts WHERE id = ? AND ip_hash = ?`).bind(id, ipHash).run();
+					await env.DB.prepare(`DELETE FROM comments WHERE post_id = ?`).bind(id).run();
 				} else {
-					await env.DB.prepare(`UPDATE comments SET is_deleted = 1, deletion_reason = 'user_deleted' WHERE id = ? AND ip_hash = ?`).bind(id, ipHash).run();
+					await env.DB.prepare(`DELETE FROM comments WHERE id = ? AND ip_hash = ?`).bind(id, ipHash).run();
 				}
 
 				return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
 			}
 
-			// stats and mods
 			if (path === '/api/admin/stats' && method === 'GET') {
 				const adminKey = request.headers.get('X-Admin-Key');
 				if (adminKey !== env.ADMIN_SECRET) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
@@ -248,6 +188,12 @@ export default {
 					await env.DB.prepare(`UPDATE comments SET is_deleted = 1 WHERE ip_hash = ?`).bind(targetIp).run();
 					await env.DB.prepare(`INSERT INTO moderation (id, ip_hash, username, action_type, reason, admin_name) VALUES (?, ?, ?, 'kick', ?, ?)`).bind(modId, targetIp, username, reason, modName).run();
 				}
+				else if (action === 'purge_deleted') {
+					// Purge all moderator deleted posts permanently
+					await env.DB.prepare(`DELETE FROM posts WHERE is_deleted = 1`).run();
+					await env.DB.prepare(`DELETE FROM comments WHERE is_deleted = 1`).run();
+					await env.DB.prepare(`INSERT INTO moderation (id, ip_hash, username, action_type, reason, admin_name) VALUES (?, 'system', 'admin', 'purge', 'Purged all deleted posts', ?)`).bind(modId, modName).run();
+				}
 				else if (action === 'revoke') {
 					await env.DB.prepare(`DELETE FROM moderation WHERE id = ?`).bind(targetId).run();
 				}
@@ -255,7 +201,6 @@ export default {
 				return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
 			}
 
-			// serve r2
 			if (path.startsWith('/api/forum/images/')) {
 				const key = path.replace('/api/forum/images/', '');
 				const object = await env.UPLOADS.get(key);

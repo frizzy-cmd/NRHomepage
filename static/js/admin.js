@@ -152,6 +152,24 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	});
 
+    document.getElementById('purgeDeletedBtn')?.addEventListener('click', async () => {
+	if (!confirm('Are you sure you want to delete?')) return;
+	const pwd = sessionStorage.getItem('kip_admin_token');
+
+	try {
+		const res = await fetch('/api/admin/moderate', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json', 'X-Admin-Key': pwd },
+			body: JSON.stringify({ action: 'purge_deleted' })
+		});
+
+		if (res.ok) {
+			alert('Deleted.');
+			fetchStats(pwd);
+		}
+	} catch (e) { alert('Purge failed'); }
+});
+
 	window.revokeMod = async function(modId) {
 		const pwd = sessionStorage.getItem('kip_admin_token');
 		if (!confirm('Are you sure you want to revoke this punishment?')) return;

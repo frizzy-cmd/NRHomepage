@@ -1,4 +1,4 @@
-// forum.js
+// forum.js - Fixed Comment Submission & Username Locking
 
 document.addEventListener('DOMContentLoaded', () => {
 	const postForm = document.getElementById('postForm');
@@ -16,8 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	let allPosts = [];
 	let allComments = [];
 
+	// Lock username if saved in localStorage
 	const savedUser = localStorage.getItem('kip_forum_username') || '';
-	if (postAuthor) postAuthor.value = savedUser;
+	if (postAuthor && savedUser) {
+		postAuthor.value = savedUser;
+		postAuthor.readOnly = true;
+	}
 
 	checkUserStatus();
 	loadPosts();
@@ -34,6 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
 			if (files.length > 2) return alert('Maximum 2 images allowed!');
 
 			localStorage.setItem('kip_forum_username', authorVal);
+			postAuthor.readOnly = true;
+
 			submitPostBtn.disabled = true;
 
 			try {
@@ -43,7 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
 				formData.append('content', contentVal);
 				for (let i = 0; i < files.length; i++) formData.append('images', files[i]);
 
-				const res = await fetch('/api/forum/posts', { method: 'POST', body: formData });
+				const adminToken = sessionStorage.getItem('kip_admin_token') || '';
+				const headers = {};
+				if (adminToken) headers['X-Admin-Key'] = adminToken;
+
+				const res = await fetch('/api/forum/posts', { method: 'POST', headers, body: formData });
 				if (res.ok) {
 					postTitle.value = ''; postContent.value = ''; postImages.value = '';
 					loadPosts();
@@ -77,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			allComments = data.comments || [];
 
 			if (!allPosts.length) {
-				postsFeed.innerHTML = '<p style="color: #aaa;">No discussions yet.</p>';
+				postsFeed.innerHTML = '<p style="color: #aaa;">No discussions yet. Be the first one!</p>';
 				return;
 			}
 
@@ -95,8 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
 						<div class="post-title">${escapeHTML(p.title)}</div>
 						<div class="post-content">${escapeHTML(p.content)}</div>
 						<div style="font-size: 11pt; color: var(--header-subtitle);">
-							💬 ${pComments.length} Comments (Click to view & reply)
-							${isOwnPost && !p.is_deleted ? `<button class="self-del-btn" onclick="event.stopPropagation(); deleteOwn('post', '${p.id}')">Delete post</button>` : ''}
+							${pComments.length} comments
+							${isOwnPost && !p.is_deleted ? `<button class="self-del-btn" onclick="event.stopPropagation(); deleteOwn('post', '${p.id}')">Delete</button>` : ''}
 						</div>
 					</div>
 				`;
@@ -111,6 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		const pComments = allComments.filter(c => c.post_id === postId);
 		let imagesArr = [];
 		try { imagesArr = JSON.parse(post.images || '[]'); } catch (e) {}
+
+		const currentLockedUsername = localStorage.getItem('kip_forum_username') || '';
 
 		sidePanelBody.innerHTML = `
 			<h3 style="color: #fff; margin-top: 0;">${escapeHTML(post.title)}</h3>
@@ -131,17 +143,17 @@ document.addEventListener('DOMContentLoaded', () => {
 			<div>
 				${pComments.map(c => `
 					<div class="comment-card">
-						<span class="comment-author">${escapeHTML(c.author)}</span>
+						<span class="comment-author">${escapeHTML(c.author)}${c.is_admin ? ' <span class="mod-badge">[Moderator]</span>' : ''}</span>
 						<span class="comment-date">${new Date(c.created_at).toLocaleTimeString()}</span>
 						<div>${escapeHTML(c.content)}</div>
-						${c.ip_hash === currentUserIpHash && !c.is_deleted ? `<button class="self-del-btn" onclick="deleteOwn('comment', '${c.id}')">Delete comment</button>` : ''}
+						${c.ip_hash === currentUserIpHash && !c.is_deleted ? `<button class="self-del-btn" onclick="deleteOwn('comment', '${c.id}')">Delete</button>` : ''}
 					</div>
 				`).join('')}
 			</div>
 
 			<div style="margin-top: 20px;">
 				<h4>Add a Comment</h4>
-				<input type="text" id="commentAuthor" placeholder="Your username" value="${escapeHTML(postAuthor.value)}" style="width: 100%; margin-bottom: 8px;">
+				<input type="text" id="commentAuthor" placeholder="Username" value="${escapeHTML(currentLockedUsername)}" ${currentLockedUsername ? 'readonly' : ''} style="width: 100%; margin-bottom: 8px;">
 				<textarea id="commentContent" rows="3" placeholder="Write your reply.." style="width: 100%; background: var(--input-bg); color: #fff; border: 1px solid var(--input-border); padding: 6px; font-family: Terminus, monospace;"></textarea>
 				<button class="btn" style="width: 100% !important; margin-top: 10px;" onclick="submitComment('${post.id}')">Post</button>
 			</div>
@@ -150,20 +162,27 @@ document.addEventListener('DOMContentLoaded', () => {
 		sidePanel.classList.add('open');
 	};
 
-	window.closeSidePanel = function() {
-		sidePanel.classList.remove('open');
-	};
+	window.closeSidePanel = function() { sidePanel.classList.remove('open'); };
 
 	window.submitComment = async function(postId) {
-		const author = document.getElementById('commentAuthor').value.trim() || 'Anonymous';
+		const authorEl = document.getElementById('commentAuthor');
+		const author = authorEl ? authorEl.value.trim() : 'Anonymous';
 		const content = document.getElementById('commentContent').value.trim();
 
 		if (!content) return alert('Write a comment first!');
 
+		if (author && !localStorage.getItem('kip_forum_username')) {
+			localStorage.setItem('kip_forum_username', author);
+		}
+
 		try {
+			const adminToken = sessionStorage.getItem('kip_admin_token') || '';
+			const headers = { 'Content-Type': 'application/json' };
+			if (adminToken) headers['X-Admin-Key'] = adminToken;
+
 			const res = await fetch('/api/forum/comments', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
+				headers,
 				body: JSON.stringify({ postId, author, content })
 			});
 
@@ -171,7 +190,8 @@ document.addEventListener('DOMContentLoaded', () => {
 				await loadPosts();
 				openSidePanel(postId);
 			} else {
-				alert('Comment failed.');
+				const data = await res.json();
+				alert(data.error || 'Comment failed.');
 			}
 		} catch (e) { alert(e.message); }
 	};
