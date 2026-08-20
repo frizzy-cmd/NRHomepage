@@ -58,47 +58,42 @@ export default {
 
 			// submit new msg
 			if (path === '/api/onemsg/messages' && method === 'POST') {
-				const body = await request.json();
-				const { author, content, portrait, fingerprint } = body;
+                const body = await request.json();
+                const { author, content, portrait, fingerprint } = body;
 
-				const cleanAuthor = (author || 'Anonymous').trim();
-				const cleanContent = (content || '').trim();
-				const cleanPortrait = (portrait || 'niko.png').trim();
+                const cleanAuthor = (author || 'Anonymous').trim();
+                const cleanContent = (content || '').trim();
+                const cleanPortrait = (portrait || 'niko.png').trim();
 
-				if (!cleanContent) {
-					return new Response(JSON.stringify({ error: 'Message cannot be empty!' }), { status: 400, headers: corsHeaders });
-				}
+                if (!cleanContent) {
+                    return new Response(JSON.stringify({ error: 'Message cannot be empty!' }), { status: 400, headers: corsHeaders });
+                }
 
-                // DEBUG. REMOVE WHEN DEPLOYING
-				const isDebugUser = /^Kip\d*$/i.test(cleanAuthor) || cleanAuthor.toLowerCase() === 'coolgamer22';
+                let existingMsg = null;
+                try {
+                    existingMsg = await env.DB.prepare(
+                        `SELECT id FROM messages WHERE device_fingerprint = ? OR ip_hash = ? OR LOWER(author) = LOWER(?)`
+                    ).bind(fingerprint || 'none', ipHash, cleanAuthor).first();
+                } catch(e) {}
 
-				if (!isDebugUser) {
-					let existingMsg = null;
-					try {
-						existingMsg = await env.DB.prepare(
-							`SELECT id FROM messages WHERE device_fingerprint = ? OR ip_hash = ? OR LOWER(author) = LOWER(?)`
-						).bind(fingerprint || 'none', ipHash, cleanAuthor).first();
-					} catch(e) {}
+                if (existingMsg) {
+                    return new Response(JSON.stringify({ error: 'You have already left your OneMessage on the wall!' }), { status: 403, headers: corsHeaders });
+                }
 
-					if (existingMsg) {
-						return new Response(JSON.stringify({ error: 'You have already left your OneMessage on the wall!' }), { status: 403, headers: corsHeaders });
-					}
-				}
+                let countRow = { cnt: 0 };
+                try {
+                    countRow = await env.DB.prepare(`SELECT COUNT(*) as cnt FROM messages`).first() || { cnt: 0 };
+                } catch(e) {}
 
-				let countRow = { cnt: 0 };
-				try {
-					countRow = await env.DB.prepare(`SELECT COUNT(*) as cnt FROM messages`).first() || { cnt: 0 };
-				} catch(e) {}
+                const msgNumber = (countRow.cnt || 0) + 1;
+                const id = 'msg_' + Date.now();
 
-				const msgNumber = (countRow.cnt || 0) + 1;
-				const id = 'msg_' + Date.now();
+                await env.DB.prepare(
+                    `INSERT INTO messages (id, msg_number, author, portrait, content, ip_hash, device_fingerprint) VALUES (?, ?, ?, ?, ?, ?, ?)`
+                ).bind(id, msgNumber, cleanAuthor, cleanPortrait, cleanContent, ipHash, fingerprint || 'none').run();
 
-				await env.DB.prepare(
-					`INSERT INTO messages (id, msg_number, author, portrait, content, ip_hash, device_fingerprint) VALUES (?, ?, ?, ?, ?, ?, ?)`
-				).bind(id, msgNumber, cleanAuthor, cleanPortrait, cleanContent, ipHash, fingerprint || 'none').run();
-
-				return new Response(JSON.stringify({ success: true, id, msgNumber }), { headers: corsHeaders });
-			}
+                return new Response(JSON.stringify({ success: true, id, msgNumber }), { headers: corsHeaders });
+            }
 
 			// reactAPI
 			if (path === '/api/onemsg/react' && method === 'POST') {

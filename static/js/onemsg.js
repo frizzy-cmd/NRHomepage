@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	const deviceFingerprint = getDeviceFingerprint();
 
-	// Restore saved username
+	// rst.
 	const savedUser = localStorage.getItem('kip_onemsg_username') || '';
 	if (msgAuthor && savedUser) msgAuthor.value = savedUser;
 
@@ -81,10 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
 			const data = await res.json();
 			if (wallCount) wallCount.textContent = data.totalCount || 0;
 
-			if (data.hasPosted || clientLock) {
-				if (postFormContainer) postFormContainer.style.display = 'none';
-				if (alreadyPostedNotice) alreadyPostedNotice.style.display = 'block';
-			}
+            if (data.hasPosted) {
+                if (postFormContainer) postFormContainer.style.display = 'none';
+                if (alreadyPostedNotice) alreadyPostedNotice.style.display = 'block';
+            } else {
+                // msg was deleted or user has not posted then unlock
+                localStorage.removeItem('has_sent_onemsg');
+                setCookie('has_sent_onemsg', '', -1);
+                if (postFormContainer) postFormContainer.style.display = 'block';
+                if (alreadyPostedNotice) alreadyPostedNotice.style.display = 'none';
+            }
 
 			const msgs = data.messages || [];
 			if (!msgs.length) {
@@ -170,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 });
 
-// Global Modal & Reactions
 window.openPfpModal = function() {
 	const pfpModal = document.getElementById('pfpModal');
 	if (pfpModal) {
@@ -194,6 +199,13 @@ window.selectPfp = function(filename) {
 };
 
 window.reactMessage = async function(msgId, reaction) {
+	const lastReact = parseInt(localStorage.getItem('last_react_time') || '0');
+	const now = Date.now();
+	if (now - lastReact < 10000) {
+		const remaining = Math.ceil((10000 - (now - lastReact)) / 1000);
+		return alert(`Please wait ${remaining} seconds before reacting again!`);
+	}
+
 	try {
 		const res = await fetch('/api/onemsg/react', {
 			method: 'POST',
@@ -202,26 +214,27 @@ window.reactMessage = async function(msgId, reaction) {
 		});
 
 		if (res.ok) {
-			const resReload = await fetch(`/api/onemsg/messages`);
+			localStorage.setItem('last_react_time', now.toString());
+			const resReload = await fetch('/api/onemsg/messages');
 			if (resReload.ok) {
 				const data = await resReload.json();
 				const messagesStream = document.getElementById('messagesStream');
 				if (messagesStream && data.messages) {
 					messagesStream.innerHTML = data.messages.map(m => `
 						<div class="msg-card">
-							<img src="static/pfp/${m.portrait}" class="msg-pfp" alt="PFP" onerror="this.src='static/pfp/niko.png'">
+							<img src="static/pfp/${escapeHTML(m.portrait)}" class="msg-pfp" alt="PFP" onerror="this.src='static/pfp/niko.png'">
 							<div class="msg-body">
 								<div class="msg-header">
 									<div>
-										<strong style="color: var(--header-subtitle); font-size: 13pt;">${m.author}</strong>
+										<strong style="color: var(--header-subtitle); font-size: 13pt;">${escapeHTML(m.author)}</strong>
 										<span class="msg-badge">OneMessage #${String(m.msg_number).padStart(3, '0')}</span>
 									</div>
 									<span>${new Date(m.created_at).toLocaleString()}</span>
 								</div>
-								<div style="font-size: 13pt; color: #e0d0e0; white-space: pre-wrap; margin-bottom: 10px;">${m.content}</div>
+								<div style="font-size: 13pt; color: #e0d0e0; white-space: pre-wrap; margin-bottom: 10px;">${escapeHTML(m.content)}</div>
 								<div>
-									<button class="react-btn" onclick="reactMessage('${m.id}', 'light')">Give Light (${m.lights_count || 0})</button>
-									<button class="react-btn" onclick="reactMessage('${m.id}', 'pancake')">Give Pancakes (${m.pancakes_count || 0})</button>
+									<button class="react-btn" onclick="reactMessage('${m.id}', 'light')">💡 Give light (${m.lights_count || 0})</button>
+									<button class="react-btn" onclick="reactMessage('${m.id}', 'pancake')">🥞 Give pancakes (${m.pancakes_count || 0})</button>
 								</div>
 							</div>
 						</div>

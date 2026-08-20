@@ -62,58 +62,74 @@
 		</div>
 
 		<script>
-			async function loginAdmin() {
-				const pwd = document.getElementById('adminPwd').value.trim();
-				sessionStorage.setItem('kip_admin_token', pwd);
-				loadAdminMsgs();
-			}
+            async function loginAdmin() {
+                const pwd = document.getElementById('adminPwd').value.trim();
+                if (!pwd) return alert('PLS ENTER PW. TQ.');
+                sessionStorage.setItem('kip_admin_token', pwd);
+                loadAdminMsgs();
+            }
 
-			async function loadAdminMsgs() {
-				const pwd = sessionStorage.getItem('kip_admin_token');
-				const list = document.getElementById('adminMsgList');
-				const controls = document.getElementById('adminControls');
+            async function loadAdminMsgs() {
+                const list = document.getElementById('adminMsgList');
+                const controls = document.getElementById('adminControls');
 
-				try {
-					const res = await fetch('/api/onemsg/messages');
-					const data = await res.json();
+                try {
+                    const res = await fetch('/api/onemsg/messages');
+                    const data = await res.json();
 
-					controls.style.display = 'block';
-					list.innerHTML = (data.messages || []).map(m => `
-						<div class="msg-row">
-							<div>
-								<strong>#${m.msg_number} - ${m.author}</strong>: "${m.content}"
-							</div>
-							<button class="del-btn" onclick="deleteMsg('${m.id}')">Delete</button>
-						</div>
-					`).join('');
-				} catch (e) { alert('Error loading listt'); }
-			}
+                    controls.style.display = 'block';
+                    list.innerHTML = (data.messages || []).map(m => `
+                        <div class="msg-row">
+                            <div>
+                                <strong>#${m.msg_number} - ${escapeHTML(m.author)}</strong>: "${escapeHTML(m.content)}"
+                            </div>
+                            <button class="del-btn" onclick="deleteMsg('${m.id}')">Delete</button>
+                        </div>
+                    `).join('');
+                } catch (e) { alert('Error loading messages list'); }
+            }
 
-			async function deleteMsg(msgId) {
-				const pwd = sessionStorage.getItem('kip_admin_token');
-				if (!confirm('Delete this message?')) return;
+            async function deleteMsg(msgId) {
+                const pwd = sessionStorage.getItem('kip_admin_token');
+                if (!pwd) return alert('LOGIN FIRST! TQ.');
+                if (!confirm('Delete this message?')) return;
 
-				const res = await fetch('/api/onemsg/admin/delete', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json', 'X-Admin-Key': pwd },
-					body: JSON.stringify({ msgId })
-				});
+                const res = await fetch('/api/onemsg/admin/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Admin-Key': pwd },
+                    body: JSON.stringify({ msgId })
+                });
 
-				if (res.ok) loadAdminMsgs();
-			}
+                if (res.ok) {
+                    loadAdminMsgs();
+                } else {
+                    alert('WRONG PW. ENTER PW AGAIN. TQ.');
+                }
+            }
 
-			async function purgeAll() {
-				const pwd = sessionStorage.getItem('kip_admin_token');
-				if (!confirm('Are you sure you wanna purge all msgs on wall?')) return;
+            async function purgeAll() {
+                const pwd = sessionStorage.getItem('kip_admin_token');
+                if (!pwd) return alert('Login first.');
+                if (!confirm('You are really really sure you wna delete all msgs?? This cant be undone btw')) return;
 
-				const res = await fetch('/api/onemsg/admin/delete', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json', 'X-Admin-Key': pwd },
-					body: JSON.stringify({ purgeAll: true })
-				});
+                const res = await fetch('/api/onemsg/admin/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Admin-Key': pwd },
+                    body: JSON.stringify({ purgeAll: true })
+                });
 
-				if (res.ok) loadAdminMsgs();
-			}
-		</script>
+                if (res.ok) {
+                    loadAdminMsgs();
+                } else {
+                    alert('WRONG PW. FUCK. YOU.');
+                }
+            }
+
+            function escapeHTML(str) {
+                return String(str || '').replace(/[&<>"']/g, m => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+                })[m]);
+            }
+        </script>
 	</body>
 </html>
