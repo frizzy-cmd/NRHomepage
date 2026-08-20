@@ -10,7 +10,7 @@
 		<link rel="stylesheet" href="static/styles.css">
 		<script src="static/js/theme-switcher.js"></script>
 		<script src="static/js/admin.js" defer></script>
-		<title>Admin Dashboard - Kip's Forum</title>
+		<title>Admin - Kip's Forum</title>
 
 		<style>
 			.admin-gate {
@@ -91,7 +91,6 @@
 				border-radius: 3px;
 			}
 
-			/* Moderation Modal */
 			.modal-overlay {
 				position: fixed;
 				top:0; left:0; right:0; bottom:0;
@@ -116,96 +115,89 @@
 			<a href="index.html" style="text-decoration: none;">
 				<img id="logo" src="static/img/logo.png" alt="OneShot Logo" title="Go to Homepage">
 			</a>
-			<div id="subtitle">Admin Dashboard</div>
+			<div id="subtitle">Leave this site if you dont know what you're doing.</div>
 		</div>
 
 		<div id="box">
-			<!-- Password Login Gate -->
 			<div id="loginGate" class="admin-gate">
-				<h3>Moderator Access</h3>
-				<p style="font-size: 11pt; color: #aaa;">Enter admin password to continue</p>
+				<h3>Access</h3>
+				<p style="font-size: 11pt; color: #aaa;">Enter pw to continue</p>
 				<input type="password" id="adminPasswordInput" placeholder="Password" style="margin-bottom: 16px;">
 				<button id="loginBtn" class="btn" style="width: 100% !important; margin: 0;">Login</button>
 			</div>
 
-			<!-- Main Dashboard UI -->
 			<div id="adminDashboard" class="admin-dashboard">
-				<h3>Moderation Overview</h3>
+				<h3>Overview</h3>
 
-				<!-- Overview Stats Grid -->
 				<div class="stats-grid">
 					<div class="stat-card">
 						<div id="statActivePosts" class="stat-val">0</div>
-						<div class="stat-label">Active Posts</div>
+						<div class="stat-label">Active posts</div>
 					</div>
 					<div class="stat-card">
 						<div id="statActiveComments" class="stat-val">0</div>
-						<div class="stat-label">Active Comments</div>
+						<div class="stat-label">Active comments</div>
 					</div>
 					<div class="stat-card">
 						<div id="statTotalCombined" class="stat-val">0</div>
-						<div class="stat-label">Total Combined</div>
+						<div class="stat-label">Total combined</div>
 					</div>
 					<div class="stat-card">
 						<div id="statBans" class="stat-val">0</div>
-						<div class="stat-label">Total Bans</div>
+						<div class="stat-label">Total bans</div>
 					</div>
 					<div class="stat-card">
 						<div id="statMutes" class="stat-val">0</div>
-						<div class="stat-label">Total Mutes</div>
+						<div class="stat-label">Total mutes</div>
 					</div>
 					<div class="stat-card">
 						<div id="statKicks" class="stat-val">0</div>
-						<div class="stat-label">Total Kicks</div>
+						<div class="stat-label">Total kicks</div>
 					</div>
 				</div>
 
-				<!-- Audit Log Section -->
 				<div class="admin-section">
-					<h4>Audit Log</h4>
+					<h4>Logs</h4>
 					<input type="text" id="searchAudit" class="search-input" placeholder="Search audit log...">
 					<div id="auditLogList"></div>
 				</div>
 
-				<!-- Active Users Section -->
 				<div class="admin-section">
-					<h4>Active Users</h4>
+					<h4>Active users</h4>
 					<input type="text" id="searchActiveUsers" class="search-input" placeholder="Search active users...">
 					<div id="activeUsersList"></div>
 				</div>
 
-				<!-- Past Moderations Section -->
 				<div class="admin-section">
-					<h4>Past Moderations</h4>
+					<h4>Past moderations</h4>
 					<input type="text" id="searchPastUsers" class="search-input" placeholder="Search past moderations...">
 					<div id="pastUsersList"></div>
 				</div>
 			</div>
 		</div>
 
-		<!-- Action Modal Popup -->
 		<div id="modModal" class="modal-overlay">
 			<div class="modal-body">
-				<h3 style="margin-top:0;">Moderate User</h3>
+				<h3 style="margin-top:0;">Moderate user</h3>
 				<p id="modModalTarget" style="color: var(--header-subtitle);"></p>
 
-				<label style="display:block; margin: 10px 0 4px 0;">Action Type:</label>
+				<label style="display:block; margin: 10px 0 4px 0;">type:</label>
 				<select id="modActionType" class="theme-dropdown" style="width: 100%;">
-					<option value="mute">Mute User</option>
-					<option value="kick">Kick User</option>
-					<option value="ban">Ban User</option>
+					<option value="mute">Mute</option>
+					<option value="kick">Kick</option>
+					<option value="ban">Ban</option>
 				</select>
 
 				<label style="display:block; margin: 10px 0 4px 0;">Reason:</label>
 				<input type="text" id="modReasonInput" placeholder="Reason for action" style="width: 100%;">
 
 				<div id="muteDurationGroup" style="margin-top: 10px;">
-					<label style="display:block; margin-bottom: 4px;">Mute Duration (Hours):</label>
+					<label style="display:block; margin-bottom: 4px;">Mute duration (hrs):</label>
 					<input type="number" id="modDurationInput" value="24" min="1" style="width: 100%;">
 				</div>
 
 				<div style="display: flex; gap: 10px; margin-top: 20px;">
-					<button id="confirmModBtn" class="mod-btn" style="flex:1; padding: 8px;">Execute Action</button>
+					<button id="confirmModBtn" class="mod-btn" style="flex:1; padding: 8px;">Execute</button>
 					<button id="cancelModBtn" class="btn" style="flex:1; margin:0; padding: 8px;">Cancel</button>
 				</div>
 			</div>
