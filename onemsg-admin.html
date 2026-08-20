@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="title" content="admin">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#5a207f">
+
+		<link rel="icon" type="image/png" href="static/img/icon.png">
+		<link rel="stylesheet" href="static/styles.css">
+		<script src="static/js/theme-switcher.js"></script>
+		<title>admin - Kip's Homepage</title>
+
+		<style>
+			.admin-box {
+				background: rgba(18, 6, 28, 0.9);
+				border: 3px solid var(--box-border);
+				padding: 24px;
+				border-radius: 6px;
+			}
+			.msg-row {
+				padding: 10px;
+				border-bottom: 1px solid var(--box-border);
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+			.del-btn {
+				background: #b71c1c;
+				color: white;
+				border: 0;
+				padding: 4px 10px;
+				font-family: Terminus, monospace;
+				cursor: pointer;
+				border-radius: 3px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			<a href="index.html" style="text-decoration: none;">
+				<img id="logo" src="static/img/logo.png" alt="OneShot Logo">
+			</a>
+			<div id="subtitle">OneMessage panel</div>
+		</div>
+
+		<div id="box">
+			<div class="admin-box">
+				<h3>Auth</h3>
+				<input type="password" id="adminPwd" placeholder="Password" style="width: 100%; margin-bottom: 12px;">
+				<button class="btn" onclick="loginAdmin()" style="width: 100% !important; margin: 0;">Login</button>
+			</div>
+
+			<div id="adminControls" style="display: none; margin-top: 24px;">
+				<button class="del-btn" onclick="purgeAll()" style="padding: 8px 16px; font-size: 12pt; margin-bottom: 20px;">
+					Purge all msgs on wall
+				</button>
+
+				<h3>Manage msgs</h3>
+				<div id="adminMsgList"></div>
+			</div>
+		</div>
+
+		<script>
+			async function loginAdmin() {
+				const pwd = document.getElementById('adminPwd').value.trim();
+				sessionStorage.setItem('kip_admin_token', pwd);
+				loadAdminMsgs();
+			}
+
+			async function loadAdminMsgs() {
+				const pwd = sessionStorage.getItem('kip_admin_token');
+				const list = document.getElementById('adminMsgList');
+				const controls = document.getElementById('adminControls');
+
+				try {
+					const res = await fetch('/api/onemsg/messages');
+					const data = await res.json();
+
+					controls.style.display = 'block';
+					list.innerHTML = (data.messages || []).map(m => `
+						<div class="msg-row">
+							<div>
+								<strong>#${m.msg_number} - ${m.author}</strong>: "${m.content}"
+							</div>
+							<button class="del-btn" onclick="deleteMsg('${m.id}')">Delete</button>
+						</div>
+					`).join('');
+				} catch (e) { alert('Error loading listt'); }
+			}
+
+			async function deleteMsg(msgId) {
+				const pwd = sessionStorage.getItem('kip_admin_token');
+				if (!confirm('Delete this message?')) return;
+
+				const res = await fetch('/api/onemsg/admin/delete', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json', 'X-Admin-Key': pwd },
+					body: JSON.stringify({ msgId })
+				});
+
+				if (res.ok) loadAdminMsgs();
+			}
+
+			async function purgeAll() {
+				const pwd = sessionStorage.getItem('kip_admin_token');
+				if (!confirm('Are you sure you wanna purge all msgs on wall?')) return;
+
+				const res = await fetch('/api/onemsg/admin/delete', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json', 'X-Admin-Key': pwd },
+					body: JSON.stringify({ purgeAll: true })
+				});
+
+				if (res.ok) loadAdminMsgs();
+			}
+		</script>
+	</body>
+</html>

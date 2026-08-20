@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="title" content="OneMessage Wall - Kip's Homepage">
+		<meta name="description" content="Leave your permanent OneMessage on the community wall. One message per person.">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#5a207f">
+
+		<link rel="icon" type="image/png" href="static/img/icon.png">
+		<link rel="stylesheet" href="static/styles.css">
+		<script src="static/js/theme-switcher.js"></script>
+		<script src="static/js/onemsg.js" defer></script>
+		<title>OneMessage Wall - Kip's Homepage</title>
+
+		<style>
+			.global-counter {
+				text-align: center;
+				background: rgba(18, 6, 28, 0.85);
+				border: 2px solid var(--box-border);
+				padding: 12px;
+				margin-bottom: 24px;
+				border-radius: 6px;
+				color: var(--header-subtitle);
+				font-size: 16pt;
+			}
+			.msg-card {
+				background: rgba(18, 6, 28, 0.85);
+				border: 2px solid var(--box-border);
+				padding: 16px 20px;
+				margin-bottom: 16px;
+				border-radius: 6px;
+				display: flex;
+				gap: 16px;
+				align-items: flex-start;
+			}
+			.msg-pfp {
+				width: 56px;
+				height: 56px;
+				border: 2px solid var(--box-border);
+				border-radius: 4px;
+				background: #100020;
+				object-fit: contain;
+			}
+			.msg-body {
+				flex: 1;
+			}
+			.msg-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				font-size: 11pt;
+				color: #aaa;
+				margin-bottom: 6px;
+			}
+			.msg-badge {
+				background: var(--box-border);
+				color: var(--header-subtitle);
+				padding: 2px 6px;
+				border-radius: 3px;
+				font-size: 10pt;
+			}
+			.react-btn {
+				background: rgba(40, 10, 50, 0.6);
+				border: 1px solid var(--box-border);
+				color: white;
+				padding: 4px 10px;
+				font-family: Terminus, monospace;
+				font-size: 11pt;
+				cursor: pointer;
+				border-radius: 4px;
+				margin-right: 8px;
+			}
+			.react-btn:hover {
+				background: var(--box-border);
+			}
+
+			/* PFP Picker Modal */
+			.pfp-modal {
+				position: fixed;
+				top:0; left:0; right:0; bottom:0;
+				background: rgba(0,0,0,0.85);
+				display: none;
+				justify-content: center;
+				align-items: center;
+				z-index: 1000;
+				padding: 20px;
+			}
+			.pfp-modal-body {
+				background: #14041c;
+				border: 3px solid var(--box-border);
+				width: 600px;
+				max-width: 95%;
+				max-height: 80vh;
+				display: flex;
+				flex-direction: column;
+				padding: 20px;
+				border-radius: 6px;
+			}
+			.pfp-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+				gap: 10px;
+				overflow-y: auto;
+				padding: 10px;
+				background: rgba(10, 2, 16, 0.8);
+				border: 1px solid var(--box-border);
+			}
+			.pfp-item {
+				width: 60px;
+				height: 60px;
+				border: 2px solid transparent;
+				cursor: pointer;
+				object-fit: contain;
+				border-radius: 4px;
+			}
+			.pfp-item:hover {
+				border-color: var(--header-subtitle);
+				transform: scale(1.05);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			<a href="index.html" style="text-decoration: none;">
+				<img id="logo" src="static/img/logo.png" alt="OneShot Logo" title="Go to Homepage">
+			</a>
+			<div id="subtitle">OneMessage Wall</div>
+		</div>
+
+		<div id="message">
+			<h3>The OneMessage Wall</h3>
+			You get <strong>One Message</strong> ever on this wall. No editing. No deleting. Make your message count!
+		</div>
+
+		<div id="box">
+			<!-- Global Wall Counter Header -->
+			<div class="global-counter">
+				<span id="wallCount">0</span> OneMessages written to the World Machine
+			</div>
+
+			<!-- Message Submission Form -->
+			<div id="postFormContainer">
+				<h3>Write Your OneMessage</h3>
+				<form id="msgForm" onsubmit="return false;">
+					<div style="display: flex; gap: 12px; margin-bottom: 12px; align-items: center;">
+						<div>
+							<label style="display:block; font-size: 11pt; color: var(--header-subtitle);">Portrait:</label>
+							<img id="selectedPfpImg" src="static/pfp/niko.png" alt="PFP" style="width: 56px; height: 56px; border: 2px solid var(--box-border); cursor: pointer; border-radius: 4px;" onclick="openPfpModal()" title="Click to change portrait">
+						</div>
+						<div style="flex: 1;">
+							<label style="display:block; font-size: 11pt; color: var(--header-subtitle);">Username:</label>
+							<input type="text" id="msgAuthor" placeholder="Your Name" required style="width: 100%;">
+						</div>
+					</div>
+
+					<div style="margin-bottom: 12px;">
+						<label style="display:block; font-size: 11pt; color: var(--header-subtitle);">Your OneMessage (Max 280 chars):</label>
+						<textarea id="msgContent" rows="4" maxlength="280" placeholder="Write your permanent message here..." required style="width: 100%; background: var(--input-bg); color: white; border: 1px solid var(--input-border); padding: 8px; font-family: Terminus, monospace; font-size: 13pt;"></textarea>
+					</div>
+
+					<p style="font-size: 10pt; color: #ff6666; margin-bottom: 12px;">
+						⚠️ Notice: You only get ONE message ever. Once submitted, it cannot be edited or deleted.
+					</p>
+
+					<button type="submit" id="sendMsgBtn" class="btn">Send OneMessage</button>
+				</form>
+			</div>
+
+			<div id="alreadyPostedNotice" style="display: none; text-align: center; color: var(--header-subtitle); font-size: 14pt; padding: 20px;">
+				✨ Your OneMessage has been permanently written to the World Machine.
+			</div>
+
+			<hr style="border:0; border-top: 2px solid var(--box-border); margin: 32px 0;">
+
+			<!-- Public Messages Wall Stream -->
+			<h3>Community Wall</h3>
+			<div id="messagesStream">
+				<p style="color: #aaa;">Loading messages...</p>
+			</div>
+		</div>
+
+		<!-- PFP Selector Search Modal -->
+		<div id="pfpModal" class="pfp-modal">
+			<div class="pfp-modal-body">
+				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+					<strong style="color: var(--header-subtitle); font-size: 14pt;">Choose Character Face</strong>
+					<button onclick="closePfpModal()" style="background: transparent; color: #ff4444; border: 0; font-size: 16pt; cursor: pointer;">✖</button>
+				</div>
+				<input type="text" id="pfpSearch" placeholder="Search character (e.g. Niko, Alula, Cedric, Rue)..." style="padding: 6px; background: var(--input-bg); color: white; border: 1px solid var(--box-border); font-family: Terminus, monospace; margin-bottom: 12px;">
+				<div class="pfp-grid" id="pfpGrid"></div>
+			</div>
+		</div>
+
+		<div id="footer">
+			OneMessage Wall by <a href="https://github.com/frizzy-cmd" target="_blank">Kip</a> | 
+			<a href="index.html">Homepage</a> | 
+			<a href="legal.html">Legal</a> | 
+			<a href="https://github.com/frizzy-cmd/AlulaEditor" target="_blank">Github Repository</a>
+
+			<div class="theme-picker">
+				<span>Area Theme: </span>
+				<select id="themeSelect" class="theme-dropdown">
+					<option value="theme-barrens">The Barrens (Purple)</option>
+					<option value="theme-refuge">The Refuge (Pink/Red)</option>
+					<option value="theme-glen">The Glen (Emerald Green)</option>
+				</select>
+			</div>
+		</div>
+	</body>
+</html>
