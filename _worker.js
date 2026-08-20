@@ -1,4 +1,4 @@
-// _worker.js - Cloudflare Worker Backend & Static Asset Router
+// _worker.js
 
 export default {
 	async fetch(request, env, ctx) {
@@ -17,7 +17,6 @@ export default {
 		const clientIP = request.headers.get('cf-connecting-ip') || '127.0.0.1';
 		const ipHash = await hashIP(clientIP);
 
-		// headers
 		const corsHeaders = {
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -30,18 +29,14 @@ export default {
 		}
 
 		try {
-			//get status of user
+			// chgck user status
 			if (path === '/api/forum/user-status' && method === 'GET') {
 				const activeBan = await env.DB.prepare(
 					`SELECT * FROM moderation WHERE ip_hash = ? AND action_type = 'ban' ORDER BY created_at DESC LIMIT 1`
 				).bind(ipHash).first();
 
 				if (activeBan) {
-					return new Response(JSON.stringify({
-						status: 'banned',
-						reviewed: activeBan.created_at,
-						reason: activeBan.reason
-					}), { headers: corsHeaders });
+					return new Response(JSON.stringify({ status: 'banned', reviewed: activeBan.created_at, reason: activeBan.reason }), { headers: corsHeaders });
 				}
 
 				const activeMute = await env.DB.prepare(
@@ -49,11 +44,7 @@ export default {
 				).bind(ipHash).first();
 
 				if (activeMute) {
-					return new Response(JSON.stringify({
-						status: 'muted',
-						expires_at: activeMute.expires_at,
-						reason: activeMute.reason
-					}), { headers: corsHeaders });
+					return new Response(JSON.stringify({ status: 'muted', expires_at: activeMute.expires_at, reason: activeMute.reason }), { headers: corsHeaders });
 				}
 
 				const activeKick = await env.DB.prepare(
@@ -61,19 +52,17 @@ export default {
 				).bind(ipHash).first();
 
 				if (activeKick) {
-					return new Response(JSON.stringify({
-						status: 'kicked',
-						reason: activeKick.reason
-					}), { headers: corsHeaders });
+					return new Response(JSON.stringify({ status: 'kicked', reason: activeKick.reason }), { headers: corsHeaders });
 				}
 
-				return new Response(JSON.stringify({ status: 'ok' }), { headers: corsHeaders });
+				return new Response(JSON.stringify({ status: 'ok', userIpHash: ipHash }), { headers: corsHeaders });
 			}
 
-			// get all posts comments
+			// fetch posts/cokmments
 			if (path === '/api/forum/posts' && method === 'GET') {
+				// hide mod deleted posts after 48 hrs
 				const posts = await env.DB.prepare(
-					`SELECT * FROM posts ORDER BY created_at DESC LIMIT 50`
+					`SELECT * FROM posts WHERE is_deleted = 0 OR (is_deleted = 1 AND created_at > datetime('now', '-2 days')) ORDER BY created_at DESC LIMIT 50`
 				).all();
 
 				const comments = await env.DB.prepare(
@@ -82,30 +71,43 @@ export default {
 
 				const sanitizedPosts = (posts.results || []).map(p => {
 					if (p.is_deleted) {
+						const isUserDel = p.deletion_reason === 'user_deleted';
 						return {
 							...p,
 							title: '[deleted]',
-							content: '[Post removed by forum moderator]',
+							content: isUserDel ? '[Post deleted by original poster]' : '[Post removed by forum moderator]',
 							images: '[]'
 						};
 					}
 					return p;
 				});
 
+				const sanitizedComments = (comments.results || []).map(c => {
+					if (c.is_deleted) {
+						const isUserDel = c.deletion_reason === 'user_deleted';
+						return {
+							...c,
+							content: isUserDel ? '[Comment deleted by original commenter]' : '[Comment deleted by forum moderator]'
+						};
+					}
+					return c;
+				});
+
 				return new Response(JSON.stringify({
+					userIpHash: ipHash,
 					posts: sanitizedPosts,
-					comments: comments.results || []
+					comments: sanitizedComments
 				}), { headers: corsHeaders });
 			}
 
-			// post creation
+			// new post creation
 			if (path === '/api/forum/posts' && method === 'POST') {
 				const modCheck = await env.DB.prepare(
-					`SELECT action_type, reason, expires_at FROM moderation WHERE ip_hash = ? AND (action_type = 'ban' OR (action_type = 'mute' AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)))`
+					`SELECT action_type, reason FROM moderation WHERE ip_hash = ? AND (action_type = 'ban' OR (action_type = 'mute' AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)))`
 				).bind(ipHash).first();
 
 				if (modCheck) {
-					return new Response(JSON.stringify({ error: `Action restricted. Status: ${modCheck.action_type}. Reason: ${modCheck.reason}` }), { status: 403, headers: corsHeaders });
+					return new Response(JSON.stringify({ error: `Action restricted. Reason: ${modCheck.reason}` }), { status: 403, headers: corsHeaders });
 				}
 
 				const formData = await request.formData();
@@ -119,7 +121,7 @@ export default {
 				}
 
 				if (imageFiles.length > 2) {
-					return new Response(JSON.stringify({ error: 'Maximum 2 images allowed per post!' }), { status: 400, headers: corsHeaders });
+					return new Response(JSON.stringify({ error: 'Maximum 2 images allowed!' }), { status: 400, headers: corsHeaders });
 				}
 
 				const allowedTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
@@ -127,23 +129,21 @@ export default {
 				for (const file of imageFiles) {
 					if (file && file.size > 0) {
 						if (!allowedTypes.includes(file.type)) {
-							return new Response(JSON.stringify({ error: 'Only PNG, JPG, WEBP, and GIF images are allowed!' }), { status: 400, headers: corsHeaders });
+							return new Response(JSON.stringify({ error: 'Invalid image format!' }), { status: 400, headers: corsHeaders });
 						}
 						if (file.size > 2 * 1024 * 1024) {
-							return new Response(JSON.stringify({ error: 'Image size must be under 2MB!' }), { status: 400, headers: corsHeaders });
+							return new Response(JSON.stringify({ error: 'Image size over 2MB limit!' }), { status: 400, headers: corsHeaders });
 						}
 						const key = `uploads/${Date.now()}_${Math.random().toString(36).substring(7)}_${file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`;
-						await env.UPLOADS.put(key, file.stream(), {
-							httpMetadata: { contentType: file.type }
-						});
+						await env.UPLOADS.put(key, file.stream(), { httpMetadata: { contentType: file.type } });
 						uploadedImageUrls.push(`/api/forum/images/${key}`);
 					}
 				}
 
 				const adminKey = request.headers.get('X-Admin-Key');
 				const isAdmin = (adminKey && adminKey === env.ADMIN_SECRET) ? 1 : 0;
-
 				const id = 'post_' + Date.now();
+
 				await env.DB.prepare(
 					`INSERT INTO posts (id, author, title, content, images, ip_hash, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?)`
 				).bind(id, author, title, content, JSON.stringify(uploadedImageUrls), ipHash, isAdmin).run();
@@ -151,12 +151,44 @@ export default {
 				return new Response(JSON.stringify({ success: true, id }), { headers: corsHeaders });
 			}
 
-			//verify pw and stats
+			// crate comment
+			if (path === '/api/forum/comments' && method === 'POST') {
+				const body = await request.json();
+				const { postId, author, content } = body;
+
+				if (!postId || !content.trim()) {
+					return new Response(JSON.stringify({ error: 'Missing comment content or postId' }), { status: 400, headers: corsHeaders });
+				}
+
+				const adminKey = request.headers.get('X-Admin-Key');
+				const isAdmin = (adminKey && adminKey === env.ADMIN_SECRET) ? 1 : 0;
+				const id = 'comment_' + Date.now();
+
+				await env.DB.prepare(
+					`INSERT INTO comments (id, post_id, author, content, ip_hash, is_admin) VALUES (?, ?, ?, ?, ?, ?)`
+				).bind(id, postId, author || 'Anonymous', content, ipHash, isAdmin).run();
+
+				return new Response(JSON.stringify({ success: true, id }), { headers: corsHeaders });
+			}
+
+			// delete post of own comment or post
+			if (path === '/api/forum/delete-own' && method === 'POST') {
+				const body = await request.json();
+				const { type, id } = body;
+
+				if (type === 'post') {
+					await env.DB.prepare(`UPDATE posts SET is_deleted = 1, deletion_reason = 'user_deleted' WHERE id = ? AND ip_hash = ?`).bind(id, ipHash).run();
+				} else {
+					await env.DB.prepare(`UPDATE comments SET is_deleted = 1, deletion_reason = 'user_deleted' WHERE id = ? AND ip_hash = ?`).bind(id, ipHash).run();
+				}
+
+				return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+			}
+
+			// stats and mods
 			if (path === '/api/admin/stats' && method === 'GET') {
 				const adminKey = request.headers.get('X-Admin-Key');
-				if (adminKey !== env.ADMIN_SECRET) {
-					return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
-				}
+				if (adminKey !== env.ADMIN_SECRET) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
 
 				const totalActivePosts = await env.DB.prepare(`SELECT COUNT(*) as cnt FROM posts WHERE is_deleted = 0`).first();
 				const totalActiveComments = await env.DB.prepare(`SELECT COUNT(*) as cnt FROM comments WHERE is_deleted = 0`).first();
@@ -187,12 +219,9 @@ export default {
 				}), { headers: corsHeaders });
 			}
 
-			//Mod actions
 			if (path === '/api/admin/moderate' && method === 'POST') {
 				const adminKey = request.headers.get('X-Admin-Key');
-				if (adminKey !== env.ADMIN_SECRET) {
-					return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
-				}
+				if (adminKey !== env.ADMIN_SECRET) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
 
 				const body = await request.json();
 				const { action, targetId, ipHash: targetIp, username, reason, durationHours, adminName } = body;
@@ -226,7 +255,7 @@ export default {
 				return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
 			}
 
-			// SERVER IMAGES FROM r2
+			// serve r2
 			if (path.startsWith('/api/forum/images/')) {
 				const key = path.replace('/api/forum/images/', '');
 				const object = await env.UPLOADS.get(key);
@@ -245,7 +274,6 @@ export default {
 	}
 };
 
-// SHA-256 anon
 async function hashIP(ip) {
 	const msgUint8 = new TextEncoder().encode(ip + '_SALT_KIP_FORUM');
 	const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);

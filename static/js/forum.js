@@ -1,4 +1,4 @@
-// forum.js - For forum.html
+// forum.js
 
 document.addEventListener('DOMContentLoaded', () => {
 	const postForm = document.getElementById('postForm');
@@ -9,183 +9,190 @@ document.addEventListener('DOMContentLoaded', () => {
 	const submitPostBtn = document.getElementById('submitPostBtn');
 	const forumNotice = document.getElementById('forumNotice');
 	const postsFeed = document.getElementById('postsFeed');
+	const sidePanel = document.getElementById('sidePanel');
+	const sidePanelBody = document.getElementById('sidePanelBody');
 
-	const suspensionModal = document.getElementById('suspensionModal');
-	const banDate = document.getElementById('banDate');
-	const banReason = document.getElementById('banReason');
+	let currentUserIpHash = '';
+	let allPosts = [];
+	let allComments = [];
 
-	// restore username from localstorage
 	const savedUser = localStorage.getItem('kip_forum_username') || '';
 	if (postAuthor) postAuthor.value = savedUser;
 
 	checkUserStatus();
-
 	loadPosts();
 
-	// this handles post submissions
 	if (postForm) {
 		postForm.addEventListener('submit', async (e) => {
 			e.preventDefault();
-
 			const authorVal = postAuthor.value.trim() || 'Anonymous';
 			const titleVal = postTitle.value.trim();
 			const contentVal = postContent.value.trim();
 			const files = postImages.files;
 
-			if (!titleVal || !contentVal) {
-				alert('Please fill in both the title and content!');
-				return;
-			}
+			if (!titleVal || !contentVal) return alert('Fill in both title and content!');
+			if (files.length > 2) return alert('Maximum 2 images allowed!');
 
-			if (files.length > 2) {
-				alert('Maximum 2 images allowed per post!');
-				return;
-			}
-
-			// save usr for future sessions
 			localStorage.setItem('kip_forum_username', authorVal);
-
 			submitPostBtn.disabled = true;
-			submitPostBtn.textContent = 'Publishing..';
 
 			try {
 				const formData = new FormData();
 				formData.append('author', authorVal);
 				formData.append('title', titleVal);
 				formData.append('content', contentVal);
+				for (let i = 0; i < files.length; i++) formData.append('images', files[i]);
 
-				for (let i = 0; i < files.length; i++) {
-					formData.append('images', files[i]);
-				}
-
-				const res = await fetch('/api/forum/posts', {
-					method: 'POST',
-					body: formData
-				});
-
-				const data = await res.json();
-
-				if (!res.ok) {
-					alert(data.error || 'Failed to publish post.');
+				const res = await fetch('/api/forum/posts', { method: 'POST', body: formData });
+				if (res.ok) {
+					postTitle.value = ''; postContent.value = ''; postImages.value = '';
+					loadPosts();
 				} else {
-					postTitle.value = '';
-					postContent.value = '';
-					postImages.value = '';
-					loadPosts(); // ref
+					const data = await res.json();
+					alert(data.error || 'Post failed');
 				}
-			} catch (err) {
-				alert('Error publishing post: ' + err.message);
-			} finally {
-				submitPostBtn.disabled = false;
-				submitPostBtn.textContent = 'Publish post';
-			}
+			} catch (err) { alert(err.message); }
+			finally { submitPostBtn.disabled = false; }
 		});
 	}
 
-	// we check user status
 	async function checkUserStatus() {
 		try {
 			const res = await fetch('/api/forum/user-status');
-			if (!res.ok) return;
-
-			const data = await res.json();
-
-            // here lists the uis for the moderations
-			if (data.status === 'banned') {
-				// ban
-				if (suspensionModal) {
-					banDate.textContent = new Date(data.reviewed).toUTCString();
-					banReason.textContent = data.reason || 'Violation of community rules';
-					suspensionModal.style.display = 'flex';
-				}
-				if (postForm) postForm.style.display = 'none';
-			} else if (data.status === 'muted') {
-				// mute
-				if (forumNotice) {
-					forumNotice.className = 'forum-notice mute';
-					forumNotice.style.display = 'block';
-					forumNotice.innerHTML = `
-						<strong>Forum mute</strong><br>
-						You have been temporarily muted by a forum moderator until ${new Date(data.expires_at).toUTCString()}.<br>
-						Reason: ${escapeHTML(data.reason || 'Undefined')}
-					`;
-				}
-				if (submitPostBtn) submitPostBtn.disabled = true;
-			} else if (data.status === 'kicked') {
-				// kick
-				if (forumNotice) {
-					forumNotice.className = 'forum-notice';
-					forumNotice.style.display = 'block';
-					forumNotice.innerHTML = `
-						<strong>Notice</strong><br>
-						You have been kicked by a forum moderator. You can still make posts/comments, however existing posts/comments have been removed.<br>
-						Reason: ${escapeHTML(data.reason || 'Undefined')}
-					`;
-				}
-				localStorage.removeItem('kip_forum_username');
+			if (res.ok) {
+				const data = await res.json();
+				currentUserIpHash = data.userIpHash || '';
 			}
-		} catch (e) {
-			console.log('failed to check User status:', e);
-		}
+		} catch (e) {}
 	}
 
-	// load all avail posts and comments
 	async function loadPosts() {
 		try {
 			const res = await fetch('/api/forum/posts');
-			if (!res.ok) throw new Error('Failed to load posts');
+			if (!res.ok) return;
 
 			const data = await res.json();
-			const posts = data.posts || [];
-			const comments = data.comments || [];
+			currentUserIpHash = data.userIpHash || currentUserIpHash;
+			allPosts = data.posts || [];
+			allComments = data.comments || [];
 
-			if (!posts.length) {
-				postsFeed.innerHTML = '<p style="color: #aaa;">No discussions yet. Be the first to create a post!</p>';
+			if (!allPosts.length) {
+				postsFeed.innerHTML = '<p style="color: #aaa;">No discussions yet.</p>';
 				return;
 			}
 
-			postsFeed.innerHTML = posts.map(p => {
-				const postComments = comments.filter(c => c.post_id === p.id);
-				let imagesArr = [];
-				try { imagesArr = JSON.parse(p.images || '[]'); } catch (e) {}
-
-				const isDeleted = p.is_deleted === 1;
+			postsFeed.innerHTML = allPosts.map(p => {
+				const pComments = allComments.filter(c => c.post_id === p.id);
+				const isOwnPost = p.ip_hash === currentUserIpHash;
+				const modBadge = p.is_admin === 1 ? '<span class="mod-badge">[Moderator]</span>' : '';
 
 				return `
-					<div class="post-card">
+					<div class="post-card" style="cursor: pointer;" onclick="openSidePanel('${p.id}')">
 						<div class="post-header">
-							<span class="post-author">${escapeHTML(p.author)}</span>
+							<span class="post-author">${escapeHTML(p.author)}${modBadge}</span>
 							<span>${new Date(p.created_at).toLocaleString()}</span>
 						</div>
-						<div class="post-title">${isDeleted ? '[deleted]' : escapeHTML(p.title)}</div>
-						<div class="post-content">${isDeleted ? '[Post removed by forum moderator]' : escapeHTML(p.content)}</div>
-
-						${!isDeleted && imagesArr.length ? `
-							<div class="post-images-grid">
-								${imagesArr.map(imgUrl => `<img src="${imgUrl}" class="post-img" onclick="window.open('${imgUrl}', '_blank')">`).join('')}
-							</div>
-						` : ''}
-
-						<div class="comments-section">
-							<strong style="color: var(--header-subtitle);">${postComments.length} Comments</strong>
-							${postComments.map(c => `
-								<div class="comment-card">
-									<span class="comment-author">${escapeHTML(c.author)}</span>
-									<span class="comment-date">${new Date(c.created_at).toLocaleTimeString()}</span>
-									<div>${c.is_deleted ? '[Comment removed by forum moderator]' : escapeHTML(c.content)}</div>
-								</div>
-							`).join('')}
+						<div class="post-title">${escapeHTML(p.title)}</div>
+						<div class="post-content">${escapeHTML(p.content)}</div>
+						<div style="font-size: 11pt; color: var(--header-subtitle);">
+							💬 ${pComments.length} Comments (Click to view & reply)
+							${isOwnPost && !p.is_deleted ? `<button class="self-del-btn" onclick="event.stopPropagation(); deleteOwn('post', '${p.id}')">Delete post</button>` : ''}
 						</div>
 					</div>
 				`;
 			}).join('');
-
-		} catch (err) {
-			postsFeed.innerHTML = `<p style="color: #ff4444;">Error loading posts: ${err.message}</p>`;
-		}
+		} catch (e) {}
 	}
 
-    // lol
+	window.openSidePanel = function(postId) {
+		const post = allPosts.find(p => p.id === postId);
+		if (!post) return;
+
+		const pComments = allComments.filter(c => c.post_id === postId);
+		let imagesArr = [];
+		try { imagesArr = JSON.parse(post.images || '[]'); } catch (e) {}
+
+		sidePanelBody.innerHTML = `
+			<h3 style="color: #fff; margin-top: 0;">${escapeHTML(post.title)}</h3>
+			<div style="font-size: 11pt; color: #aaa; margin-bottom: 12px;">
+				By <strong style="color: var(--header-subtitle);">${escapeHTML(post.author)}</strong> | ${new Date(post.created_at).toLocaleString()}
+			</div>
+			<div class="post-content">${escapeHTML(post.content)}</div>
+
+			${imagesArr.length ? `
+				<div class="post-images-grid">
+					${imagesArr.map(img => `<img src="${img}" class="post-img" onclick="window.open('${img}', '_blank')">`).join('')}
+				</div>
+			` : ''}
+
+			<hr style="border: 0; border-top: 1px solid var(--box-border); margin: 20px 0;">
+
+			<h4>Comments (${pComments.length})</h4>
+			<div>
+				${pComments.map(c => `
+					<div class="comment-card">
+						<span class="comment-author">${escapeHTML(c.author)}</span>
+						<span class="comment-date">${new Date(c.created_at).toLocaleTimeString()}</span>
+						<div>${escapeHTML(c.content)}</div>
+						${c.ip_hash === currentUserIpHash && !c.is_deleted ? `<button class="self-del-btn" onclick="deleteOwn('comment', '${c.id}')">Delete comment</button>` : ''}
+					</div>
+				`).join('')}
+			</div>
+
+			<div style="margin-top: 20px;">
+				<h4>Add a Comment</h4>
+				<input type="text" id="commentAuthor" placeholder="Your username" value="${escapeHTML(postAuthor.value)}" style="width: 100%; margin-bottom: 8px;">
+				<textarea id="commentContent" rows="3" placeholder="Write your reply.." style="width: 100%; background: var(--input-bg); color: #fff; border: 1px solid var(--input-border); padding: 6px; font-family: Terminus, monospace;"></textarea>
+				<button class="btn" style="width: 100% !important; margin-top: 10px;" onclick="submitComment('${post.id}')">Post</button>
+			</div>
+		`;
+
+		sidePanel.classList.add('open');
+	};
+
+	window.closeSidePanel = function() {
+		sidePanel.classList.remove('open');
+	};
+
+	window.submitComment = async function(postId) {
+		const author = document.getElementById('commentAuthor').value.trim() || 'Anonymous';
+		const content = document.getElementById('commentContent').value.trim();
+
+		if (!content) return alert('Write a comment first!');
+
+		try {
+			const res = await fetch('/api/forum/comments', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ postId, author, content })
+			});
+
+			if (res.ok) {
+				await loadPosts();
+				openSidePanel(postId);
+			} else {
+				alert('Comment failed.');
+			}
+		} catch (e) { alert(e.message); }
+	};
+
+	window.deleteOwn = async function(type, id) {
+		if (!confirm(`Are you sure you want to delete your ${type}?`)) return;
+
+		try {
+			const res = await fetch('/api/forum/delete-own', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ type, id })
+			});
+
+			if (res.ok) {
+				await loadPosts();
+				closeSidePanel();
+			}
+		} catch (e) {}
+	};
+
 	function escapeHTML(str) {
 		return String(str || '').replace(/[&<>"']/g, m => ({
 			'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'

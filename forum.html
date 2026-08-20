@@ -166,6 +166,45 @@
 				margin: 16px 0;
 				border-radius: 4px;
 			}
+
+            .side-panel {
+                position: fixed;
+                top: 0; right: -500px; width: 480px; max-width: 90%;
+                height: 100%;
+                background: #14041c;
+                border-left: 3px solid var(--box-border);
+                box-shadow: -10px 0 20px rgba(0,0,0,0.6);
+                z-index: 1000;
+                transition: right 0.3s ease;
+                display: flex;
+                flex-direction: column;
+            }
+            .side-panel.open {
+                right: 0;
+            }
+            .side-panel-header {
+                background: #240830;
+                padding: 14px 18px;
+                border-bottom: 2px solid var(--box-border);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .side-panel-body {
+                padding: 20px;
+                overflow-y: auto;
+                flex: 1;
+            }
+            .self-del-btn {
+                background: transparent;
+                color: #ff6666;
+                border: 1px solid #ff4444;
+                padding: 2px 6px;
+                font-size: 10pt;
+                cursor: pointer;
+                border-radius: 3px;
+                margin-left: 8px;
+            }
 		</style>
 	</head>
 	<body>
@@ -265,5 +304,15 @@
 		<div id="sub-footer">
 			OneShot and its assets are property of Future Cat LLC.
 		</div>
+
+		<div id="sidePanel" class="side-panel">
+			<div class="side-panel-header">
+				<strong style="color: var(--header-subtitle);">Post Details</strong>
+				<button onclick="closeSidePanel()" style="background: transparent; color: #ff4444; border: 0; font-size: 16pt; cursor: pointer;">✖</button>
+			</div>
+			<div id="sidePanelBody" class="side-panel-body">
+			</div>
+		</div>
+
 	</body>
 </html>
