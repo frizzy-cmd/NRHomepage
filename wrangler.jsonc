@@ -1,19 +1,28 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "kip",
+	"main": "_worker.js",
 	"compatibility_date": "2026-08-15",
 	"observability": {
 		"enabled": true
 	},
 	"assets": {
 		"directory": ".",
-		"not_found_handling": "404-page"
+		"binding": "ASSETS",
+		"not_found_handling": "404-page",
+		"run_worker_first": true
 	},
 	"d1_databases": [
 		{
-			"binding": "forum_db",
+			"binding": "DB",
 			"database_name": "forum-db",
 			"database_id": "3b830a74-15a2-47cb-b696-21a2382fc1c7"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "UPLOADS",
+			"bucket_name": "forum-uploads"
 		}
 	]
 }
