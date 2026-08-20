@@ -1,4 +1,4 @@
-// forum.js - Fixed Comment Submission & Username Locking
+// forum.js - Client API connector with Restored Suspension Modal & Notices
 
 document.addEventListener('DOMContentLoaded', () => {
 	const postForm = document.getElementById('postForm');
@@ -11,6 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
 	const postsFeed = document.getElementById('postsFeed');
 	const sidePanel = document.getElementById('sidePanel');
 	const sidePanelBody = document.getElementById('sidePanelBody');
+
+	const suspensionModal = document.getElementById('suspensionModal');
+	const banDate = document.getElementById('banDate');
+	const banReason = document.getElementById('banReason');
 
 	let currentUserIpHash = '';
 	let allPosts = [];
@@ -54,11 +58,12 @@ document.addEventListener('DOMContentLoaded', () => {
 				if (adminToken) headers['X-Admin-Key'] = adminToken;
 
 				const res = await fetch('/api/forum/posts', { method: 'POST', headers, body: formData });
+				const data = await res.json();
+
 				if (res.ok) {
 					postTitle.value = ''; postContent.value = ''; postImages.value = '';
 					loadPosts();
 				} else {
-					const data = await res.json();
 					alert(data.error || 'Post failed');
 				}
 			} catch (err) { alert(err.message); }
@@ -69,11 +74,47 @@ document.addEventListener('DOMContentLoaded', () => {
 	async function checkUserStatus() {
 		try {
 			const res = await fetch('/api/forum/user-status');
-			if (res.ok) {
-				const data = await res.json();
-				currentUserIpHash = data.userIpHash || '';
+			if (!res.ok) return;
+
+			const data = await res.json();
+			currentUserIpHash = data.userIpHash || '';
+
+			if (data.status === 'banned') {
+				// Show Roblox Account Suspension Modal immediately
+				if (suspensionModal) {
+					if (banDate) banDate.textContent = new Date(data.reviewed).toUTCString();
+					if (banReason) banReason.textContent = data.reason || 'Violation of community rules';
+					suspensionModal.style.display = 'flex';
+				}
+				if (postForm) postForm.style.display = 'none';
+			} else if (data.status === 'muted') {
+				// Show Mute Warning Bar immediately
+				if (forumNotice) {
+					forumNotice.className = 'forum-notice mute';
+					forumNotice.style.display = 'block';
+					forumNotice.innerHTML = `
+						<strong>Forum mute</strong><br>
+						You have been temporarily muted by a forum moderator until ${new Date(data.expires_at).toUTCString()}.<br>
+						Reason: ${escapeHTML(data.reason || 'Spamming images')}
+					`;
+				}
+				if (submitPostBtn) submitPostBtn.disabled = true;
+			} else if (data.status === 'kicked') {
+				// Show Kick Notice Banner immediately
+				if (forumNotice) {
+					forumNotice.className = 'forum-notice';
+					forumNotice.style.display = 'block';
+					forumNotice.innerHTML = `
+						<strong>Notice</strong><br>
+						You have been kicked by a forum moderator. You can still make posts/comments, however existing posts/comments have been removed.<br>
+						Reason: ${escapeHTML(data.reason || 'Spamming')}
+					`;
+				}
+				localStorage.removeItem('kip_forum_username');
 			}
-		} catch (e) {}
+		} catch (e) {
+			console.log('Status check error:', e);
+		}
 	}
 
 	async function loadPosts() {
@@ -87,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			allComments = data.comments || [];
 
 			if (!allPosts.length) {
-				postsFeed.innerHTML = '<p style="color: #aaa;">No discussions yet. Be the first one!</p>';
+				postsFeed.innerHTML = '<p style="color: #aaa;">No discussions yet.</p>';
 				return;
 			}
 
@@ -105,8 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
 						<div class="post-title">${escapeHTML(p.title)}</div>
 						<div class="post-content">${escapeHTML(p.content)}</div>
 						<div style="font-size: 11pt; color: var(--header-subtitle);">
-							${pComments.length} comments
-							${isOwnPost && !p.is_deleted ? `<button class="self-del-btn" onclick="event.stopPropagation(); deleteOwn('post', '${p.id}')">Delete</button>` : ''}
+							💬 ${pComments.length} Comments (Click to view & reply)
+							${isOwnPost && !p.is_deleted ? `<button class="self-del-btn" onclick="event.stopPropagation(); deleteOwn('post', '${p.id}')">Delete My Post</button>` : ''}
 						</div>
 					</div>
 				`;
@@ -146,16 +187,16 @@ document.addEventListener('DOMContentLoaded', () => {
 						<span class="comment-author">${escapeHTML(c.author)}${c.is_admin ? ' <span class="mod-badge">[Moderator]</span>' : ''}</span>
 						<span class="comment-date">${new Date(c.created_at).toLocaleTimeString()}</span>
 						<div>${escapeHTML(c.content)}</div>
-						${c.ip_hash === currentUserIpHash && !c.is_deleted ? `<button class="self-del-btn" onclick="deleteOwn('comment', '${c.id}')">Delete</button>` : ''}
+						${c.ip_hash === currentUserIpHash && !c.is_deleted ? `<button class="self-del-btn" onclick="deleteOwn('comment', '${c.id}')">Delete My Comment</button>` : ''}
 					</div>
 				`).join('')}
 			</div>
 
 			<div style="margin-top: 20px;">
 				<h4>Add a Comment</h4>
-				<input type="text" id="commentAuthor" placeholder="Username" value="${escapeHTML(currentLockedUsername)}" ${currentLockedUsername ? 'readonly' : ''} style="width: 100%; margin-bottom: 8px;">
-				<textarea id="commentContent" rows="3" placeholder="Write your reply.." style="width: 100%; background: var(--input-bg); color: #fff; border: 1px solid var(--input-border); padding: 6px; font-family: Terminus, monospace;"></textarea>
-				<button class="btn" style="width: 100% !important; margin-top: 10px;" onclick="submitComment('${post.id}')">Post</button>
+				<input type="text" id="commentAuthor" placeholder="Your Name" value="${escapeHTML(currentLockedUsername)}" ${currentLockedUsername ? 'readonly' : ''} style="width: 100%; margin-bottom: 8px;">
+				<textarea id="commentContent" rows="3" placeholder="Write your reply..." style="width: 100%; background: var(--input-bg); color: #fff; border: 1px solid var(--input-border); padding: 6px; font-family: Terminus, monospace;"></textarea>
+				<button class="btn" style="width: 100% !important; margin-top: 10px;" onclick="submitComment('${post.id}')">Submit Comment</button>
 			</div>
 		`;
 

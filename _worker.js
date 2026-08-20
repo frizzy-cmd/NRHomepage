@@ -65,7 +65,7 @@ export default {
 
 			if (path === '/api/forum/posts' && method === 'POST') {
 				const modCheck = await env.DB.prepare(`SELECT action_type, reason FROM moderation WHERE ip_hash = ? AND (action_type = 'ban' OR (action_type = 'mute' AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)))`).bind(ipHash).first();
-				if (modCheck) return new Response(JSON.stringify({ error: `Action restricted. Reason: ${modCheck.reason}` }), { status: 403, headers: corsHeaders });
+				if (modCheck) return new Response(JSON.stringify({ error: `Your action was restricted. This is usually due to you being banned, or muted, but the UI for the moderation did not appear properly. Reason: ${modCheck.reason}` }), { status: 403, headers: corsHeaders });
 
 				const formData = await request.formData();
 				const author = formData.get('author') || 'Anonymous';
@@ -111,7 +111,7 @@ export default {
 
 				return new Response(JSON.stringify({ success: true, id }), { headers: corsHeaders });
 			}
-			
+
 			if (path === '/api/forum/delete-own' && method === 'POST') {
 				const body = await request.json();
 				const { type, id } = body;
