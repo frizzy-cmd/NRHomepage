@@ -111,7 +111,7 @@ export default {
 
 				return new Response(JSON.stringify({ success: true, id }), { headers: corsHeaders });
 			}
-)
+			
 			if (path === '/api/forum/delete-own' && method === 'POST') {
 				const body = await request.json();
 				const { type, id } = body;
