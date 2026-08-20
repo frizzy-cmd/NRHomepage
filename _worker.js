@@ -1,4 +1,4 @@
-// worker.js - Cloudflare Worker Backend for Kip's Forum & Admin Panel
+// _worker.js - Cloudflare Worker Backend & Static Asset Router
 
 export default {
 	async fetch(request, env, ctx) {
@@ -6,11 +6,16 @@ export default {
 		const path = url.pathname;
 		const method = request.method;
 
-		// Get user IP hash for md.
+		// if not api then serve static
+		if (!path.startsWith('/api/')) {
+			return env.ASSETS.fetch(request);
+		}
+
+		// get ip
 		const clientIP = request.headers.get('cf-connecting-ip') || '127.0.0.1';
 		const ipHash = await hashIP(clientIP);
 
-		// this is CORS headers
+		// headers
 		const corsHeaders = {
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -23,7 +28,7 @@ export default {
 		}
 
 		try {
-            //Public API. Get usr status (checks if ban, mute or kick)
+			//get status of user
 			if (path === '/api/forum/user-status' && method === 'GET') {
 				const activeBan = await env.DB.prepare(
 					`SELECT * FROM moderation WHERE ip_hash = ? AND action_type = 'ban' ORDER BY created_at DESC LIMIT 1`
@@ -63,8 +68,7 @@ export default {
 				return new Response(JSON.stringify({ status: 'ok' }), { headers: corsHeaders });
 			}
 
-
-            // Public API: Fetch all forum posts/comments
+			// get all posts comments
 			if (path === '/api/forum/posts' && method === 'GET') {
 				const posts = await env.DB.prepare(
 					`SELECT * FROM posts ORDER BY created_at DESC LIMIT 50`
@@ -74,8 +78,7 @@ export default {
 					`SELECT * FROM comments ORDER BY created_at ASC`
 				).all();
 
-				// we kill off any del posts
-				const sanitizedPosts = posts.results.map(p => {
+				const sanitizedPosts = (posts.results || []).map(p => {
 					if (p.is_deleted) {
 						return {
 							...p,
@@ -89,13 +92,12 @@ export default {
 
 				return new Response(JSON.stringify({
 					posts: sanitizedPosts,
-					comments: comments.results
+					comments: comments.results || []
 				}), { headers: corsHeaders });
 			}
 
-            // Public API: we create new post with a max of 2 img and a mcheck
+			// post creation
 			if (path === '/api/forum/posts' && method === 'POST') {
-				// is user banned or muted? if YES!!, reject.
 				const modCheck = await env.DB.prepare(
 					`SELECT action_type, reason, expires_at FROM moderation WHERE ip_hash = ? AND (action_type = 'ban' OR (action_type = 'mute' AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)))`
 				).bind(ipHash).first();
@@ -118,13 +120,17 @@ export default {
 					return new Response(JSON.stringify({ error: 'Maximum 2 images allowed per post!' }), { status: 400, headers: corsHeaders });
 				}
 
+				const allowedTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
 				const uploadedImageUrls = [];
 				for (const file of imageFiles) {
 					if (file && file.size > 0) {
+						if (!allowedTypes.includes(file.type)) {
+							return new Response(JSON.stringify({ error: 'Only PNG, JPG, WEBP, and GIF images are allowed!' }), { status: 400, headers: corsHeaders });
+						}
 						if (file.size > 2 * 1024 * 1024) {
 							return new Response(JSON.stringify({ error: 'Image size must be under 2MB!' }), { status: 400, headers: corsHeaders });
 						}
-						const key = `uploads/${Date.now()}_${Math.random().toString(36).substring(7)}_${file.name}`;
+						const key = `uploads/${Date.now()}_${Math.random().toString(36).substring(7)}_${file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`;
 						await env.UPLOADS.put(key, file.stream(), {
 							httpMetadata: { contentType: file.type }
 						});
@@ -132,7 +138,6 @@ export default {
 					}
 				}
 
-                // we check if req ahs valid mod pw header
 				const adminKey = request.headers.get('X-Admin-Key');
 				const isAdmin = (adminKey && adminKey === env.ADMIN_SECRET) ? 1 : 0;
 
@@ -144,7 +149,7 @@ export default {
 				return new Response(JSON.stringify({ success: true, id }), { headers: corsHeaders });
 			}
 
-            // modAPI: Verify admin pw and fetch stats admin.html
+			//verify pw and stats
 			if (path === '/api/admin/stats' && method === 'GET') {
 				const adminKey = request.headers.get('X-Admin-Key');
 				if (adminKey !== env.ADMIN_SECRET) {
@@ -175,12 +180,12 @@ export default {
 						kicks: totalKicks.cnt,
 						removals: totalRemovals.cnt
 					},
-					auditLog: auditLog.results,
-					activeUsers: activeUsers.results
+					auditLog: auditLog.results || [],
+					activeUsers: activeUsers.results || []
 				}), { headers: corsHeaders });
 			}
 
-            // modAPI: Exec mod actions, del post, ban, mute, kick.
+			//Mod actions
 			if (path === '/api/admin/moderate' && method === 'POST') {
 				const adminKey = request.headers.get('X-Admin-Key');
 				if (adminKey !== env.ADMIN_SECRET) {
@@ -219,7 +224,7 @@ export default {
 				return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
 			}
 
-			// serve img from r2
+			// SERVER IMAGES FROM r2
 			if (path.startsWith('/api/forum/images/')) {
 				const key = path.replace('/api/forum/images/', '');
 				const object = await env.UPLOADS.get(key);
@@ -238,7 +243,7 @@ export default {
 	}
 };
 
-// SHA-256 hash func for IP
+// SHA-256 anon
 async function hashIP(ip) {
 	const msgUint8 = new TextEncoder().encode(ip + '_SALT_KIP_FORUM');
 	const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
