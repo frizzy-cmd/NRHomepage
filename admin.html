@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="title" content="Admin Dashboard - Kip's Forum">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#5a207f">
+
+		<link rel="icon" type="image/png" href="static/img/icon.png">
+		<link rel="stylesheet" href="static/styles.css">
+		<script src="static/js/theme-switcher.js"></script>
+		<script src="static/js/admin.js" defer></script>
+		<title>Admin Dashboard - Kip's Forum</title>
+
+		<style>
+			.admin-gate {
+				max-width: 400px;
+				margin: 40px auto;
+				padding: 24px;
+				background: rgba(18, 6, 28, 0.9);
+				border: 3px solid var(--box-border);
+				border-radius: 6px;
+				text-align: center;
+			}
+			.admin-dashboard {
+				display: none;
+			}
+			.stats-grid {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+				gap: 12px;
+				margin: 20px 0;
+			}
+			.stat-card {
+				background: rgba(20, 10, 30, 0.85);
+				border: 2px solid var(--box-border);
+				padding: 12px 16px;
+				border-radius: 4px;
+			}
+			.stat-val {
+				font-size: 20pt;
+				color: var(--header-subtitle);
+				font-weight: bold;
+			}
+			.stat-label {
+				font-size: 11pt;
+				color: #aaa;
+			}
+			.admin-section {
+				background: rgba(16, 4, 24, 0.85);
+				border: 2px solid var(--box-border);
+				padding: 16px;
+				margin: 20px 0;
+				border-radius: 6px;
+			}
+			.search-input {
+				width: 100%;
+				padding: 6px 10px;
+				background: var(--input-bg);
+				color: white;
+				border: 1px solid var(--box-border);
+				font-family: Terminus, monospace;
+				margin-bottom: 12px;
+			}
+			.user-row, .audit-row {
+				padding: 8px 12px;
+				border-bottom: 1px solid rgba(90, 32, 127, 0.3);
+				font-size: 11pt;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 8px;
+			}
+			.mod-btn {
+				background: #b71c1c;
+				color: white;
+				border: 0;
+				padding: 3px 10px;
+				font-family: Terminus, monospace;
+				cursor: pointer;
+				border-radius: 3px;
+			}
+			.revoke-btn {
+				background: #2e7d32;
+				color: white;
+				border: 0;
+				padding: 3px 10px;
+				font-family: Terminus, monospace;
+				cursor: pointer;
+				border-radius: 3px;
+			}
+
+			/* Moderation Modal */
+			.modal-overlay {
+				position: fixed;
+				top:0; left:0; right:0; bottom:0;
+				background: rgba(0,0,0,0.8);
+				display: none;
+				justify-content: center;
+				align-items: center;
+				z-index: 999;
+			}
+			.modal-body {
+				background: #1a0524;
+				border: 3px solid var(--msg-border);
+				padding: 24px;
+				max-width: 480px;
+				width: 100%;
+				border-radius: 6px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			<a href="index.html" style="text-decoration: none;">
+				<img id="logo" src="static/img/logo.png" alt="OneShot Logo" title="Go to Homepage">
+			</a>
+			<div id="subtitle">Admin Dashboard</div>
+		</div>
+
+		<div id="box">
+			<!-- Password Login Gate -->
+			<div id="loginGate" class="admin-gate">
+				<h3>Moderator Access</h3>
+				<p style="font-size: 11pt; color: #aaa;">Enter admin password to continue</p>
+				<input type="password" id="adminPasswordInput" placeholder="Password" style="margin-bottom: 16px;">
+				<button id="loginBtn" class="btn" style="width: 100% !important; margin: 0;">Login</button>
+			</div>
+
+			<!-- Main Dashboard UI -->
+			<div id="adminDashboard" class="admin-dashboard">
+				<h3>Moderation Overview</h3>
+
+				<!-- Overview Stats Grid -->
+				<div class="stats-grid">
+					<div class="stat-card">
+						<div id="statActivePosts" class="stat-val">0</div>
+						<div class="stat-label">Active Posts</div>
+					</div>
+					<div class="stat-card">
+						<div id="statActiveComments" class="stat-val">0</div>
+						<div class="stat-label">Active Comments</div>
+					</div>
+					<div class="stat-card">
+						<div id="statTotalCombined" class="stat-val">0</div>
+						<div class="stat-label">Total Combined</div>
+					</div>
+					<div class="stat-card">
+						<div id="statBans" class="stat-val">0</div>
+						<div class="stat-label">Total Bans</div>
+					</div>
+					<div class="stat-card">
+						<div id="statMutes" class="stat-val">0</div>
+						<div class="stat-label">Total Mutes</div>
+					</div>
+					<div class="stat-card">
+						<div id="statKicks" class="stat-val">0</div>
+						<div class="stat-label">Total Kicks</div>
+					</div>
+				</div>
+
+				<!-- Audit Log Section -->
+				<div class="admin-section">
+					<h4>Audit Log</h4>
+					<input type="text" id="searchAudit" class="search-input" placeholder="Search audit log...">
+					<div id="auditLogList"></div>
+				</div>
+
+				<!-- Active Users Section -->
+				<div class="admin-section">
+					<h4>Active Users</h4>
+					<input type="text" id="searchActiveUsers" class="search-input" placeholder="Search active users...">
+					<div id="activeUsersList"></div>
+				</div>
+
+				<!-- Past Moderations Section -->
+				<div class="admin-section">
+					<h4>Past Moderations</h4>
+					<input type="text" id="searchPastUsers" class="search-input" placeholder="Search past moderations...">
+					<div id="pastUsersList"></div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Action Modal Popup -->
+		<div id="modModal" class="modal-overlay">
+			<div class="modal-body">
+				<h3 style="margin-top:0;">Moderate User</h3>
+				<p id="modModalTarget" style="color: var(--header-subtitle);"></p>
+
+				<label style="display:block; margin: 10px 0 4px 0;">Action Type:</label>
+				<select id="modActionType" class="theme-dropdown" style="width: 100%;">
+					<option value="mute">Mute User</option>
+					<option value="kick">Kick User</option>
+					<option value="ban">Ban User</option>
+				</select>
+
+				<label style="display:block; margin: 10px 0 4px 0;">Reason:</label>
+				<input type="text" id="modReasonInput" placeholder="Reason for action" style="width: 100%;">
+
+				<div id="muteDurationGroup" style="margin-top: 10px;">
+					<label style="display:block; margin-bottom: 4px;">Mute Duration (Hours):</label>
+					<input type="number" id="modDurationInput" value="24" min="1" style="width: 100%;">
+				</div>
+
+				<div style="display: flex; gap: 10px; margin-top: 20px;">
+					<button id="confirmModBtn" class="mod-btn" style="flex:1; padding: 8px;">Execute Action</button>
+					<button id="cancelModBtn" class="btn" style="flex:1; margin:0; padding: 8px;">Cancel</button>
+				</div>
+			</div>
+		</div>
+
+		<div id="footer">
+			Admin Dashboard | <a href="index.html">Homepage</a> | <a href="forum.html">Forum</a>
+		</div>
+	</body>
+</html>
