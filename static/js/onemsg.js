@@ -111,8 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
 						</div>
 						<div style="font-size: 13pt; color: #e0d0e0; white-space: pre-wrap; margin-bottom: 10px;">${escapeHTML(m.content)}</div>
 						<div>
-							<button class="react-btn" onclick="reactMessage('${m.id}', 'light')">Give Light (${m.lights_count || 0})</button>
-							<button class="react-btn" onclick="reactMessage('${m.id}', 'pancake')">Give Pancakes (${m.pancakes_count || 0})</button>
+							<button class="react-btn" onclick="reactMessage('${m.id}', 'light')">💡 Give light (${m.lights_count || 0})</button>
+							<button class="react-btn" onclick="reactMessage('${m.id}', 'pancake')">🥞 Give pancakes (${m.pancakes_count || 0})</button>
 						</div>
 					</div>
 				</div>
@@ -201,8 +201,8 @@ window.selectPfp = function(filename) {
 window.reactMessage = async function(msgId, reaction) {
 	const lastReact = parseInt(localStorage.getItem('last_react_time') || '0');
 	const now = Date.now();
-	if (now - lastReact < 10000) {
-		const remaining = Math.ceil((10000 - (now - lastReact)) / 1000);
+	if (now - lastReact < 3000) {
+		const remaining = Math.ceil((3000 - (now - lastReact)) / 1000);
 		return alert(`Please wait ${remaining} seconds before reacting again!`);
 	}
 
