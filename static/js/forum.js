@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
 	const sidePanel = document.getElementById('sidePanel');
 	const sidePanelBody = document.getElementById('sidePanelBody');
 
+    const changeNameBtn = document.getElementById('changeNameBtn');
+
 	const suspensionModal = document.getElementById('suspensionModal');
 	const banDate = document.getElementById('banDate');
 	const banReason = document.getElementById('banReason');
@@ -154,6 +156,31 @@ document.addEventListener('DOMContentLoaded', () => {
 			}).join('');
 		} catch (e) {}
 	}
+
+    function updateNameLockUI() {
+        const savedUser = localStorage.getItem('kip_forum_username') || '';
+        if (postAuthor) {
+            if (savedUser) {
+                postAuthor.value = savedUser;
+                postAuthor.readOnly = true;
+                if (changeNameBtn) changeNameBtn.style.display = 'inline';
+            } else {
+                postAuthor.value = '';
+                postAuthor.readOnly = false;
+                if (changeNameBtn) changeNameBtn.style.display = 'none';
+            }
+        }
+    }
+
+    window.logoutUser = function() {
+        if (confirm('Log out and clear your saved display name?')) {
+            localStorage.removeItem('kip_forum_username');
+            updateNameLockUI();
+        }
+    };
+
+    // Call updateNameLockUI() on page load:
+    updateNameLockUI();
 
 	window.openSidePanel = function(postId) {
 		const post = allPosts.find(p => p.id === postId);

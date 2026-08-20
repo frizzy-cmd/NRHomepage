@@ -1,4 +1,4 @@
-// _worker.js - Cloudflare Worker Backend with Fixes & Admin Purge Option
+// _worker.js 
 
 export default {
 	async fetch(request, env, ctx) {
@@ -32,16 +32,16 @@ export default {
 				if (activeMute) return new Response(JSON.stringify({ status: 'muted', expires_at: activeMute.expires_at, reason: activeMute.reason }), { headers: corsHeaders });
 
 				const activeKick = await env.DB.prepare(`SELECT * FROM moderation WHERE ip_hash = ? AND action_type = 'kick' ORDER BY created_at DESC LIMIT 1`).bind(ipHash).first();
-				if (activeKick) return new Response(JSON.stringify({ status: 'kicked', reason: activeKick.reason }), { headers: corsHeaders });
+				if (activeKick) {
+					await env.DB.prepare(`DELETE FROM moderation WHERE id = ?`).bind(activeKick.id).run();
+					return new Response(JSON.stringify({ status: 'kicked', reason: activeKick.reason }), { headers: corsHeaders });
+				}
 
 				return new Response(JSON.stringify({ status: 'ok', userIpHash: ipHash }), { headers: corsHeaders });
 			}
 
 			if (path === '/api/forum/posts' && method === 'GET') {
-				const posts = await env.DB.prepare(
-					`SELECT * FROM posts WHERE is_deleted = 0 OR (is_deleted = 1 AND created_at > datetime('now', '-2 days')) ORDER BY created_at DESC LIMIT 50`
-				).all();
-
+				const posts = await env.DB.prepare(`SELECT * FROM posts WHERE is_deleted = 0 OR (is_deleted = 1 AND created_at > datetime('now', '-2 days')) ORDER BY created_at DESC LIMIT 50`).all();
 				const comments = await env.DB.prepare(`SELECT * FROM comments WHERE is_deleted = 0 ORDER BY created_at ASC`).all();
 
 				const sanitizedPosts = (posts.results || []).map(p => {
@@ -65,16 +65,24 @@ export default {
 
 			if (path === '/api/forum/posts' && method === 'POST') {
 				const modCheck = await env.DB.prepare(`SELECT action_type, reason FROM moderation WHERE ip_hash = ? AND (action_type = 'ban' OR (action_type = 'mute' AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)))`).bind(ipHash).first();
-				if (modCheck) return new Response(JSON.stringify({ error: `Your action was restricted. This is usually due to you being banned, or muted, but the UI for the moderation did not appear properly. Reason: ${modCheck.reason}` }), { status: 403, headers: corsHeaders });
+				if (modCheck) return new Response(JSON.stringify({ error: `Action restricted. You were banned, kicked, or muted. but the UI failed to appear. Reason: ${modCheck.reason}` }), { status: 403, headers: corsHeaders });
 
 				const formData = await request.formData();
-				const author = formData.get('author') || 'Anonymous';
-				const title = formData.get('title') || '';
-				const content = formData.get('content') || '';
+				const author = (formData.get('author') || 'Anonymous').trim();
+				const title = (formData.get('title') || '').trim();
+				const content = (formData.get('content') || '').trim();
 				const imageFiles = formData.getAll('images');
 
-				if (!title.trim() || !content.trim()) return new Response(JSON.stringify({ error: 'Title and content required!' }), { status: 400, headers: corsHeaders });
+				if (!title || !content) return new Response(JSON.stringify({ error: 'Title and content required!' }), { status: 400, headers: corsHeaders });
 				if (imageFiles.length > 2) return new Response(JSON.stringify({ error: 'Maximum 2 images allowed!' }), { status: 400, headers: corsHeaders });
+
+				const takenCheck = await env.DB.prepare(
+					`SELECT ip_hash FROM posts WHERE LOWER(author) = LOWER(?) AND ip_hash != ? UNION SELECT ip_hash FROM comments WHERE LOWER(author) = LOWER(?) AND ip_hash != ?`
+				).bind(author, ipHash, author, ipHash).first();
+
+				if (takenCheck) {
+					return new Response(JSON.stringify({ error: `The username "${author}" is already taken by another user!` }), { status: 400, headers: corsHeaders });
+				}
 
 				const allowedTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
 				const uploadedImageUrls = [];
@@ -103,11 +111,21 @@ export default {
 
 				if (!postId || !content.trim()) return new Response(JSON.stringify({ error: 'Content required' }), { status: 400, headers: corsHeaders });
 
+				const cleanAuthor = (author || 'Anonymous').trim();
+
+				const takenCheck = await env.DB.prepare(
+					`SELECT ip_hash FROM posts WHERE LOWER(author) = LOWER(?) AND ip_hash != ? UNION SELECT ip_hash FROM comments WHERE LOWER(author) = LOWER(?) AND ip_hash != ?`
+				).bind(cleanAuthor, ipHash, cleanAuthor, ipHash).first();
+
+				if (takenCheck) {
+					return new Response(JSON.stringify({ error: `The username "${cleanAuthor}" is already taken by another user!` }), { status: 400, headers: corsHeaders });
+				}
+
 				const adminKey = request.headers.get('X-Admin-Key');
 				const isAdmin = (adminKey && adminKey === env.ADMIN_SECRET) ? 1 : 0;
 				const id = 'comment_' + Date.now();
 
-				await env.DB.prepare(`INSERT INTO comments (id, post_id, author, content, ip_hash, is_admin) VALUES (?, ?, ?, ?, ?, ?)`).bind(id, postId, author || 'Anonymous', content, ipHash, isAdmin).run();
+				await env.DB.prepare(`INSERT INTO comments (id, post_id, author, content, ip_hash, is_admin) VALUES (?, ?, ?, ?, ?, ?)`).bind(id, postId, cleanAuthor, content, ipHash, isAdmin).run();
 
 				return new Response(JSON.stringify({ success: true, id }), { headers: corsHeaders });
 			}
@@ -189,7 +207,6 @@ export default {
 					await env.DB.prepare(`INSERT INTO moderation (id, ip_hash, username, action_type, reason, admin_name) VALUES (?, ?, ?, 'kick', ?, ?)`).bind(modId, targetIp, username, reason, modName).run();
 				}
 				else if (action === 'purge_deleted') {
-					// Purge all moderator deleted posts permanently
 					await env.DB.prepare(`DELETE FROM posts WHERE is_deleted = 1`).run();
 					await env.DB.prepare(`DELETE FROM comments WHERE is_deleted = 1`).run();
 					await env.DB.prepare(`INSERT INTO moderation (id, ip_hash, username, action_type, reason, admin_name) VALUES (?, 'system', 'admin', 'purge', 'Purged all deleted posts', ?)`).bind(modId, modName).run();
