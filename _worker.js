@@ -6,9 +6,11 @@ export default {
 		const path = url.pathname;
 		const method = request.method;
 
-		// if not api then serve static
 		if (!path.startsWith('/api/')) {
-			return env.ASSETS.fetch(request);
+			if (env.ASSETS) {
+				return env.ASSETS.fetch(request);
+			}
+			return new Response('Asset Not Found', { status: 404 });
 		}
 
 		// get ip
