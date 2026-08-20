@@ -62,12 +62,24 @@ document.addEventListener('DOMContentLoaded', () => {
 				const res = await fetch('/api/forum/posts', { method: 'POST', headers, body: formData });
 				const data = await res.json();
 
-				if (res.ok) {
-					postTitle.value = ''; postContent.value = ''; postImages.value = '';
-					loadPosts();
-				} else {
-					alert(data.error || 'Post failed');
-				}
+				const data = await res.json();
+
+                if (!res.ok) {
+                    // if name taken, unlock field so user can change it
+                    if (data.error && data.error.includes('taken')) {
+                        localStorage.removeItem('kip_forum_username');
+                        postAuthor.readOnly = false;
+                        if (changeNameBtn) changeNameBtn.style.display = 'none';
+                    }
+                    alert(data.error || 'Post failed');
+                } else {
+                    localStorage.setItem('kip_forum_username', authorVal);
+                    updateNameLockUI();
+                    postTitle.value = ''; 
+                    postContent.value = ''; 
+                    postImages.value = '';
+                    loadPosts();
+                }
 			} catch (err) { alert(err.message); }
 			finally { submitPostBtn.disabled = false; }
 		});

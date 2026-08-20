@@ -250,31 +250,63 @@
 
 			<!-- crette post -->
 			<div id="createPostSection">
-				<h3>Create a New Post</h3>
-				<form id="postForm" onsubmit="return false;">
-					<div style="margin-bottom: 12px;">
-						<label style="display: block; font-size: 12pt; color: var(--header-subtitle);">Username:</label>
-						<input type="text" id="postAuthor" placeholder="Name" required style="width: 100%;">
-					</div>
+                <h3>Create a New Post</h3>
+                <form id="postForm" onsubmit="return false;">
+                    <div style="margin-bottom: 12px">
+                        <div style="display: flex; justify-content: space-between; align-items: center">
+                            <label style="font-size: 12pt; color: var(--header-subtitle)">Username:</label>
+                            <a
+                                href="javascript:void(0)"
+                                id="changeNameBtn"
+                                onclick="logoutUser()"
+                                style="font-size: 10pt; color: #ff6666; display: none"
+                                >[Abandon this username]</a
+                            >
+                        </div>
+                        <input type="text" id="postAuthor" placeholder="Name" required style="width: 100%" />
+                    </div>
 
-					<div style="margin-bottom: 12px;">
-						<label style="display: block; font-size: 12pt; color: var(--header-subtitle);">Title:</label>
-						<input type="text" id="postTitle" placeholder="What's on your mind?" required style="width: 100%;">
-					</div>
+                    <div style="margin-bottom: 12px">
+                        <label style="display: block; font-size: 12pt; color: var(--header-subtitle)">Title:</label>
+                        <input type="text" id="postTitle" placeholder="What's on your mind?" required style="width: 100%" />
+                    </div>
 
-					<div style="margin-bottom: 12px;">
-						<label style="display: block; font-size: 12pt; color: var(--header-subtitle);">Content:</label>
-						<textarea id="postContent" rows="5" placeholder="Write your post here" required style="width: 100%; background: var(--input-bg); color: white; border: 1px solid var(--input-border); padding: 8px; font-family: Terminus, monospace; font-size: 13pt;"></textarea>
-					</div>
+                    <div style="margin-bottom: 12px">
+                        <label style="display: block; font-size: 12pt; color: var(--header-subtitle)">Content:</label>
+                        <textarea
+                            id="postContent"
+                            rows="5"
+                            placeholder="Write your post here"
+                            required
+                            style="
+                                width: 100%;
+                                background: var(--input-bg);
+                                color: white;
+                                border: 1px solid var(--input-border);
+                                padding: 8px;
+                                font-family: Terminus, monospace;
+                                font-size: 13pt;
+                            "
+                        ></textarea>
+                    </div>
 
-					<div style="margin-bottom: 16px;">
-						<label style="display: block; font-size: 12pt; color: var(--header-subtitle);">Attach content (Max 2 images, 2MB each):</label>
-						<input type="file" id="postImages" accept="image/png, image/jpeg, image/webp, image/gif" multiple style="color: #ccc; font-size: 11pt;">
-					</div>
+                    <div style="margin-bottom: 16px">
+                        <label style="display: block; font-size: 12pt; color: var(--header-subtitle)"
+                            >Attach content (Max 2 images, 2MB each):</label
+                        >
+                        <input
+                            type="file"
+                            id="postImages"
+                            accept="image/png, image/jpeg, image/webp, image/gif"
+                            multiple
+                            style="color: #ccc; font-size: 11pt"
+                        />
+                    </div>
 
-					<button type="submit" id="submitPostBtn" class="btn">Publish Post</button>
-				</form>
-			</div>
+                    <button type="submit" id="submitPostBtn" class="btn">Publish</button>
+                </form>
+            </div>
+
 
 			<hr style="border: 0; border-top: 2px solid var(--box-border); margin: 32px 0;">
 
