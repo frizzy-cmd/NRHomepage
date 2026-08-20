@@ -3,11 +3,29 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="title" content="OneMessage Wall - Kip's Homepage">
-		<meta name="description" content="Leave your permanent OneMessage on the community wall. One message per person.">
+		<meta name="description" content="Leave your permanent OneMessage on the community wall. One message per person!">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="theme-color" content="#5a207f">
 
-		<link rel="icon" type="image/png" href="static/img/icon.png">
+                		<!-- OpenGraph / Discord Metatags -->
+		<meta property="og:type" content="website">
+		<meta property="og:site_name" content="Kip's website">
+		<meta property="og:title" content="Wall">
+		<meta property="og:description" content="Leave a permanent message on the community wall. One message per person!">
+		<meta property="og:url" content="https://kip.teaa.workers.dev/onemsg">
+		<!-- <meta property="og:image" content="https://kip.teaa.workers.dev/static/img/alulasmile.png"> -->
+		<meta property="og:image:secure_url" content="https://kip.teaa.workers.dev/static/img/niko.woa.png">
+		<meta property="og:image:type" content="image/png">
+		<meta property="og:locale" content="en_US">
+
+		<!-- Twitter / dc -->
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:url" content="https://kip.teaa.workers.dev/onemsg">
+		<meta name="twitter:title" content="Wall">
+		<meta name="twitter:description" content="Leave a permanent message on the community wall. One message per person!">
+		<meta name="twitter:image" content="https://kip.teaa.workers.dev/static/img/niko.woa.png">
+
+		<link rel="icon" type="image/png" href="static/img/iconlight.png">
 		<link rel="stylesheet" href="static/styles.css">
 		<script src="static/js/theme-switcher.js"></script>
 		<script src="static/js/onemsg.js" defer></script>
@@ -134,66 +152,62 @@
 		</div>
 
 		<div id="box">
-			<!-- Global Wall Counter Header -->
 			<div class="global-counter">
 				<span id="wallCount">0</span> OneMessages written to the World Machine
 			</div>
 
-			<!-- Message Submission Form -->
 			<div id="postFormContainer">
 				<h3>Write Your OneMessage</h3>
 				<form id="msgForm" onsubmit="return false;">
 					<div style="display: flex; gap: 12px; margin-bottom: 12px; align-items: center;">
 						<div>
-							<label style="display:block; font-size: 11pt; color: var(--header-subtitle);">Portrait:</label>
+							<label style="display:block; font-size: 11pt; color: var(--header-subtitle);">Sprite:</label>
 							<img id="selectedPfpImg" src="static/pfp/niko.png" alt="PFP" style="width: 56px; height: 56px; border: 2px solid var(--box-border); cursor: pointer; border-radius: 4px;" onclick="openPfpModal()" title="Click to change portrait">
 						</div>
 						<div style="flex: 1;">
 							<label style="display:block; font-size: 11pt; color: var(--header-subtitle);">Username:</label>
-							<input type="text" id="msgAuthor" placeholder="Your Name" required style="width: 100%;">
+							<input type="text" id="msgAuthor" placeholder="Username.." required style="width: 100%;">
 						</div>
 					</div>
 
 					<div style="margin-bottom: 12px;">
 						<label style="display:block; font-size: 11pt; color: var(--header-subtitle);">Your OneMessage (Max 280 chars):</label>
-						<textarea id="msgContent" rows="4" maxlength="280" placeholder="Write your permanent message here..." required style="width: 100%; background: var(--input-bg); color: white; border: 1px solid var(--input-border); padding: 8px; font-family: Terminus, monospace; font-size: 13pt;"></textarea>
+						<textarea id="msgContent" rows="4" maxlength="280" placeholder="Write here.." required style="width: 100%; background: var(--input-bg); color: white; border: 1px solid var(--input-border); padding: 8px; font-family: Terminus, monospace; font-size: 13pt;"></textarea>
 					</div>
 
 					<p style="font-size: 10pt; color: #ff6666; margin-bottom: 12px;">
-						⚠️ Notice: You only get ONE message ever. Once submitted, it cannot be edited or deleted.
+						Notice: You only get ONE message only. Once submitted, it cannot be edited or deleted.
 					</p>
 
-					<button type="submit" id="sendMsgBtn" class="btn">Send OneMessage</button>
+					<button type="submit" id="sendMsgBtn" class="btn">Send your OneMessage</button>
 				</form>
 			</div>
 
 			<div id="alreadyPostedNotice" style="display: none; text-align: center; color: var(--header-subtitle); font-size: 14pt; padding: 20px;">
-				✨ Your OneMessage has been permanently written to the World Machine.
+				<strong>Your OneMessage has been permanently written to the World Machine.</strong>>
 			</div>
 
 			<hr style="border:0; border-top: 2px solid var(--box-border); margin: 32px 0;">
 
-			<!-- Public Messages Wall Stream -->
-			<h3>Community Wall</h3>
+			<h3>Wall</h3>
 			<div id="messagesStream">
-				<p style="color: #aaa;">Loading messages...</p>
+				<p style="color: #aaa;">Loading messages..</p>
 			</div>
 		</div>
 
-		<!-- PFP Selector Search Modal -->
 		<div id="pfpModal" class="pfp-modal">
 			<div class="pfp-modal-body">
 				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-					<strong style="color: var(--header-subtitle); font-size: 14pt;">Choose Character Face</strong>
+					<strong style="color: var(--header-subtitle); font-size: 14pt;">Choose a sprite!</strong>
 					<button onclick="closePfpModal()" style="background: transparent; color: #ff4444; border: 0; font-size: 16pt; cursor: pointer;">✖</button>
 				</div>
-				<input type="text" id="pfpSearch" placeholder="Search character (e.g. Niko, Alula, Cedric, Rue)..." style="padding: 6px; background: var(--input-bg); color: white; border: 1px solid var(--box-border); font-family: Terminus, monospace; margin-bottom: 12px;">
+				<input type="text" id="pfpSearch" placeholder="Search (e.g. niko, alula, cedric, calamus)" style="padding: 6px; background: var(--input-bg); color: white; border: 1px solid var(--box-border); font-family: Terminus, monospace; margin-bottom: 12px;">
 				<div class="pfp-grid" id="pfpGrid"></div>
 			</div>
 		</div>
 
 		<div id="footer">
-			OneMessage Wall by <a href="https://github.com/frizzy-cmd" target="_blank">Kip</a> | 
+			This website was made by <a href="https://github.com/frizzy-cmd" target="_blank">Kip</a> | 
 			<a href="index.html">Homepage</a> | 
 			<a href="legal.html">Legal</a> | 
 			<a href="https://github.com/frizzy-cmd/AlulaEditor" target="_blank">Github Repository</a>
