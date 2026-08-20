@@ -64,9 +64,24 @@
 		<script>
             async function loginAdmin() {
                 const pwd = document.getElementById('adminPwd').value.trim();
-                if (!pwd) return alert('PLS ENTER PW. TQ.');
-                sessionStorage.setItem('kip_admin_token', pwd);
-                loadAdminMsgs();
+                if (!pwd) return alert('Enter admin pw');
+
+                try {
+                    const res = await fetch('/api/onemsg/admin/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ password: pwd })
+                    });
+
+                    if (res.ok) {
+                        sessionStorage.setItem('kip_admin_token', pwd);
+                        loadAdminMsgs();
+                    } else {
+                        alert('INCORRECT!');
+                    }
+                } catch (e) {
+                    alert('Failed to req login: ' + e.message);
+                }
             }
 
             async function loadAdminMsgs() {

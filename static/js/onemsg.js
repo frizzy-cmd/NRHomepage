@@ -198,6 +198,7 @@ window.selectPfp = function(filename) {
 	window.closePfpModal();
 };
 
+//react func
 window.reactMessage = async function(msgId, reaction) {
 	const lastReact = parseInt(localStorage.getItem('last_react_time') || '0');
 	const now = Date.now();
@@ -215,32 +216,7 @@ window.reactMessage = async function(msgId, reaction) {
 
 		if (res.ok) {
 			localStorage.setItem('last_react_time', now.toString());
-			const resReload = await fetch('/api/onemsg/messages');
-			if (resReload.ok) {
-				const data = await resReload.json();
-				const messagesStream = document.getElementById('messagesStream');
-				if (messagesStream && data.messages) {
-					messagesStream.innerHTML = data.messages.map(m => `
-						<div class="msg-card">
-							<img src="static/pfp/${escapeHTML(m.portrait)}" class="msg-pfp" alt="PFP" onerror="this.src='static/pfp/niko.png'">
-							<div class="msg-body">
-								<div class="msg-header">
-									<div>
-										<strong style="color: var(--header-subtitle); font-size: 13pt;">${escapeHTML(m.author)}</strong>
-										<span class="msg-badge">OneMessage #${String(m.msg_number).padStart(3, '0')}</span>
-									</div>
-									<span>${new Date(m.created_at).toLocaleString()}</span>
-								</div>
-								<div style="font-size: 13pt; color: #e0d0e0; white-space: pre-wrap; margin-bottom: 10px;">${escapeHTML(m.content)}</div>
-								<div>
-									<button class="react-btn" onclick="reactMessage('${m.id}', 'light')">💡 Give light (${m.lights_count || 0})</button>
-									<button class="react-btn" onclick="reactMessage('${m.id}', 'pancake')">🥞 Give pancakes (${m.pancakes_count || 0})</button>
-								</div>
-							</div>
-						</div>
-					`).join('');
-				}
-			}
+			await loadMessages();
 		}
 	} catch (e) {}
 };

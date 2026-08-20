@@ -109,12 +109,22 @@ export default {
 				return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
 			}
 
+            //adm login
+            if (path === '/api/onemsg/admin/login' && method === 'POST') {
+                const body = await request.json();
+                const { password } = body;
+                if (password && env.ADMIN_SECRET && password.trim() === env.ADMIN_SECRET.trim()) {
+                    return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+                }
+                return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
+            }
+
 			// adm delete and purge
 			if (path === '/api/onemsg/admin/delete' && method === 'POST') {
-				const adminKey = request.headers.get('X-Admin-Key');
-				if (adminKey !== env.ADMIN_SECRET) {
-					return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
-				}
+                const adminKey = request.headers.get('X-Admin-Key');
+                if (!adminKey || !env.ADMIN_SECRET || adminKey.trim() !== env.ADMIN_SECRET.trim()) {
+                    return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
+                }
 
 				const body = await request.json();
 				const { msgId, purgeAll } = body;
