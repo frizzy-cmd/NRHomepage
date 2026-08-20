@@ -62,8 +62,6 @@ document.addEventListener('DOMContentLoaded', () => {
 				const res = await fetch('/api/forum/posts', { method: 'POST', headers, body: formData });
 				const data = await res.json();
 
-				const data = await res.json();
-
                 if (!res.ok) {
                     // if name taken, unlock field so user can change it
                     if (data.error && data.error.includes('taken')) {
