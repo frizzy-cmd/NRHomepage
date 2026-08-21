@@ -2,6 +2,12 @@
 
 export default {
 	async fetch(request, env, ctx) {
+		const corsHeaders = {
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+			'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Admin-Key',
+			'Content-Type': 'application/json'
+		};
 		const db = env.DB || env.forum_db;
 		const url = new URL(request.url);
 		const path = url.pathname;
@@ -158,12 +164,12 @@ export default {
 		const clientIP = request.headers.get('cf-connecting-ip') || '127.0.0.1';
 		const ipHash = await hashIP(clientIP);
 
-		const corsHeaders = {
-			'Access-Control-Allow-Origin': '*',
-			'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-			'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Admin-Key',
-			'Content-Type': 'application/json'
-		};
+		// const corsHeaders = {
+		// 	'Access-Control-Allow-Origin': '*',
+		// 	'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+		// 	'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Admin-Key',
+		// 	'Content-Type': 'application/json'
+		// };
 
 		if (method === 'OPTIONS') {
 			return new Response(null, { headers: corsHeaders });
