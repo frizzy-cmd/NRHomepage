@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="title" content="OneShot Audio Index - Kip's Homepage">
+		<meta name="description" content="Browse, preview, and download OneShot in-game music (BGM), background sounds (BGS), music events (ME), and sound effects (SE).">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#5a207f">
+
+		<link rel="icon" type="image/png" href="static/img/iconlight.png">
+		<link rel="stylesheet" href="static/styles.css">
+		<script src="static/js/theme-switcher.js"></script>
+		<script src="static/js/audio-index.js" defer></script>
+		<title>Audio Index - Kip's Homepage</title>
+
+		<style>
+			.search-box {
+				width: 100%;
+				padding: 8px 12px;
+				background: var(--input-bg);
+				color: #ffffff;
+				border: 2px solid var(--box-border);
+				font-family: Terminus, monospace;
+				font-size: 13pt;
+				margin-bottom: 24px;
+				box-sizing: border-box;
+			}
+			.category-header {
+				background: var(--input-bg);
+				border: 2px solid var(--box-border);
+				padding: 12px 16px;
+				color: var(--header-subtitle);
+				font-size: 16pt;
+				font-weight: bold;
+				cursor: pointer;
+				margin-top: 20px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				border-radius: 4px;
+			}
+			.category-header:hover {
+				background: var(--box-border);
+			}
+			.category-content {
+				display: none;
+				padding: 12px;
+				background: rgba(14, 4, 22, 0.85);
+				border: 1px solid var(--box-border);
+				border-top: 0;
+				margin-bottom: 16px;
+			}
+			.category-content.open {
+				display: block;
+			}
+			.audio-row {
+				padding: 10px 14px;
+				border-bottom: 1px solid rgba(90, 32, 127, 0.3);
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				gap: 12px;
+			}
+			.audio-row:hover {
+				background: rgba(90, 32, 127, 0.2);
+			}
+			.audio-title {
+				font-size: 13pt;
+				color: #ffffff;
+				flex: 1;
+				min-width: 0;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+			.audio-controls-container {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				flex-shrink: 0;
+			}
+			.download-btn {
+				background: var(--btn-bg);
+				color: #ffffff !important;
+				padding: 4px 10px;
+				text-decoration: none;
+				font-size: 11pt;
+				border-bottom: 3px solid var(--btn-border);
+				border-radius: 3px;
+			}
+			.download-btn:hover {
+				opacity: 0.9;
+			}
+			.play-row-btn {
+				background: var(--input-bg);
+				color: var(--header-subtitle);
+				border: 1px solid var(--box-border);
+				padding: 4px 10px;
+				font-family: Terminus, monospace;
+				font-size: 11pt;
+				cursor: pointer;
+				border-radius: 3px;
+			}
+			.play-row-btn:hover {
+				background: var(--box-border);
+			}
+
+			.mini-player-bar {
+				position: fixed;
+				bottom: 0;
+				left: 0;
+				right: 0;
+				background: rgba(18, 6, 28, 0.96);
+				border-top: 3px solid var(--box-border);
+				padding: 10px 20px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.6);
+				z-index: 9999;
+				flex-wrap: wrap;
+				gap: 12px;
+			}
+			.mini-player-badge {
+				background: var(--box-border);
+				color: var(--header-subtitle);
+				padding: 2px 8px;
+				border-radius: 3px;
+				font-size: 11pt;
+				font-weight: bold;
+				margin-right: 8px;
+			}
+			.mini-btn {
+				background: var(--btn-bg);
+				color: #ffffff;
+				border: 0;
+				border-bottom: 3px solid var(--btn-border);
+				padding: 6px 12px;
+				font-family: Terminus, monospace;
+				font-size: 11pt;
+				cursor: pointer;
+				border-radius: 3px;
+			}
+			.mini-btn:hover {
+				opacity: 0.9;
+			}
+			#globalAudioPlayer {
+				height: 32px;
+				width: 220px;
+			}
+            .audio-duration {
+                background: var(--input-bg);
+                color: var(--header-subtitle);
+                border: 1px solid var(--box-border);
+                padding: 2px 6px;
+                border-radius: 3px;
+                font-size: 10pt;
+                font-family: Terminus, monospace;
+                margin-left: 8px;
+            }
+            /* My wife left me */
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			<a href="index.html" style="text-decoration: none;">
+				<img id="logo" src="static/img/logo.png" alt="OneShot Logo" title="Go to Homepage">
+			</a>
+			<!-- <div id="subtitle">Audio Index</div> -->
+		</div>
+
+		<div id="message">
+			<h3>Audio Index</h3>
+			Browse, preview, and download OneShot audio files.
+            <br><br>
+            <strong>All ownership goes to Future Cat LLC / their respective owners</strong>
+            <br><br>
+            View the <strong>Legal</strong> page & inquiry email at the footer of this website.
+		</div>
+
+		<div id="box" style="margin-bottom: 120px;">
+			<input type="text" id="audioSearch" class="search-box" placeholder="Search (e.g. onlittle, eleventh, alula)..">
+
+			<div class="category-header" onclick="toggleCategory('bgmContent', 'bgmArrow')">
+				<span>Background music [BGM] <span id="bgmCount" style="font-size: 12pt; color: #aaa;">(62)</span></span>
+				<span id="bgmArrow">[ + ]</span>
+			</div>
+			<div id="bgmContent" class="category-content">
+				<div id="bgmList"></div>
+			</div>
+
+			<div class="category-header" onclick="toggleCategory('bgsContent', 'bgsArrow')">
+				<span>Background sound [BGS] <span id="bgsCount" style="font-size: 12pt; color: #aaa;">(3)</span></span>
+				<span id="bgsArrow">[ + ]</span>
+			</div>
+			<div id="bgsContent" class="category-content">
+				<div id="bgsList"></div>
+			</div>
+
+			<div class="category-header" onclick="toggleCategory('meContent', 'meArrow')">
+				<span>Music events [ME] <span id="meCount" style="font-size: 12pt; color: #aaa;">(12)</span></span>
+				<span id="meArrow">[ + ]</span>
+			</div>
+			<div id="meContent" class="category-content">
+				<div id="meList"></div>
+			</div>
+
+			<div class="category-header" onclick="toggleCategory('seContent', 'seArrow')">
+				<span>Sound effects [SE] <span id="seCount" style="font-size: 12pt; color: #aaa;">(111)</span></span>
+				<span id="seArrow">[ + ]</span>
+			</div>
+			<div id="seContent" class="category-content">
+				<div id="seList"></div>
+			</div>
+		</div>
+
+        <!-- miniplayer at bottomb -->
+		<div id="miniPlayerBar" class="mini-player-bar">
+			<div style="display: flex; align-items: center; overflow: hidden; max-width: 320px;">
+				<span id="miniPlayerCategory" class="mini-player-badge">[LOL]</span>
+				<strong id="miniPlayerTrack" style="color: #ffffff; font-size: 12pt; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">PlayA_AudioFileFirst.flp</strong>
+			</div>
+			<div style="display: flex; align-items: center; gap: 8px;">
+				<button class="mini-btn" onclick="playPrevTrack()">⏮ Prev</button>
+				<audio id="globalAudioPlayer" controls preload="none"></audio>
+				<button class="mini-btn" onclick="playNextTrack()">Next ⏭</button>
+			</div>
+		</div>
+
+		<div id="footer">
+			This website was made by <a href="https://github.com/frizzy-cmd" target="_blank">Kip</a> | 
+			<a href="index.html">Homepage</a> | 
+			<a href="legal.html">Legal</a> | 
+			<a href="https://github.com/frizzy-cmd/AlulaEditor" target="_blank">Github Repository</a> |
+
+			<div class="theme-picker">
+				<span>Area Theme: </span>
+				<select id="themeSelect" class="theme-dropdown">
+					<option value="theme-barrens">The Barrens (Purple)</option>
+					<option value="theme-refuge">The Refuge (Pink/Red)</option>
+					<option value="theme-glen">The Glen (Emerald Green)</option>
+				</select>
+			</div>
+		</div>
+
+		<div id="sub-footer">
+            Message support.kipsite@gmail.com for any inquiries/copyright issues
+		</div>
+	</body>
+</html>
