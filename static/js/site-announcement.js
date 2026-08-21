@@ -8,8 +8,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 		const data = await res.json();
 		if (!data.active || !data.text) return;
 
-		// if user dismissed announcement 4 ts sesion
-		if (data.closable && sessionStorage.getItem('dismissed_site_announcement') === 'true') {
+		// ceck if usr dismissed THIS SPECIFIC text of annon
+		const dismissedText = sessionStorage.getItem('dismissed_site_announcement');
+		if (data.closable && dismissedText === data.text) {
 			return;
 		}
 
@@ -33,7 +34,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 			align-items: center;
 		`;
 
-
         // empty for literal txt.
 		bar.innerHTML = `
 			<div style="flex: 1; text-align: center;">
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function closeSiteAnnouncement() {
 	const bar = document.getElementById('siteAnnouncementBar');
 	if (bar) bar.style.display = 'none';
-	sessionStorage.setItem('dismissed_site_announcement', 'true');
+	sessionStorage.setItem('dismissed_site_announcement', announcementText);
 }
 
 function escapeHtml(str) {
