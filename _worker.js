@@ -1,8 +1,8 @@
 // _worker.js - 
-const db = env.DB || env.forum_db;
 
 export default {
 	async fetch(request, env, ctx) {
+		const db = env.DB || env.forum_db;
 		const url = new URL(request.url);
 		const path = url.pathname;
 		const method = request.method;
