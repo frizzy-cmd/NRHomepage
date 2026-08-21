@@ -42,7 +42,17 @@ export default {
 		// API FOR ADMIN
 
 		if (path === '/api/site/status' && method === 'GET') {
-			return new Response(JSON.stringify({ status: siteStatus, note: maintenanceNote }), { headers: corsHeaders });
+			let statusVal = 'online';
+			let noteVal = '';
+
+			try {
+				const statusRow = await env.DB.prepare(`SELECT value FROM site_settings WHERE key = 'site_status'`).first();
+				const noteRow = await env.DB.prepare(`SELECT value FROM site_settings WHERE key = 'maintenance_note'`).first();
+				if (statusRow && statusRow.value) statusVal = statusRow.value;
+				if (noteRow && noteRow.value) noteVal = noteRow.value;
+			} catch (e) { }
+
+			return new Response(JSON.stringify({ status: statusVal, note: noteVal }), { headers: corsHeaders });
 		}
 
 		if (path === '/api/site/announcement' && method === 'GET') {
@@ -81,24 +91,37 @@ export default {
 			const body = await request.json();
 			const { action, status, note, announcementText, closable, durationMinutes } = body;
 
-			if (action === 'set_status') {
-				await env.DB.prepare(`INSERT OR REPLACE INTO site_settings (key, value) VALUES ('site_status', ?)`).bind(status).run();
-				await env.DB.prepare(`INSERT OR REPLACE INTO site_settings (key, value) VALUES ('maintenance_note', ?)`).bind(note || '').run();
-			}
-			else if (action === 'set_announcement') {
-				let expTimestamp = 0;
-				if (durationMinutes && durationMinutes > 0) {
-					expTimestamp = Date.now() + durationMinutes * 60 * 1000;
-				}
-				await env.DB.prepare(`INSERT OR REPLACE INTO site_settings (key, value) VALUES ('announcement_text', ?)`).bind(announcementText || '').run();
-				await env.DB.prepare(`INSERT OR REPLACE INTO site_settings (key, value) VALUES ('announcement_closable', ?)`).bind(closable ? 'true' : 'false').run();
-				await env.DB.prepare(`INSERT OR REPLACE INTO site_settings (key, value) VALUES ('announcement_expires', ?)`).bind(expTimestamp.toString()).run();
-			}
-			else if (action === 'clear_announcement') {
-				await env.DB.prepare(`DELETE FROM site_settings WHERE key LIKE 'announcement_%'`).run();
-			}
+			try {
+				if (action === 'set_status') {
+					await env.DB.prepare(`DELETE FROM site_settings WHERE key = 'site_status'`).run();
+					await env.DB.prepare(`INSERT INTO site_settings (key, value) VALUES ('site_status', ?)`).bind(status || 'online').run();
 
-			return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+					await env.DB.prepare(`DELETE FROM site_settings WHERE key = 'maintenance_note'`).run();
+					await env.DB.prepare(`INSERT INTO site_settings (key, value) VALUES ('maintenance_note', ?)`).bind(note || '').run();
+				}
+				else if (action === 'set_announcement') {
+					let expTimestamp = 0;
+					if (durationMinutes && durationMinutes > 0) {
+						expTimestamp = Date.now() + durationMinutes * 60 * 1000;
+					}
+
+					await env.DB.prepare(`DELETE FROM site_settings WHERE key = 'announcement_text'`).run();
+					await env.DB.prepare(`INSERT INTO site_settings (key, value) VALUES ('announcement_text', ?)`).bind(announcementText || '').run();
+
+					await env.DB.prepare(`DELETE FROM site_settings WHERE key = 'announcement_closable'`).run();
+					await env.DB.prepare(`INSERT INTO site_settings (key, value) VALUES ('announcement_closable', ?)`).bind(closable ? 'true' : 'false').run();
+
+					await env.DB.prepare(`DELETE FROM site_settings WHERE key = 'announcement_expires'`).run();
+					await env.DB.prepare(`INSERT INTO site_settings (key, value) VALUES ('announcement_expires', ?)`).bind(expTimestamp.toString()).run();
+				}
+				else if (action === 'clear_announcement') {
+					await env.DB.prepare(`DELETE FROM site_settings WHERE key LIKE 'announcement_%'`).run();
+				}
+
+				return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+			} catch (e) {
+				return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
+			}
 		}
 
 		// SITE STATUS CHECK END
