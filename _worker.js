@@ -1,4 +1,5 @@
 // _worker.js - 
+const db = env.DB || env.forum_db;
 
 export default {
 	async fetch(request, env, ctx) {
@@ -20,12 +21,17 @@ export default {
 
 		let siteStatus = 'online';
 		let maintenanceNote = '';
-		try {
-			const statusRow = await env.DB.prepare(`SELECT value FROM site_settings WHERE key = 'site_status'`).first();
-			const noteRow = await env.DB.prepare(`SELECT value FROM site_settings WHERE key = 'maintenance_note'`).first();
-			if (statusRow) siteStatus = statusRow.value;
-			if (noteRow) maintenanceNote = noteRow.value;
-		} catch (e) {}
+
+		if (db) {
+			try {
+				const statusRow = await db.prepare(`SELECT value FROM site_settings WHERE key = 'site_status'`).first();
+				const noteRow = await db.prepare(`SELECT value FROM site_settings WHERE key = 'maintenance_note'`).first();
+				if (statusRow && statusRow.value) siteStatus = statusRow.value;
+				if (noteRow && noteRow.value) maintenanceNote = noteRow.value;
+			} catch (e) {
+				siteStatus = 'online';
+			}
+		}
 
 		// If OFFLINE = redirect all to unavail.html
 		if (siteStatus === 'offline') {
