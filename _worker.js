@@ -50,41 +50,60 @@ export default {
 		if (path === '/api/site/status' && method === 'GET') {
 			let statusVal = 'online';
 			let noteVal = '';
+			let dbError = null;
 
-			try {
-				const statusRow = await env.DB.prepare(`SELECT value FROM site_settings WHERE key = 'site_status'`).first();
-				const noteRow = await env.DB.prepare(`SELECT value FROM site_settings WHERE key = 'maintenance_note'`).first();
-				if (statusRow && statusRow.value) statusVal = statusRow.value;
-				if (noteRow && noteRow.value) noteVal = noteRow.value;
-			} catch (e) { }
+			if (!db) {
+				dbError = 'D1 database binding (DB) is missing in env';
+			} else {
+				try {
+					await db.prepare(`CREATE TABLE IF NOT EXISTS site_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL)`).run();
+					const statusRow = await db.prepare(`SELECT value FROM site_settings WHERE key = 'site_status'`).first();
+					const noteRow = await db.prepare(`SELECT value FROM site_settings WHERE key = 'maintenance_note'`).first();
+					if (statusRow && statusRow.value) statusVal = statusRow.value;
+					if (noteRow && noteRow.value) noteVal = noteRow.value;
+				} catch(e) {
+					dbError = e.message;
+				}
+			}
 
-			return new Response(JSON.stringify({ status: statusVal, note: noteVal }), { headers: corsHeaders });
+			return new Response(JSON.stringify({ 
+				status: statusVal, 
+				note: noteVal,
+				dbError: dbError 
+			}), { headers: corsHeaders });
 		}
 
 		if (path === '/api/site/announcement' && method === 'GET') {
 			let text = '';
-			let closable = 'false';
-			let expiresAt = '0';
+			let closable = false;
+			let expiresAt = 0;
+			let dbError = null;
 
-			try {
-				const textRow = await env.DB.prepare(`SELECT value FROM site_settings WHERE key = 'announcement_text'`).first();
-				const closeRow = await env.DB.prepare(`SELECT value FROM site_settings WHERE key = 'announcement_closable'`).first();
-				const expRow = await env.DB.prepare(`SELECT value FROM site_settings WHERE key = 'announcement_expires'`).first();
+			if (db) {
+				try {
+					await db.prepare(`CREATE TABLE IF NOT EXISTS site_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL)`).run();
+					const textRow = await db.prepare(`SELECT value FROM site_settings WHERE key = 'announcement_text'`).first();
+					const closeRow = await db.prepare(`SELECT value FROM site_settings WHERE key = 'announcement_closable'`).first();
+					const expRow = await db.prepare(`SELECT value FROM site_settings WHERE key = 'announcement_expires'`).first();
 
-				if (textRow) text = textRow.value;
-				if (closeRow) closable = closeRow.value;
-				if (expRow) expiresAt = expRow.value;
-			} catch (e) {}
+					if (textRow && textRow.value) text = textRow.value;
+					if (closeRow && closeRow.value) closable = (closeRow.value === 'true');
+					if (expRow && expRow.value) expiresAt = parseInt(expRow.value) || 0;
+				} catch (e) {
+					dbError = e.message;
+				}
+			}
 
-			if (expiresAt !== '0' && Date.now() > parseInt(expiresAt)) {
+			if (expiresAt > 0 && Date.now() > expiresAt) {
 				text = '';
 			}
 
 			return new Response(JSON.stringify({
 				active: !!text,
 				text: text,
-				closable: closable === 'true',
-				expiresAt: parseInt(expiresAt) || 0
+				closable: closable,
+				expiresAt: expiresAt,
+				dbError: dbError
 			}), { headers: corsHeaders });
 		}
 
