@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="title" content="Site Temporarily Unavailable">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#5a207f">
+
+		<link rel="icon" type="image/png" href="static/img/icon.png">
+		<link rel="stylesheet" href="static/styles.css">
+		<script src="static/js/theme-switcher.js"></script>
+		<script src="static/js/check-status.js" defer></script>
+		<title>Site Temporarily Unavailable - Kip's Homepage</title>
+
+		<style>
+			html, body {
+				margin: 0;
+				padding: 0;
+				width: 100%;
+				height: 100vh;
+				overflow: hidden;
+				background: var(--bg-main, #200530);
+			}
+
+			.page-wrapper {
+				width: 100%;
+				height: 100vh;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				align-items: center;
+				box-sizing: border-box;
+				padding: 24px 20px;
+			}
+
+			#header {
+				margin: 0;
+				text-align: center;
+				flex-shrink: 0;
+			}
+
+			#header #subtitle {
+				margin-top: -10px;
+			}
+
+			/* Dead-centered Middle Section */
+			.main-content {
+				flex: 1;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: center;
+				gap: 36px;
+				width: 100%;
+				max-width: 950px;
+			}
+
+			.alula-cal {
+				height: 340px;
+				max-height: 48vh;
+				object-fit: contain;
+				flex-shrink: 0;
+			}
+
+			.unavail-card {
+				width: 460px;
+				max-width: 100%;
+				padding: 24px 28px;
+				border: 4px solid var(--msg-border, #fa9040);
+				background: var(--msg-bg, rgba(48, 24, 48, 0.5));
+				box-shadow: 0px 0px 6px 2px var(--msg-border, #fa9040), var(--msg-border, #fa9040) 0px 0px 32px inset;
+				box-sizing: border-box;
+				text-align: center;
+			}
+
+			.unavail-card h3 {
+				margin: 0 0 16px 0;
+				font-size: 22pt;
+				color: var(--header-subtitle, #fa9040);
+				text-shadow: 0px 0px 4px var(--header-shadow, #fa7060);
+			}
+
+			.unavail-card p {
+				margin: 0 0 20px 0;
+				font-size: 13pt;
+				line-height: 1.4;
+				color: #ffffff;
+			}
+
+			.note-box {
+				background: rgba(16, 4, 24, 0.85);
+				border: 1px solid var(--header-subtitle, #fa9040);
+				padding: 10px 14px;
+				margin-bottom: 20px;
+				border-radius: 4px;
+				color: var(--header-subtitle, #fa9040);
+				font-size: 12pt;
+			}
+
+			.btn-check {
+				display: block;
+				width: 100%;
+				padding: 10px;
+				border: 0;
+				border-bottom: 6px solid var(--btn-border, #603010);
+				color: white;
+				text-align: center;
+				background: var(--btn-bg, #ba6a30);
+				font-family: Terminus, monospace;
+				font-size: 14pt;
+				cursor: pointer;
+				box-sizing: border-box;
+			}
+
+			.btn-check:active {
+				border-bottom-width: 2px;
+				transform: translateY(4px);
+			}
+
+			#footer {
+				margin: 0;
+				text-align: center;
+				flex-shrink: 0;
+			}
+
+			@media (max-width: 750px) {
+				.main-content {
+					flex-direction: column;
+					gap: 16px;
+				}
+				.alula-cal {
+					height: 180px;
+				}
+				.unavail-card {
+					width: 100%;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="page-wrapper">
+			<div id="header">
+				<a href="index.html" style="text-decoration: none;">
+					<img id="logo" src="static/img/logo.png" alt="OneShot Logo">
+				</a>
+				<div id="subtitle" style="color: #c92f24;">[OFFLINE]</div>
+			</div>
+
+			<div class="main-content">
+				<img src="static/sitedown/c2.png" class="alula-cal" alt="A cute duo!">
+				<div class="unavail-card">
+					<h3>The World Machine is currently offline.</h3>
+					<p>
+						Sorry, but the site is currently offline, usually for maintenance or updates. Please check back shortly!
+					</p>
+
+					<div id="adminNoteBox" class="note-box" style="display: none;">
+						<strong>Note:</strong> <span id="adminNoteText">undefined</span>
+					</div>
+
+					<button onclick="checkStatus(true)" class="btn-check">Re-check status</button>
+				</div>
+			</div>
+
+			<div id="footer">
+				503 Service Unavailable
+				<div class="theme-picker">
+					<span>Theme: </span>
+					<select id="themeSelect" class="theme-dropdown">
+						<option value="theme-barrens">The Barrens (Purple)</option>
+						<option value="theme-refuge">The Refuge (Pink/Red)</option>
+						<option value="theme-glen">The Glen (Emerald Green)</option>
+					</select>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

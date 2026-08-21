@@ -11,6 +11,102 @@ export default {
 			return new Response('Asset Not Found', { status: 404 });
 		}
 
+		// SITE STATUS CHECK START
+		// SITE STATUS CHECK START
+		// SITE STATUS CHECK START
+		// SITE STATUS CHECK START
+		// SITE STATUS CHECK START
+		// SITE STATUS CHECK START
+
+		let siteStatus = 'online';
+		let maintenanceNote = '';
+		try {
+			const statusRow = await env.DB.prepare(`SELECT value FROM site_settings WHERE key = 'site_status'`).first();
+			const noteRow = await env.DB.prepare(`SELECT value FROM site_settings WHERE key = 'maintenance_note'`).first();
+			if (statusRow) siteStatus = statusRow.value;
+			if (noteRow) maintenanceNote = noteRow.value;
+		} catch (e) {}
+
+		// If OFFLINE = redirect all to unavail.html
+		if (siteStatus === 'offline') {
+			const isExempt = path.startsWith('/admin-panel.html') || 
+							path.startsWith('/unavail.html') || 
+							path.startsWith('/api/admin/') || 
+							path.startsWith('/api/site/') || 
+							path.startsWith('/static/');
+			if (!isExempt) {
+				return Response.redirect(`${url.origin}/unavail.html`, 302);
+			}
+		}
+
+		// API FOR ADMIN
+
+		if (path === '/api/site/status' && method === 'GET') {
+			return new Response(JSON.stringify({ status: siteStatus, note: maintenanceNote }), { headers: corsHeaders });
+		}
+
+		if (path === '/api/site/announcement' && method === 'GET') {
+			let text = '';
+			let closable = 'false';
+			let expiresAt = '0';
+
+			try {
+				const textRow = await env.DB.prepare(`SELECT value FROM site_settings WHERE key = 'announcement_text'`).first();
+				const closeRow = await env.DB.prepare(`SELECT value FROM site_settings WHERE key = 'announcement_closable'`).first();
+				const expRow = await env.DB.prepare(`SELECT value FROM site_settings WHERE key = 'announcement_expires'`).first();
+
+				if (textRow) text = textRow.value;
+				if (closeRow) closable = closeRow.value;
+				if (expRow) expiresAt = expRow.value;
+			} catch (e) {}
+
+			if (expiresAt !== '0' && Date.now() > parseInt(expiresAt)) {
+				text = '';
+			}
+
+			return new Response(JSON.stringify({
+				active: !!text,
+				text: text,
+				closable: closable === 'true',
+				expiresAt: parseInt(expiresAt) || 0
+			}), { headers: corsHeaders });
+		}
+
+		if (path === '/api/admin/site-settings' && method === 'POST') {
+			const adminKey = request.headers.get('X-Admin-Key');
+			if (!adminKey || !env.ADMIN_SECRET || adminKey.trim() !== env.ADMIN_SECRET.trim()) {
+				return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
+			}
+
+			const body = await request.json();
+			const { action, status, note, announcementText, closable, durationMinutes } = body;
+
+			if (action === 'set_status') {
+				await env.DB.prepare(`INSERT OR REPLACE INTO site_settings (key, value) VALUES ('site_status', ?)`).bind(status).run();
+				await env.DB.prepare(`INSERT OR REPLACE INTO site_settings (key, value) VALUES ('maintenance_note', ?)`).bind(note || '').run();
+			}
+			else if (action === 'set_announcement') {
+				let expTimestamp = 0;
+				if (durationMinutes && durationMinutes > 0) {
+					expTimestamp = Date.now() + durationMinutes * 60 * 1000;
+				}
+				await env.DB.prepare(`INSERT OR REPLACE INTO site_settings (key, value) VALUES ('announcement_text', ?)`).bind(announcementText || '').run();
+				await env.DB.prepare(`INSERT OR REPLACE INTO site_settings (key, value) VALUES ('announcement_closable', ?)`).bind(closable ? 'true' : 'false').run();
+				await env.DB.prepare(`INSERT OR REPLACE INTO site_settings (key, value) VALUES ('announcement_expires', ?)`).bind(expTimestamp.toString()).run();
+			}
+			else if (action === 'clear_announcement') {
+				await env.DB.prepare(`DELETE FROM site_settings WHERE key LIKE 'announcement_%'`).run();
+			}
+
+			return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+		}
+
+		// SITE STATUS CHECK END
+		// SITE STATUS CHECK END
+		// SITE STATUS CHECK END
+		// SITE STATUS CHECK END
+		// SITE STATUS CHECK END
+
 		const clientIP = request.headers.get('cf-connecting-ip') || '127.0.0.1';
 		const ipHash = await hashIP(clientIP);
 
