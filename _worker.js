@@ -2,28 +2,25 @@
 
 export default {
 	async fetch(request, env, ctx) {
+		// 1. CORS Headers
 		const corsHeaders = {
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 			'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Admin-Key',
 			'Content-Type': 'application/json'
 		};
-		const db = env.DB || env.forum_db;
+
 		const url = new URL(request.url);
 		const path = url.pathname;
 		const method = request.method;
 
-		if (!path.startsWith('/api/')) {
-			if (env.ASSETS) return env.ASSETS.fetch(request);
-			return new Response('Asset Not Found', { status: 404 });
+		if (method === 'OPTIONS') {
+			return new Response(null, { headers: corsHeaders });
 		}
 
-		// SITE STATUS CHECK START
-		// SITE STATUS CHECK START
-		// SITE STATUS CHECK START
-		// SITE STATUS CHECK START
-		// SITE STATUS CHECK START
-		// SITE STATUS CHECK START
+		const db = env.DB || env.forum_db;
+		const clientIP = request.headers.get('cf-connecting-ip') || '127.0.0.1';
+		const ipHash = await hashIP(clientIP);
 
 		let siteStatus = 'online';
 		let maintenanceNote = '';
@@ -39,16 +36,22 @@ export default {
 			}
 		}
 
-		// If OFFLINE = redirect all to unavail.html
 		if (siteStatus === 'offline') {
-			const isExempt = path.startsWith('/admin-panel.html') || 
-							path.startsWith('/unavail.html') || 
-							path.startsWith('/api/admin/') || 
-							path.startsWith('/api/site/') || 
-							path.startsWith('/static/');
+			const isExempt = path === '/admin-panel.html' || 
+			                 path === '/admin-panel' || 
+			                 path === '/unavail.html' || 
+			                 path === '/unavail' || 
+			                 path.startsWith('/api/admin/') || 
+			                 path.startsWith('/api/site/') || 
+			                 path.startsWith('/static/');
 			if (!isExempt) {
 				return Response.redirect(`${url.origin}/unavail.html`, 302);
 			}
+		}
+
+		if (!path.startsWith('/api/')) {
+			if (env.ASSETS) return env.ASSETS.fetch(request);
+			return new Response('Asset Not Found', { status: 404 });
 		}
 
 		// API FOR ADMIN
@@ -160,9 +163,6 @@ export default {
 		// SITE STATUS CHECK END
 		// SITE STATUS CHECK END
 		// SITE STATUS CHECK END
-
-		const clientIP = request.headers.get('cf-connecting-ip') || '127.0.0.1';
-		const ipHash = await hashIP(clientIP);
 
 		// const corsHeaders = {
 		// 	'Access-Control-Allow-Origin': '*',
