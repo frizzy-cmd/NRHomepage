@@ -17,7 +17,7 @@ async function checkStatus(isManualClick) {
 			window.location.href = 'index.html';
 		} else {
 			if (isManualClick) {
-				alert('Site is still undergoing maintenance. Please check back soon!');
+				alert('Site is still offline. Check back soon!');
 			}
 		}
 	} catch (e) {

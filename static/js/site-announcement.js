@@ -33,9 +33,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 			align-items: center;
 		`;
 
+
+        // empty for literal txt.
 		bar.innerHTML = `
 			<div style="flex: 1; text-align: center;">
-				<strong>Announcement:</strong> ${escapeHtml(data.text)}
+				<strong></strong> ${escapeHtml(data.text)}
 			</div>
 			${data.closable ? `<button onclick="closeSiteAnnouncement()" style="background: transparent; color: #fff; border: 0; font-size: 14pt; cursor: pointer; margin-left: 12px;">✖</button>` : ''}
 		`;
