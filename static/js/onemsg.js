@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			const authorVal = msgAuthor.value.trim() || 'Anon';
 			const contentVal = msgContent.value.trim();
 
-			if (!contentVal) return alert('Please write a message!');
+			if (!contentVal) return showAlert("Please write a message!", "instruction");
 
 			sendMsgBtn.disabled = true;
 			sendMsgBtn.textContent = 'Writing..';
@@ -204,7 +204,7 @@ window.reactMessage = async function(msgId, reaction) {
 	const now = Date.now();
 	if (now - lastReact < 3000) {
 		const remaining = Math.ceil((3000 - (now - lastReact)) / 1000);
-		return alert(`Please wait ${remaining} seconds before reacting again!`);
+		return showAlert("Please wait ${remaining} seconds before reacting again!", "error");
 	}
 
 	try {

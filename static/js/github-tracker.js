@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', async () => {	const commitContainer = document.getElementById('githubCommitContainer');
 	if (!commitContainer) return;
 

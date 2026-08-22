@@ -68,7 +68,7 @@ function generate() {
 	let val_rue = parseInt(document.getElementById('i_timesrue').value) || 0;
 
 	if (i_ign.length == 0) {
-		alert('Please enter player name!!');
+		showAlert("Please enter player name.", "instruction");
 		return false;
 	}
 
@@ -81,7 +81,7 @@ function generate() {
 	var s_knowruename = document.getElementById('s_knowruename').checked ? MARSHAL_TRUE : MARSHAL_FALSE;
 	var s_pickedmemory = document.getElementById('s_pickedmemory').checked ? MARSHAL_TRUE : MARSHAL_FALSE;
 
-	// Experimental flags. Dangerous
+	// Experimental flags. Dangerous. not used in the site, taken off
 	var s_disablemenu = document.getElementById('s_disablemenu').checked ? MARSHAL_TRUE : MARSHAL_FALSE;
 	var s_blockmove = document.getElementById('s_blockmove').checked ? MARSHAL_TRUE : MARSHAL_FALSE;
 	var s_blocksave = document.getElementById('s_blocksave').checked ? MARSHAL_TRUE : MARSHAL_FALSE;

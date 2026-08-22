@@ -1,6 +1,6 @@
 async function loginAdmin() {
     const pwd = document.getElementById('adminPwd').value.trim();
-    if (!pwd) return alert('ENTER THE DAMN FUCKING PASSWORD!');
+    if (!pwd) return showAlert("Enter the password now.", "error");
 
     try {
         const res = await fetch('/api/onemsg/admin/delete', {
@@ -15,7 +15,7 @@ async function loginAdmin() {
             document.getElementById('adminControls').style.display = 'block';
             loadSiteStatus();
         } else {
-            alert('YOU GOT IT WRONG! DO IT AGAIN DUMBASS');
+            showAlert("incorrect", "error");
         }
     } catch (e) { alert(e.message); }
 }
@@ -59,7 +59,7 @@ async function publishAnnouncement() {
     const durationMinutes = parseInt(document.getElementById('announcementDuration').value) || 0;
     const closable = document.getElementById('announcementClosable').checked;
 
-    if (!announcementText) return alert('Enter announcement text!');
+    if (!announcementText) return showAlert("Enter text in annon", "error")
 
     const res = await fetch('/api/admin/site-settings', {
         method: 'POST',
@@ -68,7 +68,7 @@ async function publishAnnouncement() {
     });
 
     if (res.ok) {
-        alert('Signaled successfully!!!');
+        showAlert("Broadcasted success!", "success");
     }
 }
 
@@ -81,7 +81,7 @@ async function clearAnnouncement() {
     });
 
     if (res.ok) {
-        alert('Clearead announcement');
+        showAlert("Cleared annon successfully", "success")
         document.getElementById('announcementTextInput').value = '';
     }
 }
