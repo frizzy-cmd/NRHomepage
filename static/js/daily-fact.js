@@ -110,7 +110,7 @@ var ONESHOT_FACTS = [
     "Niko is technically 'not a cat,' despite having cat-like features, cat eyes, ears, and whiskers!",
     "You can make Niko ride on a roomba in one of the apartment rooms in The Refuge.",
     "The Prophet Bot in the Barrens waited a 'very long' time for the Messiah to arrive.",
-    "Plight works tirelessly to maintain the streetlights in The Refuge (surface).",
+    "Plight (the lamplighter) works tirelessly to maintain the streetlights in The Refuge (surface).",
     "Ling runs the cafe in The Refuge, and also serves pancakes! Although, not hazelnut pancakes.",
     "The Library in The Refuge contains books... but not all of them are readable.",
     "Niko carries the sun throughout the entire game.",
@@ -122,18 +122,28 @@ var ONESHOT_FACTS = [
     "Niko has an owl plush back at home, The owl is brown and yellow, and it's name is 'Mr. Banana Bread'.",
     "According to Nightmargin, Niko is 8 years old, but Niko (as a character), was created on Dec 28, 2013. If this were their canonical birthdate, Niko would be 12 years old.",
     "Niko's height is around 4 feet, (1.27m/121cm).",
+    "George is a tea drinker, (brit) but may switch over to coffee in stressful times.",
+    "Plight (the lamplighter) drinks coffee straight from the pot.",
+    "Ling is a barista, and mainly handles coffee, but his drink of choice is green tea.",
+    "Ling is a character from Nightmargin's comic, 'Margin'.",
+    "Kip is one of the people who have a complicated order when ordering from the cafe, but tips really well afterwards.",
     "Rue is a fox who remembers your previous game runs.",
-    "Niko has been stated by Eliza, to have a ambiguous gender.",
+    "Niko has been stated by Eliza, to have a ambiguous gender, meaning it's up to the player's interpretation. For me, I've always seen Niko as a male, but it's up to your opinion.",
+    "Magpie goes for hard liquor! (..but only so he could collect the bottles afterwards)",
+    "Alula is a bird!",
+    "Throughout the game's xScripts.rxdata, which contain code for the game and such, only one swear word is present in 109 - EdText.rb at line 43. Calamus Toolkit has only 8!",
     "Niko is referred to using they/them pronouns in the OneShot: World Machine Edition bio and trailer.",
     "Niko's name was orginally 'Nico', chosen because it was a gender-neutral name, It was changed to 'Niko' after Nightmargin realized the name could be a reference to Nikola Tesla and his work on lightbulbs.",
     "Niko is NOT A CAT!! However, in The Refuge, the title of the soundtrack playing is 'On Little Cat Feet', possibly referencing the thumping sound of Niko walking on the Refuge's catwalks.",
     "At one point during a Solstice run, Niko makes '*confused cat noises*', So much for being a cat, huh?",
+    "OneShot is (surprisingly) easy to mod, if you are only focusing on the code though. For full on mods, such as OneShot: Fading Memory, it's way more complex.",
     "Niko thinks that coffee is for grown-ups, and prefers to drink milk with syrup, I don't even wanna imagine what milk and syrup tastes like.",
+    "In the game's files, Lamplighter, (as people usually call) is called 'plight'.",
     "The Steam game release contained a sprite error with Niko having human ears the during the chess and pancakes cutcenes, like in the original game release. This was fixed in a update.",
     "Niko is not a cat!"
 ];
 
-// Last upd ONESHOT_FACTS 8/22/2026 10:50 AM UTC+8
+// Last upd ONESHOT_FACTS 8/22/2026 6:42 PM UTC+8
 
 document.addEventListener('DOMContentLoaded', function() {
 	var messageDiv = document.getElementById('message');

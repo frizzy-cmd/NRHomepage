@@ -1,0 +1,590 @@
+# 110 - Diag_test.rb
+# ==============================================================================
+#      ++++++++++++++++++++++++ Rue Studio +++++++++++++++++++++++++++++++
+# 
+# - Rue Studio v0.1-RLS
+# - Licensed under the GNU GPL v3 license.
+# - Last updated this section: 23/08/2026 3:46 PM UTC+8
+# 
+#      ++++++++++++++++++++++++ LEGAL ++++++++++++++++++++++++++++++
+# - Rue Studio is not affiliated, nor endorsed by Future Cat LLC in any way.
+# - OneShot, its characters, story, assets, and code are the property of Future Cat LLC.
+# - Rue Studio, and the contents of 110 - Diag_test.rb are property of the creator.
+# - Rue Studio is made, developed, built, maintained, by Kip at codeberg.org/kipkat
+#
+#     ++++++++++++++++++++++++ READ ME ++++++++++++++++++++++++++++++
+# - PLEASE backup your unmodified xScripts.rxdata, save.dat and additional save files. I am not responsible for any corrupt files!
+# - This Windows 11 Pro (Tiny11), OneShot 64 bit [Steam client] | No dependencies required.
+# 
+#    ++++++++++++++++++++++++ TO MODDERS +++++++++++++++++++++++++++++
+# - Thank you for using Rue Studio! Please read the documentation in your OneShot game directory.
+#
+#
+# - Thank you for using Rue Studio.
+# - the reason why its named diag_test.rb is cuz idk why but it just doesn't work with other names andim lazy to investigate lmao
+# ==============================================================================
+module RueStudio
+  FILE_PATH = "./ruestudio.txt"
+  LOG_PATH  = "./ruestudio_output.txt"
+  DOC_PATH  = "./ruestudio_documentation.txt"
+  MAX_LOG_MB = 35
+
+  def self.init_logger(clear = false)
+    if File.exist?(LOG_PATH)
+      size_mb = File.size(LOG_PATH).to_f / (1024 * 1024)
+      clear = true if size_mb >= MAX_LOG_MB
+    end
+
+    return if File.exist?(LOG_PATH) && !clear
+
+    File.open(LOG_PATH, "w") do |f|
+      f.puts "=================================================="
+      f.puts " RueStudio v0.1-RLS | Output | Initialized, OK!"
+      f.puts " currentTime: #{Time.now.strftime('%Y-%m-%d %H:%M:%S')}"
+      f.puts "==================================================\n\n"
+    end
+  end
+
+  def self.clear_log_file
+    File.delete(LOG_PATH) if File.exist?(LOG_PATH)
+  end
+
+  def self.log(msg, line_num = nil)
+    init_logger
+    timestamp = Time.now.strftime("%H:%M:%S")
+    loc = line_num ? " from ruestudio.txt at line #{line_num}" : ""
+    
+    File.open(LOG_PATH, "a") do |f|
+      f.puts "[#{timestamp}] #{msg}#{loc}"
+    end
+  end
+
+  def self.init_files
+    unless File.exist?(FILE_PATH)
+      default_script = "@ed Please read ruestudio_documentation.txt in your game directory if you haven't, its necessary to know the basics.\n"
+      File.open(FILE_PATH, "w") { |f| f.write(default_script) }
+      log("[INFO] Created default ruestudio.txt")
+    end
+
+    unless File.exist?(DOC_PATH)
+      doc_content = <<~DOC
+        // ==============================================================================
+        //  Rue Studio v0.1-RLS - Basics & Documentation
+        // ==============================================================================
+
+        // Welcome to Rue Studio! 
+        // Lines starting with // (like this) are single-line comments and will be ignored by the interpreter.
+        // Press your L key in-game (or check F1 menu for keybinds and check whatever key is set to L, then press it) to trigger your scripts.
+
+        // Please read this text file.
+
+        /*
+          This is a multi line comment!
+          Wrap any section in /* [start] and */ [end] to disable entire blocks of scripts, noted, etc. Everything inside block comments will be completely skipped by the interpreter.
+        */
+
+
+        // ------------------------------------------------------------------------------
+        // 1. Dialogue syntax & modes
+        // ------------------------------------------------------------------------------
+        // Regular dialogue: @face_filename Dialogue text goes here
+        // (@face_filename must be a image from Graphics/Faces/face_filename.png)
+
+        // Example: (Press your L key, or whatever is set to your L key to trigger this)
+        @niko_pancakes Rue Studio is working perfectly & intialized!
+        @alula_gasp WOW!!!
+        @calamus_speak Coolio!
+        @rue_smile >-<
+        // The order goes from Niko, Alula, Calamus, then finally Rue, top to down
+
+        // Other dialogues:
+        // @ed text          -> Displays the Entity/TWM style dialogue
+        // @doctext text     -> Displays text formatted as a document/note, example are the notes found in the Barrens.
+        // @desktoptext text -> Displays text as a simulated desktop message, Like when you first start in the game, you will have to interact with the computer in the room Niko wakes up in.
+        // @creditstext text -> Displays text for end credits.
+
+        @ed [Niko feels uneasy.]
+        @doctext If you notice a decline in the charge cycle within the warranty period, please contact the manufacturer.
+        @desktoptext This place was never\\nworth saving.
+        // \\n makes a new line!
+
+
+
+
+        // ------------------------------------------------------------------------------
+        // 2. Audio syntax
+        // ------------------------------------------------------------------------------
+        // Timing prefix:
+        // @b4.   -> Executes the audio BEFORE showing the next line of dialogue.
+        // @dur.  -> Executes the audio AT THE SAME TIME as the dialogue.
+
+        // Audio types:
+        // .se / .sfx -> Sound Effects (Audio/SE/)
+        // .me        -> Musical Effects (Audio/ME/)
+        // .bgm       -> Background Music (Audio/BGM/)
+
+        // SE & ME commands:
+        // @b4.se filename            Plays SE before dialogue continues
+        // @dur.sfx filename          Plays SFX during dialogue
+        // @b4.me.fadein filename     Fades in a ME before dialogue
+
+        // BGM commands:
+        // @bgm filename              Plays BGM from Audio/BGM/
+        // @bgm.stop                  Fades out current BGM (def. fade: 20 frames)
+        // @bgm.stop 60               Fades out current BGM after 60 frames
+        // @bgm.start                 Resumes previously stopped BGM
+
+
+
+
+
+        // ------------------------------------------------------------------------------
+        // 3. Movement & timing
+        // ------------------------------------------------------------------------------
+        // COMMAND: @move.niko X, Y)
+        // Moves Niko relative to current grid position (positive X = right, positive Y = down).
+
+        // @move.niko 0, -2          Smoothly walks Niko 2 tiles up
+        // @move.niko 3, 0           Smoothly walks Niko 3 tiles right
+        // @move.niko.instant 0, -5  Instantly teleports Niko 5 tiles up
+
+
+
+        // COMMAND: @face.niko direction
+        // Turns Niko's sprite (w/o walking).
+        // Accepts words (down, left, right, up) or numbers (2, 4, 6, 8).
+
+        // @face.niko left          Turns Niko's sprite to the left
+        // @face.niko up            Turns Niko's sprite facing up
+        // @face.niko 2             Turns Niko's sprite facing down
+
+
+
+        // COMMAND: @wait frames
+        // Pauses execution for X frames (60 frames = ~1 second).
+
+        @wait 30                   // Pauses for half a second
+        @wait 120                  // Pauses for 2 seconds
+
+
+        // ------------------------------------------------------------------------------
+        // 4. Native OS dialogues (@edtext)
+        // ------------------------------------------------------------------------------
+        // Displays native OS message boxes outside the game.
+
+        @edtext.info Info icon
+        @edtext.err Caution icon (despite saying err)
+        @edtext.yesno Info icon, with 2 choices: Yes / No
+
+        // ------------------------------------------------------------------------------
+        // Utility
+        // ------------------------------------------------------------------------------
+        // @clearlog (Clears ruestudio_output.txt)
+
+        // ------------------------------------------------------------------------------
+        // Example script:
+        // ------------------------------------------------------------------------------
+        /*
+        @bgm.stop
+        @wait 70
+        @bgm.start 60
+        @bgm agod'smachine
+        @ed What are you doing here?
+        @ed Do you know what you're doing?
+        @ed Answer me.
+        @edtext.yesno Do you KNOW what you're doing?
+        @bgm.stop
+        @wait 75
+        @bgm onlittlecatfeet
+        */
+        // ^^ This is an example of an accurate @ed scene. Remove /* and */ to run it. You can run @ed [text], but it doesn't fade out the music and such, like a accurate @ed message would.
+        // ==================================================================================================================================================================================
+
+        // Once you have achieved enough knowledge, head on over to ruestudio.txt, and start typing away! >w<
+      DOC
+      File.open(DOC_PATH, "w") { |f| f.write(doc_content) }
+      log("[INFO] Created ruestudio_documentation.txt")
+    end
+  end
+
+  def self.find_audio_file(folder, filename)
+    return nil if filename.nil? || filename.empty?
+    dir = "Audio/#{folder}/"
+    return nil unless File.directory?(dir)
+    
+    entries = Dir.entries(dir).reject { |f| f.start_with?(".") }
+    match = entries.find do |f|
+      File.basename(f, ".*").downcase == filename.downcase
+    end
+    match ? "#{dir}#{match}" : nil
+  end
+
+  def self.parse_and_run
+    init_logger
+    # log("=== sof ===")
+
+    # cant find ruestudio.txt so create, at first launch
+    unless File.exist?(FILE_PATH)
+      log("[ERROR] Could not find ruestudio.txt")
+      EdText.err("RueStudio: Creating ruestudio.txt, couldn't find it.") if defined?(EdText)
+      init_files
+      return
+    end
+
+    begin
+      lines = File.readlines(FILE_PATH)
+    rescue => e
+      log("[ERROR] Could not load ruestudio.txt.")
+      EdText.err("RueStudio: Could not load ruestudio.txt.") if defined?(EdText)
+      return
+    end
+
+    in_block_comment = false
+
+    lines.each_with_index do |raw_line, idx|
+      line_num = idx + 1
+      line = raw_line.strip
+
+      if line.start_with?("/*")
+        in_block_comment = true
+        next
+      end
+      if line.end_with?("*/") || line.include?("*/")
+        in_block_comment = false
+        next
+      end
+      next if in_block_comment || line.empty? || line.start_with?("//")
+
+      if line.downcase == "@clearlog"
+        init_logger(true)
+        log("[INFO] Log file cleared via @clearlog command", line_num)
+        next
+      end
+
+      # validate @edtext
+      if line.start_with?("@edtext.")
+        subtag = line.split.first.sub("@edtext.", "")
+        unless ["err", "info", "yesno"].include?(subtag.downcase)
+          log("[ERROR] Unknown tag \"@edtext.#{subtag}\"", line_num)
+          EdText.err("RueStudio: (Line #{line_num}) Unknown tag \"@edtext.#{subtag}\"") if defined?(EdText)
+          next
+        end
+        process_line(line, line_num)
+        next
+      end
+
+      # @wait [frames]
+      if line =~ /^@wait\s+(\d+)/i
+        process_line(line, line_num)
+        next
+      end
+
+      # validate @move.niko.instant / @move.niko
+      if line =~ /^@move\.niko(\.instant)?\s+(.*)/i
+        args = $2.split(",").map(&:strip)
+        if args.size != 2 || args[0] !~ /^-?\d+$/ || args[1] !~ /^-?\d+$/
+          log("[ERROR] Invalid movement arguments", line_num)
+          EdText.err("RueStudio: (Line #{line_num}) Invalid movement arguments.") if defined?(EdText)
+          next
+        end
+        process_line(line, line_num)
+        next
+      end
+
+      # @face.niko validation
+      if line =~ /^@face\.niko\s+(.*)/i
+        dir_arg = $1.downcase.strip
+        valid_dirs = ["down", "left", "right", "up", "2", "4", "6", "8"]
+        unless valid_dirs.include?(dir_arg)
+          log("[ERROR] Invalid direction argument \"#{dir_arg}\"", line_num)
+          EdText.err("RueStudio: (Line #{line_num}) Invalid direction argument.") if defined?(EdText)
+          next
+        end
+        process_line(line, line_num)
+        next
+      end
+
+      # audio file validation
+      if line =~ /^@(b4|dur)\.(se|sfx|me)(\.fadein)?\s+(.*)/i
+        raw_type = $2.upcase
+        type = (raw_type == "SFX" ? "SE" : raw_type)
+        file_query = $4.strip
+        found = find_audio_file(type, file_query)
+        unless found
+          log("[ERROR] Could not find audio file \"#{file_query}\" in Audio\\#{type}", line_num)
+          EdText.err("RueStudio: (Line #{line_num}) Could not find audio \"#{file_query}\"") if defined?(EdText)
+          next
+        end
+        process_line(line, line_num)
+        next
+      end
+
+      if line =~ /^@bgm(\.stop|\.start)?\s*(.*)/i
+        cmd = $1
+        file_query = $2.strip
+        if cmd.nil? && !file_query.empty?
+          found = find_audio_file("BGM", file_query)
+          unless found
+            log("[ERROR] Could not find audio file \"#{file_query}\" in Audio\\BGM", line_num)
+            EdText.err("RueStudio: (Line #{line_num}) Could not find audio \"#{file_query}\"") if defined?(EdText)
+            next
+          end
+        end
+        process_line(line, line_num)
+        next
+      end
+
+      # dialogue syntax / forrmatting validatiomn
+      clean_line = line.sub(/^@(ed|doctext|desktoptext|creditstext|credits)\s+/, "")
+
+      unless line.start_with?("@")
+        log("[ERROR] Missing starting tag (@)", line_num)
+        EdText.err("RueStudio: (Line #{line_num}) Missing starting tag (@)") if defined?(EdText)
+        next
+      end
+
+      if clean_line =~ /^@(\w+)\s*(.*)/m
+        face_name = $1
+        text_content = $2
+
+        unless face_name.empty? || File.exist?("Graphics/Faces/#{face_name}.png")
+          log("[ERROR] Could not find face \"#{face_name}.png\"", line_num)
+          EdText.err("RueStudio: (Line #{line_num}) Could not find face \"#{face_name}.png\"") if defined?(EdText)
+          next
+        end
+
+        if text_content.length > 150
+          if defined?(EdText)
+            log("[WARN] Text character count > 150", line_num)
+            play_line = EdText.yesno("RueStudio: (Line #{line_num}) Text may overflow. Play anyway?")
+            next unless play_line
+          end
+        end
+      end
+
+      sanitized_tags = clean_line.gsub(/\\@\w+/, "")
+      extra_tags = sanitized_tags.sub(/^@\w+/, "").scan(/(?<!\s)@/).size
+
+      if extra_tags > 0
+        if defined?(EdText)
+          log("[WARN] Malformed line (excessive tags)", line_num)
+          play_line = EdText.yesno("RueStudio: (Line #{line_num}) Malformed line. Excessive tags detected. Play anyway?")
+          next unless play_line
+        end
+      end
+
+      malformed_cols = []
+      clean_line.scan(/\\(c|v|n)\[([^\]]*)$/).each do |match|
+        malformed_cols << clean_line.index("\\#{match[0]}[")
+      end
+      if malformed_cols.any?
+        if defined?(EdText)
+          log("[WARN] Malformed sequence", line_num)
+          play_line = EdText.yesno("RueStudio: (Line #{line_num}) Malformed escape sequence. Play anyway?")
+          next unless play_line
+        end
+      end
+
+      process_line(line, line_num)
+    end
+    # log("=== eof ===\n")
+  end
+
+  # INFO LOGS START
+  def self.process_line(line, line_num = nil)
+    if line =~ /^@edtext\.err\s+(.*)/i
+      log("[INFO] Executed @edtext.err", line_num)
+      EdText.err($1) if defined?(EdText)
+      return
+    elsif line =~ /^@edtext\.info\s+(.*)/i
+      log("[INFO] Executed @edtext.info", line_num)
+      EdText.info($1) if defined?(EdText)
+      return
+    elsif line =~ /^@edtext\.yesno\s+(.*)/i
+      log("[INFO]Executed @edtext.yesno", line_num)
+      EdText.yesno($1) if defined?(EdText)
+      return
+    end
+
+    if line =~ /^@wait\s+(\d+)/i
+      frames = $1.to_i
+      log("[INFO] Executed @wait #{frames} frames", line_num)
+      frames.times do
+        Graphics.update
+        Input.update
+        $scene.update if $scene
+      end
+      return
+    end
+
+    if line =~ /^@face\.niko\s+(.*)/i
+      dir_str = $1.downcase.strip
+      log("[INFO] Executed @face.niko #{dir_str}", line_num)
+      code = case dir_str
+             when "down", "2" then 2
+             when "left", "4" then 4
+             when "right", "6" then 6
+             when "up", "8" then 8
+             else 2
+             end
+      if $game_player
+        if $game_player.respond_to?(:direction=)
+          $game_player.direction = code
+        elsif $game_player.respond_to?(:set_direction)
+          $game_player.set_direction(code)
+        elsif $game_player.respond_to?(:turn_generic)
+          $game_player.turn_generic(code)
+        end
+      end
+      return
+    end
+
+    if line =~ /^@move\.niko(\.instant)?\s+(.*)/i
+      instant = !$1.nil?
+      cmd_name = instant ? "@move.niko.instant" : "@move.niko"
+      dx, dy = $2.split(",").map(&:to_i)
+      log("[INFO] Executed #{cmd_name} #{dx}, #{dy}", line_num)
+      target_x = $game_player.x + dx
+      target_y = $game_player.y + dy
+
+      if instant
+        $game_player.moveto(target_x, target_y)
+      else
+        while $game_player.x != target_x
+          if target_x > $game_player.x
+            $game_player.move_right rescue $game_player.x += 1
+          else
+            $game_player.move_left rescue $game_player.x -= 1
+          end
+          20.times do
+            Graphics.update
+            Input.update
+            $scene.update if $scene
+          end
+        end
+
+        while $game_player.y != target_y
+          if target_y > $game_player.y
+            $game_player.move_down rescue $game_player.y += 1
+          else
+            $game_player.move_up rescue $game_player.y -= 1
+          end
+          20.times do
+            Graphics.update
+            Input.update
+            $scene.update if $scene
+          end
+        end
+      end
+      return
+    end
+
+    if line =~ /^@(b4|dur)\.(se|sfx|me)(\.fadein)?\s+(.*)/i
+      timing = $1
+      raw_type = $2.upcase
+      folder = (raw_type == "SFX" ? "SE" : raw_type)
+      fadein = !$3.nil?
+      file_name = $4.strip
+      file_path = find_audio_file(folder, file_name)
+
+      log("[INFO] Executed @#{timing}.#{raw_type.downcase} #{file_name}", line_num)
+
+      if file_path
+        if folder == "SE"
+          Audio.se_play(file_path)
+        else
+          fadein ? Audio.me_fade(20) : Audio.me_play(file_path)
+        end
+      end
+      return if timing == "b4"
+    end
+
+    if line =~ /^@bgm\.stop\s*(\d*)/i
+      frames = $1.empty? ? 20 : $1.to_i
+      log("[INFO] Executed @bgm.stop #{frames}", line_num)
+      Audio.bgm_fade(frames * 50)
+      return
+    elsif line =~ /^@bgm\.start/i
+      log("[INFO] Executed @bgm.start", line_num)
+      Audio.bgm_resume if Audio.respond_to?(:bgm_resume)
+      return
+    elsif line =~ /^@bgm\s+(.*)/i
+      file_query = $1.strip
+      log("[INFO] Executed @bgm #{file_query}", line_num)
+      file_path = find_audio_file("BGM", file_query)
+      Audio.bgm_play(file_path) if file_path
+      return
+    end
+
+    mode = :standard
+    if line.start_with?("@ed ")
+      mode = :ed
+      line = line.sub("@ed ", "")
+    elsif line.start_with?("@doctext ")
+      mode = :doc
+      line = line.sub("@doctext ", "")
+    elsif line.start_with?("@desktoptext ")
+      mode = :desktop
+      line = line.sub("@desktoptext ", "")
+    elsif line.start_with?("@creditstext ") || line.start_with?("@credits ")
+      mode = :credits
+      line = line.sub(/^@(creditstext|credits)\s+/, "")
+    end
+
+    if line =~ /^@(\w+)\s*(.*)/m
+      face = $1
+      text = $2
+    else
+      face = nil
+      text = line
+    end
+
+    log("[INFO] Executed dialogue [@#{face}] (Type: #{mode})", line_num)
+
+    if $game_temp
+      case mode
+      when :ed
+        $game_temp.message_ed_text = text
+      when :doc
+        $game_temp.message_doc_text = text
+      when :desktop
+        $game_temp.message_desktop_text = text
+      when :credits
+        $game_temp.message_credits_text = text
+      else
+        $game_temp.message_face = face
+        $game_temp.message_text = text
+      end
+      $game_temp.message_window_showing = true
+    end
+
+    while $game_temp && $game_temp.message_window_showing
+      Graphics.update
+      Input.update
+      $scene.update if $scene
+    end
+  end
+
+  def self.update
+    if Input.trigger?(Input::L)
+      parse_and_run
+    end
+  end
+end
+
+# startup init
+RueStudio.init_files
+RueStudio.init_logger
+
+# clear everything in ruestudio_output.txt after exit game
+at_exit do
+  RueStudio.clear_log_file
+end
+
+class Scene_Map
+  alias rue_upd update
+  def update
+    rue_upd
+    RueStudio.update
+  end
+end

@@ -204,7 +204,7 @@ window.reactMessage = async function(msgId, reaction) {
 	const now = Date.now();
 	if (now - lastReact < 3000) {
 		const remaining = Math.ceil((3000 - (now - lastReact)) / 1000);
-		return showAlert("Please wait ${remaining} seconds before reacting again!", "error");
+		return alert('Please wait ${remaining} seconds before reacting again!');
 	}
 
 	try {
