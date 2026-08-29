@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="title" content="About Nightregion">
+		<meta name="description" content="Information & general details about Developer Nightregion.">
+		<meta name="keywords" content="oneshot, fading memory, osfm, solstice, post-solstice, save generator, p-settings, modding, about, nightregion, about nightregion, who is nightregion, dev, soemthing idk">
+		<meta name="language" content="EN">
+		<meta name="owner" content="nightregion">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#a82c51">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+		<!-- Og/DC meta -->
+		<meta property="og:type" content="website">
+		<meta property="og:site_name" content="About Nightregion">
+		<meta property="og:title" content="About Me - Nightregion's Homepage">
+		<meta property="og:description" content="Information & general details about Developer Nightregion.">
+		<meta property="og:url" content="https://nightregion.teaa.workers.dev/about-me">
+		<meta property="og:image" content="https://nightregion.teaa.workers.dev/static/img/mots.banner.png">
+
+		<!-- Large img preview -->
+		<meta property="og:image:secure_url" content="https://nightregion.teaa.workers.dev/static/img/mots.banner.png">
+		<meta property="og:image:type" content="image/png">
+		<meta property="og:image:width" content="1200">
+		<meta property="og:image:height" content="627">
+		<meta property="og:locale" content="en_US">
+		<meta name="theme-color" content="#a82c51">
+
+		<!-- Twitter metatags -->
+		<meta property="twitter:card" content="summary_large_image">
+		<meta property="twitter:url" content="https://nightregion.teaa.workers.dev/about-me">
+		<meta property="twitter:title" content="Nightregion's Homepage">
+		<meta property="twitter:description" content="">
+		<meta property="twitter:image" content="https://nightregion.teaa.workers.dev/static/img/mots.banner.png">
+
+		<!-- Metatags END! -->
+		<link rel="icon" type="image/png" href="static/img/pf1.jpg">
+		<link rel="stylesheet" href="static/styles.css">
+		<script src="static/js/theme-switcher.js"></script>
+		<script src="static/js/site-announcement.js" defer></script>
+		<script src="static/js/about-me-scripts-thing.js" defer></script>
+		<title>About - Nightregion's Homepage</title>
+
+		<style>
+			#starfield {
+				position: fixed;
+				top: 0; left: 0;
+				width: 100%; height: 100%;
+				z-index: -1;
+				pointer-events: none;
+			}
+
+			.about-container {
+				width: 680px;
+				max-width: 92%;
+				margin: 20px auto 60px auto;
+				display: flex;
+				flex-direction: column;
+				gap: 20px;
+				font-family: Terminus, monospace;
+			}
+
+			.card {
+				background: rgba(18, 6, 28, 0.88);
+				border: 3px solid var(--box-border);
+				padding: 20px;
+				border-radius: 6px;
+				box-shadow: 0 0 12px rgba(0,0,0,0.4);
+				color: #ffffff;
+				position: relative;
+				box-sizing: border-box;
+				user-select: none;
+			}
+
+			.card.dragging {
+				opacity: 0.8;
+				z-index: 1000;
+				border-color: var(--header-subtitle);
+			}
+
+			.profile-banner {
+				height: 205px;
+				background: var(--input-bg);
+				border: 2px solid var(--box-border);
+				border-radius: 4px;
+				background-size: cover;
+				background-position: center;
+				margin-bottom: -40px;
+			}
+
+			.profile-pic {
+				width: 80px;
+				height: 80px;
+				border: 3px solid var(--box-border);
+				border-radius: 50%;
+				background-size: cover;
+				background-position: center;
+				margin-left: 20px;
+				background-color: #100020;
+			}
+
+			.profile-title {
+				color: var(--header-subtitle);
+				font-size: 24pt;
+				margin: 8px 0 2px 0;
+			}
+
+			.status-quote {
+				color: #aaa;
+				font-style: italic;
+				margin-bottom: 12px;
+				font-size: 12pt;
+			}
+
+			.bio-text {
+				font-size: 12pt;
+				line-height: 1.5;
+				color: #e0d0e0;
+				white-space: pre-line;
+				margin-bottom: 16px;
+			}
+
+			/* Collapsible Dropdown Styling for Modding Guide */
+			details.mod-step {
+				background: var(--input-bg);
+				border: 1px solid var(--box-border);
+				border-radius: 4px;
+				margin: 8px 0;
+				padding: 8px 12px;
+			}
+
+			details.mod-step summary {
+				color: var(--header-subtitle);
+				font-weight: bold;
+				font-size: 11pt;
+				cursor: pointer;
+				user-select: none;
+				outline: none;
+			}
+
+			details.mod-step summary:hover {
+				color: #ffffff;
+			}
+
+			details.mod-step[open] summary {
+				border-bottom: 1px dashed var(--box-border);
+				padding-bottom: 6px;
+				margin-bottom: 8px;
+			}
+
+			details.mod-step div {
+				font-size: 11pt;
+				color: #e0d0e0;
+				line-height: 1.5;
+				white-space: normal;
+			}
+
+			.socials-row {
+				display: flex;
+				gap: 12px;
+				flex-wrap: wrap;
+			}
+
+			.social-badge {
+				background: var(--input-bg);
+				border: 1px solid var(--box-border);
+				color: var(--header-subtitle);
+				padding: 6px 12px;
+				border-radius: 4px;
+				text-decoration: none;
+				font-size: 11pt;
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+			}
+
+			.social-badge img {
+				width: 18px;
+				height: 18px;
+				object-fit: contain;
+			}
+
+			.social-badge:hover {
+				border-color: var(--header-subtitle);
+				background: var(--box-border);
+			}
+
+			.clicker-box {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+				margin-top: 10px;
+			}
+
+			.floppy-btn {
+				width: 54px;
+				height: 54px;
+				background: var(--input-bg);
+				border: 2px solid var(--box-border);
+				border-radius: 4px;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				cursor: pointer;
+			}
+
+			.floppy-btn img {
+				width: 32px;
+				height: 32px;
+				object-fit: contain;
+			}
+
+			.floppy-btn:active {
+				transform: scale(0.95);
+			}
+
+			.specs-list {
+				list-style: none;
+				padding: 0;
+				margin: 10px 0;
+			}
+
+			.specs-list li {
+				padding: 6px 0;
+				border-bottom: 1px dashed rgba(90, 32, 127, 0.3);
+				font-size: 11pt;
+			}
+
+			.spec-help {
+				color: var(--header-subtitle);
+				text-decoration: none;
+				font-weight: bold;
+				margin-left: 6px;
+				padding: 1px 6px;
+				border: 1px solid var(--box-border);
+				border-radius: 3px;
+				background: var(--input-bg);
+			}
+
+			.spec-help:hover {
+				background: var(--box-border);
+			}
+
+			.os-badge {
+				display: inline-block;
+				padding: 2px 8px;
+				border-radius: 3px;
+				font-size: 10pt;
+				font-weight: bold;
+			}
+
+			.os-main { background: #1b5e20; color: #a5d6a7; border: 1px solid #2e7d32; }
+			.os-side { background: #4a148c; color: #e1bee7; border: 1px solid #7b1fa2; }
+
+			.spoiler {
+				background-color: currentcolor;
+				cursor: pointer;
+				border-radius: 3px;
+				padding: 0 2px;
+			}
+            
+			.spoiler:active,
+			.spoiler:focus,
+			.spoiler:hover {
+				background-color: transparent;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="starfield"></canvas>
+		<div id="header">
+			<a href="index.html" style="text-decoration: none;">
+				<img id="logo" src="static/img/logo.png" alt="OneShot Logo" title="Go to Homepage">
+			</a>
+			<div id="subtitle">About Me</div>
+		</div>
+
+		<div class="about-container">
+			<div class="card profile-card">
+				<div class="profile-banner" style="background-image: url('static/img/mots.banner.png');"></div>
+				<div class="profile-pic" style="background-image: url('static/img/pf1.jpg');"></div>
+				<h1 class="profile-title">Nightregion</h1>
+				<div class="status-quote">"i LOVE margin of the strange"</div>
+
+				<div class="bio-text">
+I'm that kind of guy where i honestly just dont give a <span class="spoiler" tabindex="0">fuck</span> and is just generally chill. Unless its something critical/important.. Sounds cliche & corny i know
+<strong>I am 17 years of age. Please hold your horses.</strong>
+yes i am a male.
+<strong>I'm experienced primarily in Ruby, Python, C++, C#, A bit of x64 asm and C, Javascript, also bit of Java, HTML, CSS. and a bit more. I know RMXP!</strong>
+
+<strong>How do i make OneShot mods?</strong> It's pretty complicated, but i'll try to simplify and cut down some processes into this description:
+
+<details class="mod-step">
+	<summary>Step 1: Extraction</summary>
+	<div>You'd have to extract the xScripts.rxdata in your OneShot folder (Data/xScripts.rxdata), after extracting, there will be plenty of .rb files (Ruby). That's normal.</div>
+</details>
+<details class="mod-step">
+	<summary>Step 2: Code</summary>
+	<div>Personally, i'd make a new file called 110 - [mod name].rb, for example 110 - Calamus_Toolkit.rb, then code some <span class="spoiler" tabindex="0">shit</span> in there.</div>
+</details>
+<details class="mod-step">
+	<summary>Step 3: Repack</summary>
+	<div>You'd have to repack it back up. I made a custom .rb file for both extracting & repacking, so i run ruby extractor.rb, it repacks the extracted .rb files into xScripts.rxdata, i put it back in the Data folder, then test. Any errors, fix, repack, repeat.</div>
+</details>
+I don't really have any ideas for any mods as of now, any ideas, fixes, suggestions, or inquiries? Dont be afraid to contact me on my Discord or my email: support.kipsite@gmail.com, I'll be willing to respond to any messages. 
+<strong>Make sure you say where you're coming from if you're messaging via Discord, I don't tend to answer random DMs</strong>
+
+<h1 class="profile-title">Other info..</h1>
+Contributor to the Linux Kernel & Fedora Project.
+Creator of Calamus Toolkit, Alula Editor, Ling Launcher, Rue Studio, and much more projects on this site.
+
+Proud OneShot modder! I enjoy modding OneShot, it's fun and sometimes makes you hate everything you see, but overall it's okay. True OneShot fan!
+
+Hope you like this site and my projects! Hold SHIFT + LC and drag any card for a fun thing!
+				</div>
+
+				<div class="socials-row">
+					<a href="https://github.com/frizzy-cmd" target="_blank" class="social-badge">
+						<img src="static/img/about_icons/githublogo.png" alt="GitHub"> GitHub: frizzy-cmd
+					</a>
+					<a href="https://www.roblox.com/users/3005052340/profile" target="_blank" class="social-badge">
+						<img src="static/img/about_icons/robloxlogo.png" alt="Roblox"> Roblox: Snippets2
+					</a>
+					<span class="social-badge" title="User ID: 946316462182789130">
+						<img src="static/img/about_icons/discordlogo.png" alt="Discord"> Discord: advancedopengl
+					</span>
+					<span class="social-badge" title="FC: 1919075329">
+						<img src="static/img/about_icons/steamlogo.png" alt="Steam"> Steam FC: 1919075329
+					</span>
+				</div>
+			</div>
+
+			<div class="card">
+				<p style="margin: 6px 0 12px 0; color: var(--header-subtitle); font-weight: bold;">Uptime: <span id="uptime-counter" style="font-weight: normal;">0s</span></p>
+
+				<div class="clicker-box">
+					<div class="floppy-btn" id="floppyClicker" title="Click me!">
+						<img src="static/img/about_icons/floppydisk.png" alt="Floppy Disk">
+					</div>
+					<div style="font-size: 11pt;">
+						<div>Write: <span id="click-count" style="color: #81c784; font-weight: bold;">0 KB/s</span></div>
+						<div>Read: <span id="read-count" style="color: var(--header-subtitle); font-weight: bold;">0 KB/s</span></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<h3 style="margin-top: 0; text-align: left; font-size: 16pt;">Specifications:</h3>
+				<ul class="specs-list">
+					<li><strong>CPU:</strong> Intel Core i3-4130 <a href="about-me-specs.html#cpu" class="spec-help">?</a></li>
+					<li><strong>GPU:</strong> Nvidia Quadro P620 <a href="about-me-specs.html#gpu" class="spec-help">?</a></li>
+					<li><strong>Former GPU:</strong> Nvidia Quadro K600 <a href="about-me-specs.html#former-gpu" class="spec-help">?</a></li>
+					<li><strong>RAM:</strong> 8GB DDR3 1333MHz Dual Rank <a href="about-me-specs.html#ram" class="spec-help">?</a></li>
+					<li><strong>SSD:</strong> ADATA SU650 <a href="about-me-specs.html#storage" class="spec-help">?</a></li>
+				</ul>
+
+				<h3 style="margin-top: 16px; text-align: left; font-size: 16pt;">OSes:</h3>
+				<p style="margin: 4px 0;">Main OS: <span class="os-badge os-main">Windows 11 Pro (Tiny11)</span></p>
+				<p style="margin: 4px 0;">Secondary OS: <span class="os-badge os-side">Undefined</span></p>
+				<p style="margin: 6px 0 0 0; font-size: 10pt; color: #aaa;">
+					Former OSes: Kubuntu, Arch, Fedora KDE, Windows 11 LTSC, Linux Mint XFCE, Gentoo, OpenSUSE Tumbleweed
+				</p>
+			</div>
+
+			<div class="card" style="text-align: center;">
+				<span style="color: #aaa; font-size: 12pt;">Visits: </span>
+				<span id="hitCounter" style="color: var(--header-subtitle); font-weight: bold; font-size: 16pt; margin-left: 8px;">000000</span>
+			</div>
+
+		</div>
+
+		<div id="footer">
+			This website was made by <a href="https://github.com/frizzy-cmd" target="_blank">Nightregion</a> | 
+			<a href="index.html">Homepage</a> | 
+			<a href="legal.html">Legal</a> | 
+			<a href="https://github.com/frizzy-cmd/AlulaEditor" target="_blank">Github Repository</a>
+
+			<div class="theme-picker">
+				<span>Theme: </span>
+				<select id="themeSelect" class="theme-dropdown">
+					<option value="theme-barrens">The Barrens (Purple)</option>
+					<option value="theme-refuge">The Refuge (Pink/Red)</option>
+					<option value="theme-glen">The Glen (Emerald Green)</option>
+				</select>
+			</div>
+		</div>
+	</body>
+</html>

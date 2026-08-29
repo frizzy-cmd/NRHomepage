@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {	const commitContaine
 	} catch (e) {
 		commitContainer.innerHTML = `
 			<div style="font-size: 10pt; color: #888; margin-top: 12px;">
-				Latest build: Kip (frizzy-cmd) | Live
+				Latest build: Nightregion (frizzy-cmd) | Live
 			</div>
 		`;
 	}

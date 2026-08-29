@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#5a207f">
+
+		<link rel="icon" type="image/png" href="static/img/iconlight.png">
+		<link rel="stylesheet" href="static/styles.css">
+		<script src="static/js/theme-switcher.js"></script>
+        <script src="static/js/site-announcement.js" defer></script>
+		<title>Specifications - Nightregion's Homepage</title>
+
+		<style>
+			.doc-container {
+				width: 100%;
+				max-width: 640px;
+				margin: 30px auto;
+			}
+			.doc-section {
+				background: rgba(18, 6, 28, 0.88);
+				border: 2px solid var(--box-border);
+				border-left: 4px solid var(--header-subtitle);
+				border-radius: 6px;
+				padding: 20px;
+				margin-bottom: 20px;
+				transition: border-color 0.3s ease, box-shadow 0.3s ease;
+			}
+			.doc-section:target {
+				border-left-color: #ffd700;
+				box-shadow: 0 0 16px rgba(255, 215, 0, 0.4);
+			}
+			.back-btn {
+				display: inline-block;
+				margin-bottom: 20px;
+				color: var(--header-subtitle);
+				text-decoration: none;
+				font-size: 12pt;
+				font-weight: bold;
+			}
+			.back-btn:hover {
+				text-decoration: underline;
+			}
+			.doc-section h2 {
+				font-size: 16pt;
+				border-bottom: 1px dashed var(--box-border);
+				padding-bottom: 8px;
+				margin-top: 0;
+				margin-bottom: 12px;
+				color: #ffffff;
+				text-align: left;
+			}
+			.doc-section p {
+				font-size: 12pt;
+				color: #e0d0e0;
+				line-height: 1.6;
+				margin-bottom: 12px;
+			}
+			.spec-img {
+				display: block;
+				max-width: 100%;
+				height: auto;
+				max-height: 220px;
+				margin: 12px auto 4px auto;
+				border-radius: 4px;
+				border: 2px solid var(--box-border);
+				object-fit: contain;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			<a href="index.html" style="text-decoration: none;">
+				<img id="logo" src="static/img/logo.png" alt="OneShot Logo">
+			</a>
+			<!-- <div id="subtitle">FOO BART</div> -->
+		</div>
+
+		<div class="doc-container">
+			<a href="about-me.html" class="back-btn">&lt;- Back..</a>
+
+			<div id="cpu" class="doc-section">
+				<h2>Intel Core i3-4130</h2>
+				<p>One of a kind Haswell CPU. Dual-core with hyper-threading clocked at 3.40 GHz. Standard for office PCs but I push it for gaming! Gets the job done for like everything.</p>
+				<img src="static/img/about_icons/spec_icons/i3-4130.png" alt="Intel Core i3-4130" class="spec-img" onerror="this.style.display='none'">
+			</div>
+
+			<div id="gpu" class="doc-section">
+				<h2>Nvidia Quadro P620</h2>
+				<p>A superior Pascal architecture workstation card equipped with 2GB GDDR5 VRAM. Basically a cut-down GTX 1050 but for workstations and et cetera. Fun fact: This GPU uses the same chip as the GTX 1050!</p>
+				<img src="static/img/about_icons/spec_icons/quadrop620.png" alt="Nvidia Quadro P620" class="spec-img" onerror="this.style.display='none'">
+			</div>
+
+			<div id="former-gpu" class="doc-section">
+				<h2>Nvidia Quadro K600</h2>
+				<p>A dogwater Kepler architecture card absolutely loaded with 1GB of DDR3 VRAM. The former, and first graphics processing unit to ever approach this setup and to retire with its last game being played on was Minecraft with shaders.</p>
+				<img src="static/img/about_icons/spec_icons/quadrok600.png" alt="Nvidia Quadro K600" class="spec-img" onerror="this.style.display='none'">
+			</div>
+
+			<div id="ram" class="doc-section">
+				<h2>8GB DDR3 1333MHz Dual Rank</h2>
+				<p>An average and mediocre dual-channel memory setup. It's just RAM, there's literally nothing to put info on in here. I guess it survived a short circuit once?</p>
+				<img src="static/img/about_icons/spec_icons/ram.png" alt="DDR3 RAM Setup" class="spec-img" onerror="this.style.display='none'">
+			</div>
+
+			<div id="storage" class="doc-section">
+				<h2>ADATA SU650 Solid State Drive</h2>
+				<p>A one of a kind SSD. This SSD was salvaged from a hard bricked ACER laptop, and put into my setup. Before this, I was running Windows on an HDD.. Yes I know.</p>
+				<img src="static/img/about_icons/spec_icons/adata.png" alt="ADATA SU650 SSD" class="spec-img" onerror="this.style.display='none'">
+			</div>
+		</div>
+
+		<!-- <div id="footer">
+			This website was made by <a href="https://github.com/frizzy-cmd" target="_blank">Nightregion</a> | 
+			<a href="index.html">Homepage</a> | 
+			<a href="legal.html">Legal</a> | 
+			<a href="https://github.com/frizzy-cmd/AlulaEditor" target="_blank">Github Repository</a>
+
+			<div class="theme-picker">
+				<span>Theme: </span>
+				<select id="themeSelect" class="theme-dropdown">
+					<option value="theme-barrens">The Barrens (Purple)</option>
+					<option value="theme-refuge">The Refuge (Pink/Red)</option>
+					<option value="theme-glen">The Glen (Emerald Green)</option>
+				</select> -->
+			</div>
+		</div>
+	</body>
+</html>
