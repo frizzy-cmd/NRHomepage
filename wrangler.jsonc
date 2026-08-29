@@ -18,11 +18,5 @@
             "database_name": "forum-db",
             "database_id": "3b830a74-15a2-47cb-b696-21a2382fc1c7"
         }
-    ],
-    "r2_buckets": [
-        {
-            "binding": "UPLOADS",
-            "bucket_name": "forum-uploads"
-        }
     ]
 }
