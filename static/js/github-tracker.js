@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {	const commitContaine
 		commitContainer.innerHTML = `
 			<div style="font-size: 11pt; border-top: 1px solid var(--box-border); padding-top: 12px; margin-top: 16px;">
 				<strong style="color: var(--header-subtitle);">Latest commit:</strong><br>
-				<span>Committed by: <strong>${authorName}</strong></span> | 
+				<span>Committed by: <strong>Nightregion</strong></span> |  
 				<span>Date: ${formattedDate}</span><br>
 				<span>UniqueID: <code>#${shortSha}</code></span> | 
 				<span>Commit: <em>"${message}"</em></span>
@@ -29,3 +29,6 @@ document.addEventListener('DOMContentLoaded', async () => {	const commitContaine
 		`;
 	}
 });
+
+
+{/* <span>Committed by: <strong>${authorName}</strong></span> | (replaced with my own name on L18*/} 
