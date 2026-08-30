@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#5a207f">
+
+		<link rel="icon" type="image/png" href="static/img/iconlight.png">
+		<link rel="stylesheet" href="static/styles.css">
+		<script src="static/js/theme-switcher.js"></script>
+		<script src="static/js/settings.js" defer></script>
+        <script src="static/js/alert-sound.js"></script>
+		<title>Settings - Nightregion's Homepage</title>
+
+		<style>
+			.setting-group {
+				background: rgba(18, 6, 28, 0.88);
+				border: 2px solid var(--box-border);
+				padding: 20px;
+				margin-bottom: 20px;
+				border-radius: 6px;
+			}
+			.setting-group h4 {
+				color: var(--header-subtitle);
+				margin-top: 0;
+				margin-bottom: 12px;
+				font-size: 16pt;
+				text-align: left;
+				text-shadow: none;
+			}
+			.wp-select {
+				width: 100%;
+				padding: 8px;
+				background: var(--input-bg);
+				color: #ffffff;
+				border: 1px solid var(--box-border);
+				font-family: Terminus, monospace;
+				font-size: 12pt;
+				margin-top: 6px;
+				margin-bottom: 12px;
+				border-radius: 3px;
+			}
+			.preview-container {
+				height: 180px;
+				border: 2px solid var(--box-border);
+				border-radius: 4px;
+				background-size: cover;
+				background-position: center;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				color: #ffffff;
+				font-weight: bold;
+				text-shadow: 0 0 6px #000;
+				margin-top: 12px;
+			}
+			.option-label {
+				display: block;
+				margin: 8px 0;
+				cursor: pointer;
+				font-size: 12pt;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			<a href="index.html" style="text-decoration: none;">
+				<img id="logo" src="static/img/logo.png" alt="OneShot Logo" title="Go to Homepage">
+			</a>
+			<div id="subtitle">General Settings</div>
+		</div>
+
+		<div id="message">
+			<h3>Settings</h3>
+			General settings page for my homepage
+		</div>
+
+		<div id="box">
+			<div class="setting-group">
+				<div class="theme-picker">
+					<h4 style="margin-bottom: 8px;">1. Theme:</h4>
+					<select id="themeSelect" class="theme-dropdown" style="width: 100%;">
+						<option value="theme-barrens">The Barrens (Purple)</option>
+						<option value="theme-refuge">The Refuge (Pink/Red)</option>
+						<option value="theme-glen">The Glen (Green)</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="setting-group">
+				<h4>2. Background</h4>
+
+				<label class="option-label">
+					<input type="radio" name="wpType" value="default" id="wpDefault">
+					<span>Solid color (Matched selected theme)</span>
+				</label>
+
+				<label class="option-label">
+					<input type="radio" name="wpType" value="auto" id="wpAuto">
+					<span>Wallpaper based on theme (Matches selected theme)</span>
+				</label>
+
+				<label class="option-label">
+					<input type="radio" name="wpType" value="preset" id="wpPreset">
+					<span>Pick a preset wallpaper</span>
+				</label>
+
+				<div id="presetOptionsContainer" style="display: none; padding-left: 20px;">
+					<label style="font-size: 11pt; color: #aaa;">Select preset wallpaper:</label>
+					<select id="wpPresetSelect" class="wp-select">
+						<!-- BARRENS -->
+						<optgroup label="Barrens">
+							<option value="static/img/wallpaper/barrensWP.jpg">Barrens - Default</option>
+							<option value="static/img/wallpaper/otherWP/Barrens/factoryBarrensWP.jpg">Barrens - Factory</option>
+							<option value="static/img/wallpaper/otherWP/Barrens/outpostBarrensWP.jpg">Barrens - Outpost</option>
+							<option value="static/img/wallpaper/otherWP/Barrens/rowbotNikoBarrensWP.jpg">Barrens - Rowbot & Niko</option>
+						</optgroup>
+						<!-- GLEN -->
+						<optgroup label="Glen">
+							<option value="static/img/wallpaper/glenWP.jpg">Glen - Default</option>
+							<option value="static/img/wallpaper/otherWP/Glen/calamusAndAlulaGlenWP.jpg">Glen - Calamus & Alula</option>
+							<option value="static/img/wallpaper/otherWP/Glen/glenShorelinesWP.jpg">Glen - Shorelines</option>
+							<option value="static/img/wallpaper/otherWP/Glen/messiahAndPoorMaizeGlenWP.jpg">Glen - Maize & Niko</option>
+						</optgroup>
+						<!-- REFUGE -->
+						<optgroup label="Refuge">
+							<option value="static/img/wallpaper/refugeWP.jpg">Refuge - Default</option>
+							<option value="static/img/wallpaper/otherWP/Refuge/libraryStrollRefugeWP.jpg">Refuge - Library Stroll</option>
+							<option value="static/img/wallpaper/otherWP/Refuge/messiahAndPlightRefugeWP.jpg">Refuge - Niko & Lamplighter</option>
+							<option value="static/img/wallpaper/otherWP/Refuge/messiahTravellingRefugeWP.jpg">Refuge - Niko Catwalks</option>
+							<option value="static/img/wallpaper/otherWP/Refuge/nikoWithLingPlightPancakesRefugeWp.jpg">Refuge - Ling, Niko & Pancakes!</option>
+							<option value="static/img/wallpaper/otherWP/Refuge/secretRamClubRefugeWP.jpg">Refuge - Secret Ram Club</option>
+						</optgroup>
+						<!-- SOLSTICE -->
+						<optgroup label="Solstice">
+							<option value="static/img/wallpaper/otherWP/Solstice/cedricRuePrototypeSolsticeWP.jpg">Solstice - Cedric, Rue & Prototype</option>
+							<option value="static/img/wallpaper/otherWP/Solstice/incelbotAndPrototypeHolyAURASolsticeWP.jpg">Solstice - Prototype & Prophetbot</option>
+							<option value="static/img/wallpaper/otherWP/Solstice/messiahReflectionTWMSolsticeWP.jpg">Solstice - Reflection</option>
+						</optgroup>
+						<!-- MISC -->
+						<optgroup label="Misc">
+							<option value="static/img/wallpaper/otherWP/Misc/asteroidMessiahWP.jpg">Misc - Asteroid</option>
+							<option value="static/img/wallpaper/otherWP/Misc/blankWP.jpg">Misc - Blank</option>
+							<option value="static/img/wallpaper/otherWP/Misc/catWP.jpg">Misc - cat!!</option>
+							<option value="static/img/wallpaper/otherWP/Misc/messiahTowerWP.jpg">Misc - Tower</option>
+							<option value="static/img/wallpaper/otherWP/Misc/messiahWP.jpg">Misc - Messiah</option>
+						</optgroup>
+					</select>
+				</div>
+
+				<label class="option-label">
+					<input type="radio" name="wpType" value="custom" id="wpCustom">
+					<span>Upload custom image.. (recommend. 1920x1080)</span>
+				</label>
+
+				<div id="customUploadContainer" style="display: none; padding-left: 20px;">
+					<input type="file" id="customWpFile" accept="image/*" style="font-size: 11pt; color: #ccc;">
+				</div>
+
+				<div style="margin-top: 16px;">
+					<label style="font-size: 11pt; color: #aaa;">Wallpaper preview::</label>
+					<div id="wpPreview" class="preview-container">
+						<span>Preview:</span>
+					</div>
+				</div>
+			</div>
+
+			<div style="display: flex; gap: 12px;">
+				<button class="btn" onclick="saveSettings()" style="flex: 1; margin: 0;">Save settings</button>
+				<button class="btn" onclick="resetSettings()" style="flex: 1; margin: 0; background: #424242; border-color: #1a1a1a;">Reset to default</button>
+			</div>
+
+		</div>
+
+		<div id="footer">
+			This website was made by <a href="https://github.com/frizzy-cmd" target="_blank">Nightregion</a> | 
+			<a href="index.html">Homepage</a> | 
+			<a href="legal.html">Legal</a> | 
+			<a href="https://github.com/frizzy-cmd/NRHomepage" target="_blank">Github Repository</a>
+		</div>
+	</body>
+</html>
