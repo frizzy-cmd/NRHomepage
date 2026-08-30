@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {	const commitContaine
 	if (!commitContainer) return;
 
 	try {
-		const res = await fetch('https://api.github.com/repos/frizzy-cmd/AlulaEditor/commits/main');
+		const res = await fetch('https://api.github.com/repos/frizzy-cmd/NRHomepage/commits/main');
 		if (!res.ok) throw new Error('Network error');
 
 		const data = await res.json();
