@@ -1,179 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="title" content="Alula Editor - p-settings.dat">
-		<meta name="description" content="This generates a Regular or Post-Solstice, Beated or Not save file for OneShot, for those who lost their save but want to play OneShot or to mods such as OneShot: Fading Memory without replaying the base game.">
-		<meta name="keywords" content="oneshot, fading memory, osfm, solstice, post-solstice, save generator, p-settings, modding">
-		<meta name="language" content="EN">
-		<meta name="owner" content="nightregion">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="theme-color" content="#2c1b75">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-		<!-- some of these are deprecated and obsolete.. but why not. -->
+<head>
+	<meta charset="UTF-8">
+	<meta name="title" content="Alula Editor - p-settings.dat">
+	<meta name="description"
+		content="This generates a Regular or Post-Solstice, Beated or Not save file for OneShot, for those who lost their save but want to play OneShot or to mods such as OneShot: Fading Memory without replaying the base game.">
+	<meta name="keywords"
+		content="oneshot, fading memory, osfm, solstice, post-solstice, save generator, p-settings, modding">
+	<meta name="language" content="EN">
+	<meta name="owner" content="nightregion">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#2c1b75">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-		
-		<!-- OpenGraph/Discord metatags -->
-		<meta property="og:type" content="website">
-		<meta property="og:site_name" content="Alula Editor by Nightregion">
-		<meta property="og:title" content="Alula Editor - A OneShot save file generator">
-		<meta property="og:description" content="This generates a Regular or Post-Solstice, Beated or Not save file for OneShot, for those who lost their save but want to play OneShot or to mods such as OneShot: Fading Memory without replaying the base game.">
-		<meta property="og:url" content="https://nightregion.teaa.workers.dev/">
-		<meta property="og:image" content="https://nightregion.teaa.workers.dev/static/img/og.png">
-
-		<!-- Large img preview -->
-		<meta property="og:image:secure_url" content="https://nightregion.teaa.workers.dev/static/img/og.png">
-		<meta property="og:image:type" content="image/png">
-		<meta property="og:image:width" content="1200">
-		<meta property="og:image:height" content="627">
-		<meta property="og:locale" content="en_US">
-		<meta name="theme-color" content="#5a207f">
-
-		<!-- Twitter metatags -->
-		<meta property="twitter:card" content="summary_large_image">
-		<meta property="twitter:url" content="https://nightregion.teaa.workers.dev/p-settings-generate">
-		<meta property="twitter:title" content="Nightregion's Homepage">
-		<meta property="twitter:description" content="">
-		<meta property="twitter:image" content="https://nightregion.teaa.workers.dev/static/img/og.png">
+	<!-- some of these are deprecated and obsolete.. but why not. -->
 
 
-		<link rel="icon" type="image/png" href="static/img/alulasmirk.png">
-		<!-- originally icon was in static but moved to static/img for organize -->
-		<link rel="stylesheet" href="static/styles.css">
-		<script src="static/js/p-settings-generate.js"></script>
-		<script src="static/js/theme-switcher.js"></script>
-		<script src="static/js/site-announcement.js" defer></script>
-		<script src="static/js/alert-sound.js"></script>
-		<title>Alula Editor - Main</title>
-	</head>
-	<body>
-		<div id="header">
-			<a href="index.html" style="text-decoration: none;">
-				<img id="logo" src="static/img/alulalogo.png" alt="one... shot title="Go to Homepage">
-			</a>
-			<div id="subtitle">Alula Editor&#8482;</div>
-		</div>
+	<!-- OpenGraph/Discord metatags -->
+	<meta property="og:type" content="website">
+	<meta property="og:site_name" content="Alula Editor by Nightregion">
+	<meta property="og:title" content="Alula Editor - A OneShot save file generator">
+	<meta property="og:description"
+		content="This generates a Regular or Post-Solstice, Beated or Not save file for OneShot, for those who lost their save but want to play OneShot or to mods such as OneShot: Fading Memory without replaying the base game.">
+	<meta property="og:url" content="https://nightregion.teaa.workers.dev/">
+	<meta property="og:image" content="https://nightregion.teaa.workers.dev/static/img/og.png">
 
-		<div id="message">
-			<h3 id="Notice">Warning [READ]</h3>
-			This generates a Regular or Post-Solstice, Beated or Not save file for OneShot, for those who lost their save but want to play OneShot or to mod <a href="https://store.steampowered.com/app/1569440/OneShot_Fading_Memory/" target="_blank">OneShot: Fading Memory</a> without replaying the base game.
-			<br><br>
-			Do NOT use if You haven't beaten Solstice yet, since you'd be missing a ton of context.
-			<br><br>
-			If you want a full save, You need fill Your In-Game Name and check all checkboxes.
-			<br><br>
-			Also, You may consider replaying the base game with OneShot: Fading Memory installed anyway, since there are subtle easter eggs you might find.
-			<br><br>
-			Again, there's nothing stopping you from using this website if you haven't finished the full game. But trust me, I recommend you to finish the entire game properly with the Solstice route for the full experience.
-			<br><br>
-			With great power, comes great responsibilities.
-		</div>
-		
-		<div id="box">
-			<h3 id="PlayerName">Player's Name & State</h3>
-			<table cellspacing="0" cellpadding="0" border="0">
-				<tbody>
-					<tr>
-						<td>In-Game Name</td>
-						<td><input id="i_ign" placeholder="Player" required="true" type="text"></td>
-					</tr>
-					<tr>
-						<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
-							Changes the name that Niko & others call you in-game. Preferrably, no weird symbols (e.g ★ and etc.)
-						</td>
-					</tr>
-					<tr>
-						<td>Times Game Cleared (max 999)</td>
-						<td><input id="i_timescleared" type="number" min="0" max="999" value="1"></td>
-					</tr>
-					<tr>
-						<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
-							Tracks total successful plays. Affects specific dialogue variations (e.g George)
-						</td>
-					</tr>
-					<tr>
-						<td>Times Talked to Rue (max 999)</td>
-						<td><input id="i_timesrue" type="number" min="0" max="999" value="0"></td>
-					</tr>
-					<tr>
-						<td colspan="2" style="font-size: 0.85em; color: #666;">
-							Tracks total interactions with Rue. Affects certain event triggers.
-						</td>
-					</tr>
-				</tbody>
-			</table>
-			
-			<h3 id="Switches">Switches/Flags</h3>
-			<table cellspacing="0" cellpadding="0" border="0">
-				<tbody>
-					<tr>
-						<td>Beat Solstice</td>
-						<td><input id="s_beatsolstice" type="checkbox"></td>
-					</tr>
-					<tr>
-						<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
-							Flags the Solstice route as completed.
-						</td>
-					</tr>
-					<tr>
-						<td>Beat the game once</td>
-						<td><input id="s_beated" type="checkbox"></td>
-					</tr>
-					<tr>
-						<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
-							Indicates at least one ending has been reached.
-						</td>
-					</tr>
-					<tr>
-						<td>Smashed lightbulb once</td>
-						<td><input id="s_smashed" type="checkbox"></td>
-					</tr>
-					<tr>
-						<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
-							Whether the player has chosen to destroy the lightbulb in a previous run.
-						</td>
-					</tr>
-					<tr>
-						<td>Saved world once</td>
-						<td><input id="s_saved" type="checkbox"></td>
-					</tr>
-					<tr>
-						<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
-							Whether the player has chosen to return the lightbulb in a previous run.
-						</td>
-					</tr>
-					<tr>
-						<td>Talked to Rue for first time</td>
-						<td><input id="s_talkedtorue" type="checkbox"></td>
-					</tr>
-					<tr>
-						<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
-							[Limited info] Manages Niko's relationship with Rue.
-						</td>
-					</tr>
-					<tr>
-						<td>Known Rue's Name</td>
-						<td><input id="s_knowruename" type="checkbox"></td>
-					</tr>
-					<tr>
-						<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
-							[Limited info] Allows Niko to refer to Rue by name in dialogue. [or] Manages Niko's relationship with Rue.
- 						</td>
-					</tr>
-					<tr>
-						<td>Picked Memory at Title</td>
-						<td><input id="s_pickedmemory" type="checkbox"></td>
-					</tr>
-					<tr>
-						<td colspan="2" style="font-size: 0.85em; color: #666;">
-							[Limited info] Whether the player chose to continue as The World Machine at the main menu.
-						</td>
-					</tr>
-				</tbody>
-			</table>
+	<!-- Large img preview -->
+	<meta property="og:image:secure_url" content="https://nightregion.teaa.workers.dev/static/img/og.png">
+	<meta property="og:image:type" content="image/png">
+	<meta property="og:image:width" content="1200">
+	<meta property="og:image:height" content="627">
+	<meta property="og:locale" content="en_US">
+	<meta name="theme-color" content="#5a207f">
 
-			<!-- <h3 id="Experimental" style="color: #ff4444;">EXPERIMENTAL !! USE AT RISK</h3>
+	<!-- Twitter metatags -->
+	<meta property="twitter:card" content="summary_large_image">
+	<meta property="twitter:url" content="https://nightregion.teaa.workers.dev/p-settings-generate">
+	<meta property="twitter:title" content="Nightregion's Homepage">
+	<meta property="twitter:description" content="">
+	<meta property="twitter:image" content="https://nightregion.teaa.workers.dev/static/img/og.png">
+
+
+	<link rel="icon" type="image/png" href="static/img/alulasmirk.png">
+	<!-- originally icon was in static but moved to static/img for organize -->
+	<link rel="stylesheet" href="static/styles.css">
+	<script src="static/js/p-settings-generate.js"></script>
+	<script src="static/js/theme-switcher.js"></script>
+	<script src="static/js/site-announcement.js" defer></script>
+	<script src="static/js/alert-sound.js"></script>
+	<script src="static/js/secret.js" defer></script>
+	<title>Alula Editor - Main</title>
+</head>
+
+<body>
+	<div id="header">
+		<a href="index.html" style="text-decoration: none;">
+			<img id="logo" src="static/img/alulalogo.png" alt="one... shot title=" Go to Homepage">
+		</a>
+		<div id="subtitle">Alula Editor&#8482;</div>
+	</div>
+
+	<div id="message">
+		<h3 id="Notice">Warning [READ]</h3>
+		This generates a Regular or Post-Solstice, Beated or Not save file for OneShot, for those who lost their save
+		but want to play OneShot or to mod <a href="https://store.steampowered.com/app/1569440/OneShot_Fading_Memory/"
+			target="_blank">OneShot: Fading Memory</a> without replaying the base game.
+		<br><br>
+		Do NOT use if You haven't beaten Solstice yet, since you'd be missing a ton of context.
+		<br><br>
+		If you want a full save, You need fill Your In-Game Name and check all checkboxes.
+		<br><br>
+		Also, You may consider replaying the base game with OneShot: Fading Memory installed anyway, since there are
+		subtle easter eggs you might find.
+		<br><br>
+		Again, there's nothing stopping you from using this website if you haven't finished the full game. But trust me,
+		I recommend you to finish the entire game properly with the Solstice route for the full experience.
+		<br><br>
+		With great power, comes great responsibilities.
+	</div>
+
+	<div id="box">
+		<h3 id="PlayerName">Player's Name & State</h3>
+		<table cellspacing="0" cellpadding="0" border="0">
+			<tbody>
+				<tr>
+					<td>In-Game Name</td>
+					<td><input id="i_ign" placeholder="Player" required="true" type="text"></td>
+				</tr>
+				<tr>
+					<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
+						Changes the name that Niko & others call you in-game. Preferrably, no weird symbols (e.g ★ and
+						etc.)
+					</td>
+				</tr>
+				<tr>
+					<td>Times Game Cleared (max 999)</td>
+					<td><input id="i_timescleared" type="number" min="0" max="999" value="1"></td>
+				</tr>
+				<tr>
+					<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
+						Tracks total successful plays. Affects specific dialogue variations (e.g George)
+					</td>
+				</tr>
+				<tr>
+					<td>Times Talked to Rue (max 999)</td>
+					<td><input id="i_timesrue" type="number" min="0" max="999" value="0"></td>
+				</tr>
+				<tr>
+					<td colspan="2" style="font-size: 0.85em; color: #666;">
+						Tracks total interactions with Rue. Affects certain event triggers.
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<h3 id="Switches">Switches/Flags</h3>
+		<table cellspacing="0" cellpadding="0" border="0">
+			<tbody>
+				<tr>
+					<td>Beat Solstice</td>
+					<td><input id="s_beatsolstice" type="checkbox"></td>
+				</tr>
+				<tr>
+					<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
+						Flags the Solstice route as completed.
+					</td>
+				</tr>
+				<tr>
+					<td>Beat the game once</td>
+					<td><input id="s_beated" type="checkbox"></td>
+				</tr>
+				<tr>
+					<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
+						Indicates at least one ending has been reached.
+					</td>
+				</tr>
+				<tr>
+					<td>Smashed lightbulb once</td>
+					<td><input id="s_smashed" type="checkbox"></td>
+				</tr>
+				<tr>
+					<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
+						Whether the player has chosen to destroy the lightbulb in a previous run.
+					</td>
+				</tr>
+				<tr>
+					<td>Saved world once</td>
+					<td><input id="s_saved" type="checkbox"></td>
+				</tr>
+				<tr>
+					<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
+						Whether the player has chosen to return the lightbulb in a previous run.
+					</td>
+				</tr>
+				<tr>
+					<td>Talked to Rue for first time</td>
+					<td><input id="s_talkedtorue" type="checkbox"></td>
+				</tr>
+				<tr>
+					<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
+						[Limited info] Manages Niko's relationship with Rue.
+					</td>
+				</tr>
+				<tr>
+					<td>Known Rue's Name</td>
+					<td><input id="s_knowruename" type="checkbox"></td>
+				</tr>
+				<tr>
+					<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
+						[Limited info] Allows Niko to refer to Rue by name in dialogue. [or] Manages Niko's relationship
+						with Rue.
+					</td>
+				</tr>
+				<tr>
+					<td>Picked Memory at Title</td>
+					<td><input id="s_pickedmemory" type="checkbox"></td>
+				</tr>
+				<tr>
+					<td colspan="2" style="font-size: 0.85em; color: #666;">
+						[Limited info] Whether the player chose to continue as The World Machine at the main menu.
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<!-- <h3 id="Experimental" style="color: #ff4444;">EXPERIMENTAL !! USE AT RISK</h3>
 			<table cellspacing="0" cellpadding="0" border="0">
 				<tbody>
 					<tr>
@@ -182,7 +194,7 @@
 					</tr>
 					<tr>
 						<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
-							Prevents player from opening the inventory.
+							s
 						</td>
 					</tr>
 					
@@ -192,7 +204,7 @@
 					</tr>
 					<tr>
 						<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
-							Stops listening to player input and stops processing frame updates.
+							s
 						</td>
 					</tr>
 
@@ -202,7 +214,7 @@
 					</tr>
 					<tr>
 						<td colspan="2" style="font-size: 0.85em; color: #666; padding-bottom: 10px;">
-							Disables all save functionality. Will NOT save your game. Wrapped in a conditional statement: save unless $game_switches[99]. When active, the game will not be able to write changes to disk.
+						
 						</td>
 					</tr>
 
@@ -212,34 +224,36 @@
 					</tr>
 					<tr>
 						<td colspan="2" style="font-size: 0.85em; color: #666;">
-							Suppresses audio and intercepts file loads to check if user is attempting to bypass a permanent choice.
+	
 						</td>
 					</tr>
 				</tbody>
 			</table> -->
 
 		<br>
-        <input id="generate" type="button" value="Generate!" onclick="generate()">
-    </div>
-		<div id="footer">
-			This website was made by <a href="https://github.com/frizzy-cmd" target="_blank">Nightregion</a> | 
-            <a href="legal.html">Legal</a> | 
-			<a href="https://github.com/frizzy-cmd/NRHomepage" target="_blank">Github Repository</a>
+		<input id="generate" type="button" value="Generate!" onclick="generate()">
+	</div>
+	<div id="footer">
+		This website was made by <a href="https://github.com/frizzy-cmd" target="_blank">Nightregion</a> |
+		<a href="legal.html">Legal</a> |
+		<a href="https://github.com/frizzy-cmd/NRHomepage" target="_blank">Github Repository</a>
 
-			<div class="theme-picker">
-				<span>Theme: </span>
-				<select id="themeSelect" class="theme-dropdown">
-					<option value="theme-barrens">The Barrens (Purple)</option>
-					<option value="theme-refuge">The Refuge (Pink/Red)</option>
-					<option value="theme-glen">The Glen (Emerald Green)</option>
-				</select>
+		<div class="theme-picker">
+			<span>Theme: </span>
+			<select id="themeSelect" class="theme-dropdown">
+				<option value="theme-barrens">The Barrens (Purple)</option>
+				<option value="theme-refuge">The Refuge (Pink/Red)</option>
+				<option value="theme-glen">The Glen (Emerald Green)</option>
+			</select>
 		</div>
 
 		<div id="sub-footer">
-			Alula artwork in OneShot logo by @AMAKUSA_CC | Edited by Nightregion in Photopea | OneShot and its assets are property of Future Cat LLC.
+			Alula artwork in OneShot logo by @AMAKUSA_CC | Edited by Nightregion in Photopea | OneShot and its assets
+			are property of Future Cat LLC<a href="alula.html"
+				style="text-decoration: none; color: inherit; cursor: default;">.</a>
 		</div>
 		<!-- cleaned up a little ^^ -->
 
-		<!-- PLS UPDATE UPD REPO LINK!! -->
-	</body>
+</body>
+
 </html>

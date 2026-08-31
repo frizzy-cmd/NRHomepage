@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="title" content=".">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#5a207f">
+
+		<link rel="icon" type="image/png" href="static/img/alulasmile.png">
+		<link rel="stylesheet" href="static/styles.css">
+		<script src="static/js/theme-switcher.js"></script>
+		<title>⠀</title>
+
+		<style>
+			html, body {
+				height: 100vh;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				align-items: center;
+				box-sizing: border-box;
+				background: var(--bg-main, #200530);
+			}
+
+			.secret-container {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				text-align: center;
+			}
+
+			.alula-gif {
+				max-height: 320px;
+				max-width: 90vw;
+				object-fit: contain;
+				margin-bottom: 20px;
+			}
+
+			.secret-btn {
+				background: var(--btn-bg);
+				color: #ffffff !important;
+				border: 0;
+				border-bottom: 6px solid var(--btn-border);
+				padding: 8px 20px;
+				font-family: Terminus, monospace;
+				font-size: 13pt;
+				text-decoration: none;
+				border-radius: 4px;
+				display: inline-block;
+			}
+
+			.secret-btn:active {
+				border-bottom-width: 2px;
+				transform: translateY(4px);
+			}
+		</style>
+	</head>
+	<body>
+		<div id="header" style="margin-top: 20px;">
+			<a href="index.html" style="text-decoration: none;">
+				<img id="logo" src="static/img/alulalogo.png" alt="ALUAL">
+			</a>
+			<div id="subtitle">GENERATOR!!!</div>
+		</div>
+
+		<div class="secret-container">
+			<img src="static/img/alula.gif" class="alula-gif" alt="Squeak!">
+			<div>
+				<a href="index.html" class="secret-btn">Back to homepage</a>
+			</div>
+		</div>
+
+		<div id="footer" style="margin-bottom: 20px;">
+			If Alula stops... we're all doomed...... | Don't worry, Alula doesn't get tired! | <a href="legal.html">Legal</a>
+			<div class="theme-picker">
+				<span>Theme: </span>
+				<select id="themeSelect" class="theme-dropdown">
+					<option value="theme-barrens">The Barrens (Purple)</option>
+					<option value="theme-refuge">The Refuge (Pink/Red)</option>
+					<option value="theme-glen">The Glen (Emerald Green)</option>
+				</select>
+			</div>
+		</div>
+	</body>
+</html>

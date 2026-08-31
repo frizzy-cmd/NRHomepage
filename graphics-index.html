@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="title" content="Graphics Index - Nightregion's Homepage">
+		<meta name="description" content="Browse, preview, and download OneShot graphics.">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#5a207f">
+
+		<link rel="icon" type="image/png" href="static/img/iconlight.png">
+		<link rel="stylesheet" href="static/styles.css">
+		<script src="static/js/theme-switcher.js"></script>
+		<script src="static/js/site-announcement.js" defer></script>
+		<script src="static/js/graphics-index.js" defer></script>
+		<title>Graphics Index - Nightregion's Homepage</title>
+
+		<style>
+			.filter-controls-row {
+				display: flex;
+				gap: 12px;
+				margin-bottom: 20px;
+				flex-wrap: wrap;
+			}
+			.search-box {
+				flex: 1;
+				min-width: 200px;
+				padding: 8px 12px;
+				background: var(--input-bg);
+				color: #ffffff;
+				border: 2px solid var(--box-border);
+				font-family: Terminus, monospace;
+				font-size: 13pt;
+				box-sizing: border-box;
+				border-radius: 3px;
+			}
+			.folder-select {
+				width: 220px;
+				padding: 8px;
+				background: var(--input-bg);
+				color: #ffffff;
+				border: 2px solid var(--box-border);
+				font-family: Terminus, monospace;
+				font-size: 12pt;
+				border-radius: 3px;
+				cursor: pointer;
+			}
+
+			.category-header {
+				background: var(--input-bg);
+				border: 2px solid var(--box-border);
+				padding: 12px 16px;
+				color: var(--header-subtitle);
+				font-size: 15pt;
+				font-weight: bold;
+				cursor: pointer;
+				margin-top: 16px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				border-radius: 4px;
+				user-select: none;
+			}
+			.category-header:hover {
+				background: var(--box-border);
+			}
+			.category-content {
+				display: none;
+				padding: 12px;
+				background: rgba(14, 4, 22, 0.85);
+				border: 1px solid var(--box-border);
+				border-top: 0;
+				margin-bottom: 16px;
+				border-radius: 0 0 4px 4px;
+			}
+			.category-content.open {
+				display: block;
+			}
+
+			.graphics-row {
+				padding: 10px 14px;
+				border-bottom: 1px solid rgba(90, 32, 127, 0.3);
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+				background: rgba(14, 4, 22, 0.6);
+				border-radius: 4px;
+				margin-bottom: 8px;
+			}
+			.graphics-row:hover {
+				background: rgba(90, 32, 127, 0.25);
+			}
+			.graphics-top-bar {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				gap: 12px;
+				width: 100%;
+			}
+			.graphics-title {
+				font-size: 13pt;
+				color: #ffffff;
+				flex: 1;
+				min-width: 0;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+			.graphics-actions {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				flex-shrink: 0;
+			}
+			.preview-btn {
+				background: var(--input-bg);
+				color: var(--header-subtitle);
+				border: 1px solid var(--box-border);
+				padding: 4px 10px;
+				font-family: Terminus, monospace;
+				font-size: 11pt;
+				cursor: pointer;
+				border-radius: 3px;
+			}
+			.preview-btn:hover {
+				background: var(--box-border);
+			}
+			.download-btn {
+				background: var(--btn-bg);
+				color: #ffffff !important;
+				padding: 4px 10px;
+				text-decoration: none;
+				font-size: 11pt;
+				border-bottom: 3px solid var(--btn-border);
+				border-radius: 3px;
+			}
+			.download-btn:hover {
+				opacity: 0.9;
+			}
+			.preview-container {
+				display: none;
+				margin-top: 10px;
+				padding: 12px;
+				background: rgba(8, 2, 14, 0.85);
+				border: 1px solid var(--box-border);
+				border-radius: 4px;
+				text-align: center;
+			}
+			.preview-img {
+				max-width: 100%;
+				max-height: 320px;
+				object-fit: contain;
+				border: 1px solid var(--box-border);
+				border-radius: 3px;
+				background: #080010;
+			}
+			.dim-info {
+				font-size: 11pt;
+				color: var(--header-subtitle);
+				margin-top: 6px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			<a href="index.html" style="text-decoration: none;">
+				<img id="logo" src="static/img/logo.png" alt="OneShot Logo" title="Go to Homepage">
+			</a>
+			<!-- <div id="subtitle">Graphics Index</div> -->
+		</div>
+
+		<div id="message">
+			<h3>Graphics Index</h3>
+			Browse, preview, and download OneShot graphic files for modding and general use.
+			<br><br>
+			<strong>All ownership and copyright belong to Future Cat LLC / Nightmargin / their respective owners.</strong>
+			<br><br>
+			View the <a href="legal.html">Legal</a> page & inquiry email in the footer of this website.
+		</div>
+
+		<div id="box">
+			<div class="filter-controls-row">
+				<input type="text" id="graphicsSearch" class="search-box" placeholder="Search graphics files (e.g. niko, barrens, face)...">
+
+				<select id="folderFilter" class="folder-select">
+					<option value="ALL">All folders</option>
+				</select>
+			</div>
+
+			<div style="font-size: 12pt; color: #aaa; margin-bottom: 12px;">
+				Counting a total of <strong id="resultCount" style="color: var(--header-subtitle);">0</strong> graphics
+			</div>
+
+			<div id="graphicsCategories">
+				<p style="color: #aaa; text-align: center;">Loading Graphics folder....</p>
+			</div>
+		</div>
+
+		<div id="footer">
+			This website was made by <a href="https://github.com/frizzy-cmd" target="_blank">Nightregion</a> | 
+            <a href="legal.html">Legal</a> | 
+			<a href="https://github.com/frizzy-cmd/NRHomepage" target="_blank">Github Repository</a>
+
+			<div class="theme-picker">
+				<span>Theme: </span>
+				<select id="themeSelect" class="theme-dropdown">
+					<option value="theme-barrens">The Barrens (Purple)</option>
+					<option value="theme-refuge">The Refuge (Pink/Red)</option>
+					<option value="theme-glen">The Glen (Emerald Green)</option>
+				</select>
+			</div>
+		</div>
+
+		<div id="sub-footer">
+			OneShot and its assets are property of Future Cat LLC.
+		</div>
+	</body>
+</html>
