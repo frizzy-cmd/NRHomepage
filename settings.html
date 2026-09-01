@@ -60,6 +60,14 @@
 				cursor: pointer;
 				font-size: 12pt;
 			}
+
+			/* in courtesy of twm cursor */
+			/* we hide the cursor option for mobile */
+			@media (max-width: 750px), (pointer: coarse) {
+				.cursor-setting-group {
+					display: none !important;
+				}
+			}
 		</style>
 	</head>
 	<body>
@@ -164,6 +172,14 @@
 						<span>Preview:</span>
 					</div>
 				</div>
+			</div>
+
+			<div class="setting-group cursor-setting-group">
+				<h4>3. Misc.</h4>
+				<label class="option-label">
+					<input type="checkbox" id="twmCursorCheckbox">
+					<span>Enable TWM edition cursor</span>
+				</label>
 			</div>
 
 			<div style="display: flex; gap: 12px;">

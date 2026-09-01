@@ -81,12 +81,6 @@ function generate() {
 	var s_knowruename = document.getElementById('s_knowruename').checked ? MARSHAL_TRUE : MARSHAL_FALSE;
 	var s_pickedmemory = document.getElementById('s_pickedmemory').checked ? MARSHAL_TRUE : MARSHAL_FALSE;
 
-	// Experimental flags. Dangerous. not used in the site, taken off
-	var s_disablemenu = document.getElementById('s_disablemenu').checked ? MARSHAL_TRUE : MARSHAL_FALSE;
-	var s_blockmove = document.getElementById('s_blockmove').checked ? MARSHAL_TRUE : MARSHAL_FALSE;
-	var s_blocksave = document.getElementById('s_blocksave').checked ? MARSHAL_TRUE : MARSHAL_FALSE;
-	var s_metalock = document.getElementById('s_metalock').checked ? MARSHAL_TRUE : MARSHAL_FALSE;
-
 	// Write game swtiches array! (151 to 175)
 	hexstring += MARSHAL_VERSION[0] + MARSHAL_VERSION[1];
 	hexstring += MARSHAL_ARRAY; 
@@ -105,7 +99,7 @@ function generate() {
 	for (var i = 161; i <= 173; i++) {
 		hexstring += MARSHAL_FALSE;
 	}
-	hexstring += s_disablemenu; // menu lock
+
 	hexstring += MARSHAL_FALSE;	// 175: END flag
 
 	// Write game variables array. (76 to 100)
@@ -122,11 +116,6 @@ function generate() {
 	for (var i = 79; i <= 97; i++) {
 		hexstring += MARSHAL_FIXNUM + '00';
 	}
-	
-	// INJECT!
-	hexstring += s_blockmove; // 98: plr freeze
-	hexstring += s_blocksave; // 99: block saving
-	hexstring += s_metalock;  // 100: engine lock
 
 	// Write player name string object.
 	hexstring += MARSHAL_VERSION[0] + MARSHAL_VERSION[1];

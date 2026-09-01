@@ -228,3 +228,15 @@ a {
         width: auto;
     }
 }
+
+/* TWM CURSOR (refer to theme-switcher.js and settings.js and settings.html for info) */
+body.twm-cursor,
+body.twm-cursor a,
+body.twm-cursor button,
+body.twm-cursor input,
+body.twm-cursor select,
+body.twm-cursor textarea,
+body.twm-cursor label,
+body.twm-cursor div {
+    cursor: url("img/twmcursor.png"), auto !important;
+}

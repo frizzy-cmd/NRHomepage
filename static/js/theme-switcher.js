@@ -24,11 +24,22 @@ function doTheThing() {
 	var savedTheme = localStorage.getItem('oneshot-theme') || 'theme-barrens';
 	var savedWpType = localStorage.getItem('oneshot-wp-type') || 'default';
 	var savedWpVal = localStorage.getItem('oneshot-wp-val') || '';
+	var savedTwmCursor = localStorage.getItem('oneshot-twm-cursor') === 'true';
 
 	var target = document.body || document.documentElement;
 	if (!target) return;
+
 	document.documentElement.className = savedTheme;
 	if (document.body) document.body.className = savedTheme;
+
+	// insert twm cursor function 1/9/2026 2:09 pm for ALL
+	if (savedTwmCursor) {
+		document.documentElement.classList.add('twm-cursor');
+		if (document.body) document.body.classList.add('twm-cursor');
+	} else {
+		document.documentElement.classList.remove('twm-cursor');
+		if (document.body) document.body.classList.remove('twm-cursor');
+	}
 
 	target.style.backgroundImage = 'none';
 

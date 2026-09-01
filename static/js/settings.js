@@ -11,12 +11,15 @@ document.addEventListener('DOMContentLoaded', function () {
 	var customUploadContainer = document.getElementById('customUploadContainer');
 	var customWpFile = document.getElementById('customWpFile');
 	var wpPreview = document.getElementById('wpPreview');
+	var twmCursorCheckbox = document.getElementById('twmCursorCheckbox');
 
 	var currentTheme = localStorage.getItem('oneshot-theme') || 'theme-barrens';
 	var currentWpType = localStorage.getItem('oneshot-wp-type') || 'default';
 	var currentWpVal = localStorage.getItem('oneshot-wp-val') || '';
+	var currentTwmCursor = localStorage.getItem('oneshot-twm-cursor') === 'true';
 
 	if (themeSelect) themeSelect.value = currentTheme;
+	if (twmCursorCheckbox) twmCursorCheckbox.checked = currentTwmCursor;
 
 	if (currentWpType === 'auto' && wpAuto) wpAuto.checked = true;
 	else if (currentWpType === 'preset' && wpPreset) wpPreset.checked = true;
@@ -38,17 +41,8 @@ document.addEventListener('DOMContentLoaded', function () {
 		});
 	}
 
-	if (themeSelect) {
-		themeSelect.addEventListener('change', function () {
-			updatePreview();
-		});
-	}
-
-	if (wpPresetSelect) {
-		wpPresetSelect.addEventListener('change', function () {
-			updatePreview();
-		});
-	}
+	if (themeSelect) themeSelect.addEventListener('change', updatePreview);
+	if (wpPresetSelect) wpPresetSelect.addEventListener('change', updatePreview);
 
 	if (customWpFile) {
 		customWpFile.addEventListener('change', function (e) {
@@ -79,7 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		return checked ? checked.value : 'default';
 	}
 
-    //else if esle if esle if selsei if
 	function updatePreview() {
 		if (!wpPreview) return;
 		var type = getSelectedWpType();
@@ -87,13 +80,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		if (type === 'default') {
 			wpPreview.style.backgroundImage = 'none';
-			wpPreview.textContent = 'Solid color (' + theme + ')';
+			wpPreview.textContent = 'Solid Color (' + theme + ')';
 		} else if (type === 'auto') {
 			var autoWp = 'static/img/wallpaper/barrensWP.jpg';
 			if (theme === 'theme-refuge') autoWp = 'static/img/wallpaper/refugeWP.jpg';
 			if (theme === 'theme-glen') autoWp = 'static/img/wallpaper/glenWP.jpg';
 			wpPreview.style.backgroundImage = 'url("' + autoWp + '")';
-			wpPreview.textContent = 'Wallpaper based on theme:';
+			wpPreview.textContent = 'Auto Area Wallpaper';
 		} else if (type === 'preset') {
 			var val = wpPresetSelect ? wpPresetSelect.value : '';
 			wpPreview.style.backgroundImage = 'url("' + val + '")';
@@ -101,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			wpPreview.textContent = 'Preset: ' + txt;
 		} else if (type === 'custom' && currentWpVal) {
 			wpPreview.style.backgroundImage = 'url("' + currentWpVal + '")';
-			wpPreview.textContent = 'Uploaded image:';
+			wpPreview.textContent = 'Custom Uploaded Image';
 		}
 	}
 
@@ -109,6 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		var theme = themeSelect ? themeSelect.value : 'theme-barrens';
 		var type = getSelectedWpType();
 		var val = '';
+		var isTwmCursor = twmCursorCheckbox ? twmCursorCheckbox.checked : false;
 
 		if (type === 'preset' && wpPresetSelect) {
 			val = wpPresetSelect.value;
@@ -121,10 +115,8 @@ document.addEventListener('DOMContentLoaded', function () {
 			else if (theme === 'theme-glen') themeRegion = 'Glen';
 
 			if ((categoryName === 'Barrens' || categoryName === 'Glen' || categoryName === 'Refuge') && categoryName !== themeRegion) {
-				var confirmMatch = confirm('Selected wallpaper (' + categoryName + ') and theme (' + themeRegion + ') selected don\'t match well. Still continue?');
-				if (!confirmMatch) {
-					return;
-				}
+				var confirmMatch = confirm('The current wallpaper (' + categoryName + ') and theme (' + themeRegion + ') selected don\'t match well. Still continue?');
+				if (!confirmMatch) return;
 			}
 		}
 
@@ -133,28 +125,27 @@ document.addEventListener('DOMContentLoaded', function () {
 		localStorage.setItem('oneshot-theme', theme);
 		localStorage.setItem('oneshot-wp-type', type);
 		localStorage.setItem('oneshot-wp-val', val);
+		localStorage.setItem('oneshot-twm-cursor', isTwmCursor ? 'true' : 'false');
 
-		if (window.doTheThing) {
-			window.doTheThing();
-		}
-		showAlert("Settings save success!", "success")
+		if (window.applySiteThemeAndWp) window.applySiteThemeAndWp();
+		showAlert("Settings saved successfully!", "success");
 	};
 
 	window.resetSettings = function () {
-		if (confirm('Reset all settings to default?')) {
+		if (confirm('Reset settings to default?')) {
 			localStorage.setItem('oneshot-theme', 'theme-barrens');
 			localStorage.setItem('oneshot-wp-type', 'default');
 			localStorage.setItem('oneshot-wp-val', '');
+			localStorage.setItem('oneshot-twm-cursor', 'false');
 
 			if (themeSelect) themeSelect.value = 'theme-barrens';
 			if (wpDefault) wpDefault.checked = true;
+			if (twmCursorCheckbox) twmCursorCheckbox.checked = false;
 			currentWpVal = '';
 
 			updateUIState();
 			updatePreview();
-			if (window.doTheThing) {
-				window.doTheThing();
-			}
+			if (window.applySiteThemeAndWp) window.applySiteThemeAndWp();
 		}
 	};
 });

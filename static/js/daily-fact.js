@@ -133,7 +133,7 @@ var ONESHOT_FACTS = [
     "Alula is a bird!",
     "Throughout the game's xScripts.rxdata, which contain code for the game and such, only one swear word is present in 109 - EdText.rb at line 43. Calamus Toolkit has only 8!",
     "Niko is referred to using they/them pronouns in the OneShot: World Machine Edition bio and trailer.",
-    "Niko's name was orginally 'Nico', chosen because it was a gender-neutral name, It was changed to 'Niko' after Nightmargin realized the name could be a reference to Nikola Tesla and his work on lightbulbs.",
+    "Niko's name was originally 'Nico', chosen because it was a gender-neutral name, It was changed to 'Niko' after Nightmargin realized the name could be a reference to Nikola Tesla and his work on lightbulbs.",
     "Niko is NOT A CAT!! However, in The Refuge, the title of the soundtrack playing is 'On Little Cat Feet', possibly referencing the thumping sound of Niko walking on the Refuge's catwalks.",
     "At one point during a Solstice run, Niko makes '*confused cat noises*', So much for being a cat, huh?",
     "OneShot is (surprisingly) easy to mod, if you are only focusing on the code though. For full on mods, such as OneShot: Fading Memory, it's way more complex.",
@@ -144,6 +144,7 @@ var ONESHOT_FACTS = [
 ];
 
 // Last upd ONESHOT_FACTS 8/22/2026 6:42 PM UTC+8
+// FIX TYPO ON LINE 136 1/9/2026 2:52 PM UTC+8
 
 document.addEventListener('DOMContentLoaded', function() {
 	var messageDiv = document.getElementById('message');
