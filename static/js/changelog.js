@@ -11,6 +11,7 @@ var WHAT_CHANGED = [
             "Fixed Alula Editor, js script was giving some TypeErrors so i just removed them completely",
             "Fixed a typo in daily-fact.js, line 136: 'orginally' to 'originally'",
             "Slight changes to the homepage (index.html)",
+            "Removed Jay's free will.",
             "[Dev] Added changelog.js in static/js to handle changelog.html",
             "[Dev] Updated p-settings-generate.js in static/js to remove some flags that were causing TypeErrors. They werent tested anyway. and probably didnt work",
             "[Dev] Updated daily-fact.js in static/js to fix a typo at line 136",
