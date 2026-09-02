@@ -1,6 +1,17 @@
 // changelog.js
 
 var WHAT_CHANGED = [
+	{
+		version: "v1.0.3",
+		date: "September 3, 2026 (sept 2 at time of development)",
+		category: "Website",
+		title: "Diagnostics",
+		changes: [
+			"Added a diagnostics page to the homepage!",
+            "[Dev] Added twm-diagnostics.js in static/js to handle twm-diagnostics.html",
+
+		]
+	},
     {
 		version: "v1.0.2",
 		date: "September 1, 2026",

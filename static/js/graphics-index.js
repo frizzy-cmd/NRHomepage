@@ -100,7 +100,7 @@ function makeList(query, selectedFolder) {
 			html += '      📄 ' + escapeHtml(fileName);
 			html += '    </div>';
 			html += '    <div class="graphics-actions">';
-			html += '      <button class="preview-btn" onclick="togglePrev(\'' + escapeHtml(folderName) + '\', \'' + escapeHtml(fileName) + '\', \'' + itemKey + '\')">▶ Preview Image</button>';
+			html += '      <button class="preview-btn" onclick="togglePrev(\'' + escapeHtml(folderName) + '\', \'' + escapeHtml(fileName) + '\', \'' + itemKey + '\')">▶ Preview</button>';
 			html += '      <a href="' + filePath + '" class="download-btn" download="' + escapeHtml(fileName) + '">Download</a>';
 			html += '    </div>';
 			html += '  </div>';
