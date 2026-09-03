@@ -52,7 +52,7 @@ var WHAT_CHANGED = [
     //
 	{
 		version: "v1.0.0",
-		date: "Somewhere in July/June 2026",
+		date: "Somewhere in July/June 2026 i think",
 		category: "Website",
 		title: "Initial release",
 		changes: [

@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin-panel.html
+Disallow: /onemsg-admin.html
+Disallow: /admpw.txt
+Disallow: /deprecated/
+Disallow: /404.html
+Disallow: /unavail.html
+
+Disallow: /alula.html
+
+Sitemap: https://nightregion.teaa.workers.dev/sitemap.xml
