@@ -240,3 +240,77 @@ body.twm-cursor label,
 body.twm-cursor div {
     cursor: url("img/twmcursor.png"), auto !important;
 }
+
+/* ACCESSIBILITY INIT AT 6/9/2026 */
+/* LOL 69 */
+/* OpenDyslexic fonts here for dyslexics */
+
+@font-face {
+	font-family: OpenDyslexic;
+	src: url("opendyslexic/OpenDyslexic-Regular.otf");
+}
+@font-face {
+	font-family: OpenDyslexic;
+	src: url("opendyslexic/OpenDyslexic-Bold.otf");
+	font-weight: bold;
+}
+@font-face {
+	font-family: OpenDyslexic;
+	src: url("opendyslexic/OpenDyslexic-Italic.otf");
+	font-style: italic;
+}
+@font-face {
+	font-family: OpenDyslexic;
+	src: url("opendyslexic/OpenDyslexic-BoldItalic.otf");
+	font-weight: bold;
+	font-style: italic;
+}
+
+body.access-dyslexia, body.access-dyslexia * {
+	font-family: OpenDyslexic, Terminus, monospace !important;
+}
+
+body.access-font-small { font-size: 12pt; }
+body.access-font-medium { font-size: 16pt; }
+body.access-font-large { font-size: 20pt; }
+
+/* HIGH CONTRAST */
+body.access-high-contrast {
+	--bg-main: #000000;
+	--text-main: #ffffff;
+	--header-subtitle: #ffff00;
+	--header-shadow: #ffff00;
+	--link-color: #00ffff;
+	--msg-bg: #000000;
+	--msg-border: #ffffff;
+	--msg-shadow: #ffffff;
+	--box-bg: #000000;
+	--box-border: #ffffff;
+	--box-shadow: #ffffff;
+	--input-bg: #1a1a1a;
+	--input-border: #ffffff;
+	--input-shadow: #ffffff;
+	--btn-bg: #ffff00;
+	--btn-border: #000000;
+}
+body.access-high-contrast, body.access-high-contrast * {
+	text-shadow: none !important;
+	box-shadow: none !important;
+}
+body.access-high-contrast .btn,
+body.access-high-contrast #box input[type=button] {
+	color: #000000 !important;
+}
+
+/* REDUCED MOTION */
+body.access-reduced-motion, body.access-reduced-motion * {
+	animation: none !important;
+	transition: none !important;
+	scroll-behavior: auto !important;
+}
+body.access-reduced-motion #starfield {
+	display: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+	#starfield { display: none; }
+}

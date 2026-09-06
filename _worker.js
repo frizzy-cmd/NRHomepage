@@ -158,6 +158,113 @@ export default {
 			}
 		}
 
+		// ANALYTICS
+		// Yers no key!
+		if (path === '/api/analytics/track' && method === 'POST') {
+			try {
+				const body = await request.json();
+
+				await env.DB.prepare(
+					`CREATE TABLE IF NOT EXISTS page_views (
+						id TEXT PRIMARY KEY,
+						path TEXT,
+						theme TEXT,
+						referrer TEXT,
+						viewport TEXT,
+						day TEXT,
+						time_spent INTEGER DEFAULT 0,
+						visit_hash TEXT,
+						created_at INTEGER
+					)`
+				).run();
+
+				await env.DB.prepare(
+					`CREATE TABLE IF NOT EXISTS click_events (
+						id INTEGER PRIMARY KEY AUTOINCREMENT,
+						path TEXT,
+						tag TEXT,
+						label TEXT,
+						day TEXT,
+						created_at INTEGER
+					)`
+				).run();
+
+				const today = new Date().toISOString().slice(0, 10);
+
+				if (body.type === 'view') {
+					await env.DB.prepare(
+						`INSERT OR IGNORE INTO page_views (id, path, theme, referrer, viewport, day, time_spent, visit_hash, created_at) VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)`
+					).bind(body.id || ('v_' + Date.now()), body.path || '', body.theme || '', body.referrer || '', body.viewport || '', today, ipHash, Date.now()).run();
+				}
+				else if (body.type === 'leave') {
+					await env.DB.prepare(
+						`UPDATE page_views SET time_spent = ? WHERE id = ?`
+					).bind(body.timeSpent || 0, body.id || '').run();
+				}
+				else if (body.type === 'click') {
+					await env.DB.prepare(
+						`INSERT INTO click_events (path, tag, label, day, created_at) VALUES (?, ?, ?, ?, ?)`
+					).bind(body.path || '', body.tag || '', body.label || '', today, Date.now()).run();
+				}
+
+				return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+			} catch (e) {
+				// dont wanna break the site incase it says bye! woopsies!
+				return new Response(JSON.stringify({ success: false }), { headers: corsHeaders });
+			}
+		}
+
+				// ANALYTICS DASHBOARD READ - added 6/9/2026
+		if (path === '/api/admin/analytics/summary' && method === 'GET') {
+			const adminKey = request.headers.get('X-Admin-Key');
+			if (!adminKey || !env.ADMIN_SECRET || adminKey.trim() !== env.ADMIN_SECRET.trim()) {
+				return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: corsHeaders });
+			}
+
+			try {
+				const topPages = await env.DB.prepare(
+					`SELECT path, COUNT(*) as views, AVG(time_spent) as avgTime FROM page_views GROUP BY path ORDER BY views DESC LIMIT 20`
+				).all();
+
+				const referrers = await env.DB.prepare(
+					`SELECT referrer, COUNT(*) as cnt FROM page_views GROUP BY referrer ORDER BY cnt DESC LIMIT 10`
+				).all();
+
+				const viewports = await env.DB.prepare(
+					`SELECT viewport, COUNT(*) as cnt FROM page_views GROUP BY viewport`
+				).all();
+
+				const themes = await env.DB.prepare(
+					`SELECT theme, COUNT(*) as cnt FROM page_views GROUP BY theme`
+				).all();
+
+				const dailyViews = await env.DB.prepare(
+					`SELECT day, COUNT(*) as cnt FROM page_views GROUP BY day ORDER BY day DESC LIMIT 14`
+				).all();
+
+				const topClicks = await env.DB.prepare(
+					`SELECT path, tag, label, COUNT(*) as cnt FROM click_events GROUP BY path, tag, label ORDER BY cnt DESC LIMIT 30`
+				).all();
+
+				const totals = await env.DB.prepare(
+					`SELECT COUNT(*) as totalViews, AVG(time_spent) as avgTimeAll FROM page_views`
+				).first();
+
+				return new Response(JSON.stringify({
+					totals: totals || { totalViews: 0, avgTimeAll: 0 },
+					topPages: topPages.results || [],
+					referrers: referrers.results || [],
+					viewports: viewports.results || [],
+					themes: themes.results || [],
+					dailyViews: dailyViews.results || [],
+					topClicks: topClicks.results || []
+				}), { headers: corsHeaders });
+			} catch (e) {
+				return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: corsHeaders });
+			}
+		}
+		// ANALYTICS DASHBOARD END
+
 		// SITE STATUS CHECK END
 		// SITE STATUS CHECK END
 		// SITE STATUS CHECK END

@@ -183,6 +183,38 @@
 				</label>
 			</div>
 
+						<div class="setting-group">
+				<h4>4. Accessibility</h4>
+
+				<label class="option-label">
+					<input type="checkbox" id="reducedMotionCheckbox">
+					<span>Reduce motion (animations, etc.)</span>
+				</label>
+
+				<!-- <label class="option-label">
+					<input type="checkbox" id="noAutoplayCheckbox">
+					<span>Don't auto-play next track in Audio Index</span>
+				</label> -->
+				<!-- TODO: FIX THIS SHIT LATER. DOESNT WORK IM LAZY -->
+
+				<label class="option-label">
+					<input type="checkbox" id="highContrastCheckbox">
+					<span>High contrast mode</span>
+				</label>
+
+				<label style="display:block; margin: 10px 0 4px 0; font-size: 11pt; color: #aaa;">Font size:</label>
+				<select id="fontSizeSelect" class="wp-select" style="margin-bottom: 8px;">
+					<option value="small">Small</option>
+					<option value="medium">Medium (default)</option>
+					<option value="large">Large</option>
+				</select>
+
+				<label class="option-label">
+					<input type="checkbox" id="dyslexiaFontCheckbox">
+					<span>Use OpenDyslexic font (for the dyslexics)</span>
+				</label>
+			</div>
+
 			<div style="display: flex; gap: 12px;">
 				<button class="btn" onclick="saveSettings()" style="flex: 1; margin: 0;">Save settings</button>
 				<button class="btn" onclick="resetSettings()" style="flex: 1; margin: 0; background: #424242; border-color: #1a1a1a;">Reset to default</button>
@@ -196,5 +228,48 @@
 			<a href="legal.html">Legal</a> | 
 			<a href="https://github.com/frizzy-cmd/NRHomepage" target="_blank">Github Repository</a>
 		</div>
+			<script>
+			// Finally!!!!!!!! Use of <script> in a page.. lazy to put in settings.js
+			(function () {
+				var rmChk = document.getElementById('reducedMotionCheckbox');
+				// var naChk = document.getElementById('noAutoplayCheckbox');
+				var hcChk = document.getElementById('highContrastCheckbox');
+				var fsSel = document.getElementById('fontSizeSelect');
+				var dfChk = document.getElementById('dyslexiaFontCheckbox');
+
+				function loadA11y() {
+					rmChk.checked = localStorage.getItem('oneshot-reduced-motion') === 'true';
+					// naChk.checked = localStorage.getItem('oneshot-no-autoplay') === 'true';
+					hcChk.checked = localStorage.getItem('oneshot-high-contrast') === 'true';
+					fsSel.value = localStorage.getItem('oneshot-font-size') || 'medium';
+					dfChk.checked = localStorage.getItem('oneshot-dyslexia-font') === 'true';
+				}
+
+				function saveBit(key, val) {
+					localStorage.setItem(key, val);
+					if (window.doTheThing) window.doTheThing();
+				}
+
+				rmChk.addEventListener('change', function () { saveBit('oneshot-reduced-motion', rmChk.checked); });
+				// naChk.addEventListener('change', function () { saveBit('oneshot-no-autoplay', naChk.checked); });
+				hcChk.addEventListener('change', function () { saveBit('oneshot-high-contrast', hcChk.checked); });
+				fsSel.addEventListener('change', function () { saveBit('oneshot-font-size', fsSel.value); });
+				dfChk.addEventListener('change', function () { saveBit('oneshot-dyslexia-font', dfChk.checked); });
+
+				var resetBtn = document.querySelector('.btn[onclick="resetSettings()"]');
+				if (resetBtn) {
+					resetBtn.addEventListener('click', function () {
+						localStorage.removeItem('oneshot-reduced-motion');
+						localStorage.removeItem('oneshot-no-autoplay');
+						localStorage.removeItem('oneshot-high-contrast');
+						localStorage.removeItem('oneshot-font-size');
+						localStorage.removeItem('oneshot-dyslexia-font');
+						setTimeout(loadA11y, 50);
+					});
+				}
+
+				loadA11y();
+			})();
+		</script>
 	</body>
 </html>

@@ -1,3 +1,16 @@
+// INIT 6/9/2026 FOR ACCESSIBILITY UPD
+function nrWantsReducedMotion() {
+	var manual = localStorage.getItem('oneshot-reduced-motion') === 'true';
+	var osLevel = false;
+	try {
+		osLevel = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	} catch (e) {}
+	return manual || osLevel;
+}
+
+var reduceMotion = nrWantsReducedMotion();
+
+
 var c = document.getElementById('starfield');
 var x = c.getContext('2d');
 var w = c.width = window.innerWidth;
@@ -8,23 +21,26 @@ var maxPts = Math.min(120, Math.floor((w * h) / 8000));
 var maxDist = 110;
 var m = { x: null, y: null };
 
-for(var i=0; i<maxPts; i++) {
-    pts.push({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 1.2,
-        vy: (Math.random() - 0.5) * 1.2,
-        r: Math.random() * 2 + 1
-    });
+if (!reduceMotion) {
+	for(var i=0; i<maxPts; i++) {
+	    pts.push({
+	        x: Math.random() * w,
+	        y: Math.random() * h,
+	        vx: (Math.random() - 0.5) * 1.2,
+	        vy: (Math.random() - 0.5) * 1.2,
+	        r: Math.random() * 2 + 1
+	    });
+	}
+
+	window.addEventListener('mousemove', e => {
+	    m.x = e.clientX;
+	    m.y = e.clientY;
+	});
+	window.addEventListener('mouseout', () => { m.x = null; m.y = null; });
 }
 
-window.addEventListener('mousemove', e => {
-    m.x = e.clientX;
-    m.y = e.clientY;
-});
-window.addEventListener('mouseout', () => { m.x = null; m.y = null; });
-
 function renderSpace() {
+    if (reduceMotion) return;
     x.clearRect(0,0,w,h);
     
     // draw if star is close
