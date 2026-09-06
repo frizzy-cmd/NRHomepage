@@ -2,6 +2,19 @@
 
 var WHAT_CHANGED = [
 	{
+		version: "v1.0.4",
+		date: "September 6, 2026",
+		category: "Website",
+		title: "Accessiblity & Analytics",
+		changes: [
+			"Added a new field to the Settings page! Focuses on accessiibility.",
+			"I can view analytics thru a admin panel. Dont worry, doesnt track individual and doesnt give personal info. just basic website analytics",
+            "Deprecated the [Dev] tag in changelog. Go view GitHub repo for more info on updates",
+
+		]
+	},
+	//
+	{
 		version: "v1.0.3",
 		date: "September 3, 2026 (sept 2 at time of development)",
 		category: "Website",

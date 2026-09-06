@@ -214,7 +214,6 @@ export default {
 			}
 		}
 
-				// ANALYTICS DASHBOARD READ - added 6/9/2026
 		if (path === '/api/admin/analytics/summary' && method === 'GET') {
 			const adminKey = request.headers.get('X-Admin-Key');
 			if (!adminKey || !env.ADMIN_SECRET || adminKey.trim() !== env.ADMIN_SECRET.trim()) {
