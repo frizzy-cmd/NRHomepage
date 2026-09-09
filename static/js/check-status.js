@@ -29,7 +29,7 @@ async function checkStatus(isManualClick) {
 
 // choose between niko or cal&alula
 document.addEventListener('DOMContentLoaded', function() {
-	var whatImg = ['c2.png', 'c4.png'];
+	var whatImg = ['c2.png', 'c4.png', 'c5.png'];
 	var chosenImg = whatImg[Math.floor(Math.random() * whatImg.length)];
 	
 	var theImg = document.querySelector('.alula-cal') || document.querySelector('.mascot-img') || document.querySelector('.mascot-left-img');
