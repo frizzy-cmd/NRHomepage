@@ -1,0 +1,1 @@
+The img folder is just a folder with all the images in Graphics/Faces/ folder in OneShot. that's all lmao i obv can't list them all here because of legal and complexity

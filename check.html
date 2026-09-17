@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#5a207f">
+		<meta name="robots" content="noindex, nofollow">
+
+    <!-- no themeswitcher.js for check page. -->
+		<link rel="icon" type="image/png" href="static/img/alulasmirk.png">
+		<link rel="stylesheet" href="static/styles.css">
+		<title>Alula is checking.. - Nightregion's Homepage</title>
+
+		<style>
+			#verifyBox {
+				background: rgba(18, 6, 28, 0.9);
+				border: 2px solid var(--box-border);
+				padding: 32px;
+				border-radius: 4px;
+				text-align: center;
+				max-width: 460px;
+				margin: 80px auto;
+				box-shadow: 0 0 2px rgba(0,0,0,0.4);
+			}
+
+			#verifyBox h3 {
+				margin-top: 0;
+				font-size: 18pt;
+			}
+
+			#alulaPfp {
+				width: 220px;
+				margin: 4px auto 16px auto;
+				display: block;
+			}
+
+			#statusText {
+				font-size: 14pt;
+				color: #ffffff;
+				margin-bottom: 4px;
+			}
+
+			#statLine {
+				font-size: 10.5pt;
+				color: #aaa;
+				margin-bottom: 16px;
+			}
+
+			#loadingGif {
+				width: 44px;
+				margin: 8px auto;
+				display: block;
+			}
+
+			details {
+				text-align: left;
+				margin-top: 20px;
+				font-size: 10pt;
+				color: #999;
+				border-top: 1px dashed var(--box-border);
+				padding-top: 10px;
+			}
+
+			details summary {
+				cursor: pointer;
+				color: var(--header-subtitle);
+				font-weight: bold;
+			}
+
+			#detailsBody div {
+				padding: 2px 0;
+			}
+
+			#failBox {
+				display: none;
+				margin-top: 16px;
+				color: #ff8888;
+				font-size: 11pt;
+			}
+
+			#noscriptWarn {
+				text-align: center;
+				color: #ff8888;
+				font-size: 13pt;
+				max-width: 460px;
+				margin: 80px auto;
+				padding: 20px;
+				border: 3px solid #701538;
+				background: rgba(18, 6, 28, 0.9);
+				border-radius: 18px;
+			}
+		</style>
+	</head>
+	<body>
+
+		<noscript>
+			<div id="noscriptWarn">
+				Sorry! To continue, this website will need JavaScript,<br>
+				(and possibly almost every other website on the internet..)
+			</div>
+		</noscript>
+
+		<div id="verifyBox" style="display:none;">
+			<h3>Alula is making sure you're not a bot!</h3>
+			<img id="alulaPfp" src="static/sitedown/c5.png" alt="Alula">
+
+			<div id="statusText">Calculating<span id="dots">.</span></div>
+			<div id="statLine">Difficulty: <span id="diffText">-</span> | Speed: <span id="speedText">0</span> kH/s</div>
+
+			<img id="loadingGif" src="static/sitedown/loading.gif" alt="">
+
+			<div id="failBox">Something went wrong. <a href="#" onclick="location.reload(); return false;">Try again?</a></div>
+
+			<details>
+				<summary>Details</summary>
+				<div id="detailsBody">
+					<div>Algorithm: SHA-256</div>
+					<div>Difficulty: <span id="dtDiff">undefined</span></div>
+					<div>Challenge: <span id="dtSalt">undefined</span></div>
+					<div>Nonce found: <span id="dtNonce">pending.....</span></div>
+					<div>Hashes tried: <span id="dtHashes">undefined</span></div>
+					<div>Time taken: <span id="dtTime">undefined</span></div>
+				</div>
+			</details>
+		</div>
+
+		<div id="sub-footer">
+			This website is protected by AlulaVerify | Made with ❤️
+			<br>
+			This website is running [alulaverify] version v0.1
+		</div>
+
+    <!-- im gonna try a diff approach today. -->
+		<script src="static/js/alulacheck.js"></script>
+	</body>
+</html>

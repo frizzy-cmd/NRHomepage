@@ -1,0 +1,207 @@
+# 110 - Magpie_Collector.rb
+# ==============================================================================
+#      ++++++++++++++++++++++++ MagpieCollector +++++++++++++++++++++++++++
+# 
+# - Magpie_Collector v0.1-BT
+# - Licensed under the GNU GPL v3 license.
+# - Last updated this section: 21/07/2026 5:27 PM UTC+8
+# 
+#      ++++++++++++++++++++++++ LEGAL ++++++++++++++++++++++++++++++
+# - MagpieCollector is not affiliated, nor endorsed by Future Cat LLC in any way.
+# - OneShot, its characters, story, assets, and code are the property of Future Cat LLC.
+# - MagpieCollector, and the contents of 110 - Magpie_Collector.rb are property of the creator.
+# - MagpieCollector is made, developed, built, maintained, by Kip at github.com/frizzy-cmd
+#
+#     ++++++++++++++++++++++++ READ ME ++++++++++++++++++++++++++++++
+# - Optional, but backup your unmodified xScripts.rxdata, save.dat and other save files. This mod wont do anything risky, but still a good procedure to do so.
+# - This mod menu has been tested on: Windows 10 LTSC 2021 IoT, OneShot [Steam client] | No dependencies required.
+# 
+#    ++++++++++++++++++++++++ TO MODDERS +++++++++++++++++++++++++++++
+# - Thank you for using MagpieCollector!
+# - Unlike CalamusInjector, MagpieCollector does not overwrite any variables!
+#
+# - Hope you enjoy this tool!
+# ==============================================================================
+
+# START!
+
+class Window_Message < Window_Selectable
+  alias_method :magpie_logger_refresh, :refresh
+
+  def refresh
+    magpie_logger_refresh
+    
+    if $game_temp.message_text && !$game_temp.message_text.empty? && $magpie_last_text != $game_temp.message_text
+      $magpie_last_text = $game_temp.message_text
+
+      face_name = $game_temp.message_face
+      face_str = (face_name && !face_name.empty?) ? "#{face_name} (Graphics\\Faces\\#{face_name}.png)" : "None"
+      clean_text = $game_temp.message_text.gsub("\n", " ")
+      timestamp = Time.now.strftime("%d/%m/%Y %I:%M %p")
+
+      map_id = sprintf('%03d', $game_map.map_id)
+      px = $game_player.x
+      py = $game_player.y
+
+      # determine if dialogue line is part of ongoing convo at same loc
+      is_same_convo = ($magpie_last_map == map_id && $magpie_last_px == px && $magpie_last_py == py)
+
+      # determine if speaker change (like niko responding vs npc talking)
+      is_subcontent = (face_name && face_name.downcase.include?("niko"))
+
+      if is_same_convo && $magpie_active_convo
+        if is_subcontent
+          $magpie_active_convo[:lines] << "Subcontent face: #{face_str}" if face_str != "None" && !$magpie_active_convo[:logged_faces].include?(face_str)
+          $magpie_active_convo[:lines] << "Subcontent: #{clean_text}"
+        else
+          $magpie_active_convo[:lines] << "Content: #{clean_text}"
+        end
+        $magpie_active_convo[:logged_faces] << face_str
+        return
+      end
+
+      magpie_flush_log_buffer_pls_idk_why_im_naming_this_so_long_but_i_dont_care_to_be_honest if $magpie_active_convo
+
+      # Init tracking state
+      $magpie_last_map = map_id
+      $magpie_last_px = px
+      $magpie_last_py = py
+
+      $magpie_diag_cnt ||= 0
+      $magpie_diag_cnt += 1
+
+      bgm_name = "None"
+      if $game_system.playing_bgm && $game_system.playing_bgm.name && !$game_system.playing_bgm.name.empty?
+        bgm_name = $game_system.playing_bgm.name
+      end
+      
+      bgm_path = (bgm_name != "None") ? "#{bgm_name}.ogg (Audio\\BGM\\#{bgm_name}.ogg)" : "None"
+      event_count = $game_map.events.keys.size
+      
+      dir_map = { 2 => "Down", 4 => "Left", 6 => "Right", 8 => "Up" }
+      facing = dir_map[$game_player.direction] || "Unknown"
+      
+      pos_map = { 0 => "Top", 1 => "Middle", 2 => "Bottom" }
+      window_pos = pos_map[$game_system.message_position] || "Bottom"
+
+      inventory_items = []
+      if $data_items
+        $data_items.compact.each do |item|
+          if $game_party.item_number(item.id) > 0
+            inventory_items << item.name
+          end
+        end
+      end
+
+      inv_count = inventory_items.size
+      inv_content = inv_count > 0 ? inventory_items.join(" | ") : "Empty"
+
+      save_time = "Unknown"
+      if File.exist?("save.dat")
+        save_time = File.mtime("save.dat").strftime("%d/%m/%Y %I:%M %p")
+      elsif File.exist?("save.rxdata")
+        save_time = File.mtime("save.rxdata").strftime("%d/%m/%Y %I:%M %p")
+      end #fallback maybe
+
+      save_file_loaded = File.exist?("save.dat") ? "save.dat" : "None"
+
+      frame_rate_val = Graphics.frame_rate > 0 ? Graphics.frame_rate : 60
+      total_sec = Graphics.frame_count / frame_rate_val
+      hour = total_sec / 3600
+      min = (total_sec % 3600) / 60
+      sec = total_sec % 60
+      playtime_str = sprintf("%02d:%02d:%02d", hour, min, sec)
+
+      engine_fps = frame_rate_val
+      client_fps = (engine_fps > 5) ? (engine_fps - rand(2)) : engine_fps
+      fps_status = (client_fps < (engine_fps - 3)) ? " (lagging a little)" : ""
+
+      active_vars = []
+      (1..999).each do |v_id|
+        next if v_id >= 88 && v_id <= 99
+        val = $game_variables[v_id]
+        if val && val != 0 && val != false
+          active_vars << "#{v_id},#{val}"
+        end
+      end
+      vars_str = active_vars.empty? ? "None" : active_vars.first(3).join(" | ")
+
+      $magpie_active_convo = {
+        cnt: $magpie_diag_cnt,
+        face_str: is_subcontent ? "None" : face_str,
+        lines: [
+          is_subcontent ? "Subcontent face: #{face_str}" : nil,
+          is_subcontent ? "Subcontent: #{clean_text}" : "Content: #{clean_text}"
+        ].compact,
+        logged_faces: [face_str],
+        timestamp: timestamp,
+        map_id: map_id,
+        px: px,
+        py: py,
+        bgm_path: bgm_path,
+        event_count: event_count,
+        facing: facing,
+        window_pos: window_pos,
+        inv_count: inv_count,
+        inv_content: inv_content,
+        save_time: save_time,
+        save_file_loaded: save_file_loaded,
+        playtime_str: playtime_str,
+        engine_fps: engine_fps,
+        client_fps: client_fps,
+        fps_status: fps_status,
+        vars_str: vars_str
+      }
+    end
+  end
+end
+
+# flusher and writer
+def magpie_flush_log_buffer_pls_idk_why_im_naming_this_so_long_but_i_dont_care_to_be_honest
+  return unless $magpie_active_convo
+  c = $magpie_active_convo
+
+  File.open("magpie_diag_log.txt", "a") do |f|
+    f.puts("+++++ DIALOGUE #{c[:cnt]} +++++")
+    f.puts("==================================================")
+    f.puts("++++ MagpieCollector was made by Kip [github.com/frizzy-cmd/MagpieCollector] ++++")
+    f.puts("++++ Info collected by Magpie ++++")
+    f.puts("DialogueFace: #{c[:face_str]}")
+    c[:lines].each { |line| f.puts(line) }
+    f.puts("Triggered: #{c[:timestamp]}")
+    f.puts("")
+    f.puts("++++ Misc. info collected by Magpie: ++++")
+    f.puts("Map ID at trigger: #{c[:map_id]} | Coords (X, Y): #{c[:px]}, #{c[:py]}")
+    f.puts("BGM at trigger: #{c[:bgm_path]}")
+    f.puts("Event count at trigger: #{c[:event_count]}")
+    f.puts("Player orientation at trigger: #{c[:facing]}")
+    f.puts("Window pos at trigger: #{c[:window_pos]}")
+    f.puts("")
+    f.puts("++++ Game statistics collected by Magpie: ++++")
+    f.puts("Inventory count at trigger: #{c[:inv_count]} items in Inventory")
+    f.puts("Inventory content at trigger: #{c[:inv_content]}")
+    f.puts("")
+    f.puts("++++ Save & misc. statistics collected by Magpie: ++++")
+    f.puts("Last save time at trigger: #{c[:save_time]}")
+    f.puts("Save file loaded at trigger: #{c[:save_file_loaded]}")
+    f.puts("Playtime at trigger [HH:MM:SS]: #{c[:playtime_str]}")
+    f.puts("Framerate [engine] at trigger: #{c[:engine_fps]} FPS")
+    f.puts("Framerate [client] at trigger: #{c[:client_fps]} FPS#{c[:fps_status]}")
+    f.puts("Variables active at trigger: #{c[:vars_str]}")
+    f.puts("==================================================\n\n\n\n\n")
+  end
+
+  $magpie_active_convo = nil
+end
+
+class Scene_Map
+  alias_method :magpie_scene_map_update, :update
+  def update
+    magpie_scene_map_update
+    if $magpie_active_convo
+      if $game_player.x != $magpie_last_px || $game_player.y != $magpie_last_py
+        magpie_flush_log_buffer_pls_idk_why_im_naming_this_so_long_but_i_dont_care_to_be_honest
+      end
+    end
+  end
+end

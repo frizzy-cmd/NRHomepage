@@ -1,0 +1,40 @@
+096 - Data_FastTravel.rb
+
+The Refuge (Surface)
+- elevator street
+- vendor street
+- back alley
+- library
+- factory
+
+The Refuge
+- garden
+- city gate
+- elevator deck
+- apartments
+- cafe
+- office
+- observation deck
+
+The Glen
+- village
+- ruins
+- forest
+- the gate
+- dock
+- courtyard
+- research station
+- graveyard
+
+The Barrens
+- entrance
+- outpost
+- cliffs
+- mineshaft entrance
+- old factory
+- dormitories
+- shrimp swamp
+- docks
+- lookout point
+
+Names of the Fast Travel locations. Stripped of code

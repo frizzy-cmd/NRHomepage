@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="title" content="SIte Changelog - Nightregion's Homepage">
+		<meta name="description" content="General changelog page for my projects & site and such.">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#5a207f">
+
+		<link rel="icon" type="image/png" href="static/img/iconlight.png">
+		<link rel="stylesheet" href="static/styles.css">
+		<script src="static/js/theme-switcher.js"></script>
+		<script src="static/js/site-announcement.js" defer></script>
+		<script src="static/js/changelog.js" defer></script>
+		<title>Changelog - Nightregion's Homepage</title>
+
+		<style>
+			.filter-controls-row {
+				display: flex;
+				gap: 12px;
+				margin-bottom: 24px;
+				flex-wrap: wrap;
+			}
+			.search-box {
+				flex: 1;
+				min-width: 200px;
+				padding: 8px 12px;
+				background: var(--input-bg);
+				color: #ffffff;
+				border: 2px solid var(--box-border);
+				font-family: Terminus, monospace;
+				font-size: 13pt;
+				box-sizing: border-box;
+				border-radius: 3px;
+			}
+			.cat-select {
+				width: 220px;
+				padding: 8px;
+				background: var(--input-bg);
+				color: #ffffff;
+				border: 2px solid var(--box-border);
+				font-family: Terminus, monospace;
+				font-size: 12pt;
+				border-radius: 3px;
+				cursor: pointer;
+			}
+			.changelog-card {
+				background: rgba(18, 6, 28, 0.85);
+				border: 2px solid var(--box-border);
+				padding: 20px;
+				margin-bottom: 20px;
+				border-radius: 6px;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+			}
+			.changelog-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				border-bottom: 1px solid var(--box-border);
+				padding-bottom: 10px;
+				margin-bottom: 12px;
+				flex-wrap: wrap;
+				gap: 8px;
+			}
+			.ver-tag {
+				background: var(--box-border);
+				color: var(--header-subtitle);
+				padding: 4px 10px;
+				font-size: 12pt;
+				font-weight: bold;
+				border-radius: 4px;
+				border: 1px solid var(--header-subtitle);
+			}
+			.cat-tag {
+				background: var(--input-bg);
+				color: #aaa;
+				padding: 2px 8px;
+				font-size: 10pt;
+				border-radius: 3px;
+				margin-left: 8px;
+			}
+			.changelog-title {
+				font-size: 16pt;
+				color: #ffffff;
+				margin: 10px 0;
+			}
+			.changes-list {
+				margin: 10px 0 0 0;
+				padding-left: 20px;
+				color: #e0d0e0;
+				font-size: 12pt;
+				line-height: 1.6;
+			}
+			.changes-list li {
+				margin-bottom: 6px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="header">
+			<a href="index.html" style="text-decoration: none;">
+				<img id="logo" src="static/img/logo.png" alt="OneShot Logo" title="Go to Homepage">
+			</a>
+			<!-- <div id="subtitle">foo bar</div> -->
+		</div>
+
+		<div id="message">
+			<h3>General Changelog</h3>
+			All changes will be logged here from onwards. This includes changes to the website, tools, and other projects. You can filter the changelog by category or search for specific keywords.
+		</div>
+
+		<div id="box">
+			<div class="filter-controls-row">
+				<input type="text" id="changelogSearch" class="search-box" placeholder="Search changelog (e.g. wallpaper, audio, onemsg, editor)...">
+
+				<select id="categoryFilter" class="cat-select">
+					<option value="ALL">All categories</option>
+					<option value="Website">Website</option>
+                    <option value="Project">Project</option>
+                    <option value="Other">Other</option>
+				</select>
+			</div>
+
+			<div style="font-size: 12pt; color: #aaa; margin-bottom: 16px;">
+				Showing a total of <strong id="changelogCount" style="color: var(--header-subtitle);">0</strong> changelogs
+			</div>
+
+			<div id="changelogList">
+				<p style="color: #aaa;">Loading changelogs..</p>
+			</div>
+		</div>
+
+		<div id="footer">
+			This website was made by <a href="https://github.com/frizzy-cmd" target="_blank">Nightregion</a> | 
+			<a href="index.html">Homepage</a> | 
+			<a href="legal.html">Legal</a> | 
+			<a href="https://github.com/frizzy-cmd/NRHomepage" target="_blank">Github Repository</a>
+
+			<div class="theme-picker">
+				<span>Theme: </span>
+				<select id="themeSelect" class="theme-dropdown">
+					<option value="theme-barrens">The Barrens (Purple)</option>
+					<option value="theme-refuge">The Refuge (Pink/Red)</option>
+					<option value="theme-glen">The Glen (Emerald Green)</option>
+				</select>
+			</div>
+		</div>
+
+		<div id="sub-footer">
+			OneShot and its assets are property of Future Cat LLC.
+		</div>
+	</body>
+</html>
