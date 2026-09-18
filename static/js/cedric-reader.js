@@ -114,7 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
 			{ name: 'Talked to Rue', active: switches[4] || false },
 			{ name: 'Knows Rues name', active: switches[5] || false },
 			{ name: 'Picked memory', active: switches[6] || false },
-			{ name: 'Disable stuff', active: switches[23] || false }
+			// { name: 'Disable stuff', active: switches[23] || false } Idk what switch this doesi forgot.
+			
+			// i think i js guessed what switches do which, (i made a new p setting dat file via alula editor, flags and name works but times game beat and times talked to rue value returns 0)
+			// ill look at the actual switches soon when i have oneshot open in rmxp
 		];
 
 		flagList.forEach(item => {

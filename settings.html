@@ -69,6 +69,19 @@
 					display: none !important;
 				}
 			}
+
+			#noscriptWarn {
+				text-align: center;
+				color: #ff8888;
+				font-size: 13pt;
+				max-width: 460px;
+				margin: 80px auto;
+				padding: 20px;
+				border: 3px solid #701538;
+				background: rgba(18, 6, 28, 0.9);
+				border-radius: 4px; 
+				/* CSS snippet taken from check.html lol */
+			}
 		</style>
 	</head>
 	<body>
@@ -87,6 +100,12 @@
 		<div id="box">
 			<div class="setting-group">
 				<div class="theme-picker">
+					<noscript>
+						<div id="noscriptWarn">
+							Sorry! To modify (and to save) the settings, you will need to enable JavaScript.
+						</div>
+					</noscript>
+			<!-- put them in sloppily bc idgaf... user fault for not enabling js (holy opsecccc) -->
 					<h4 style="margin-bottom: 8px;">1. Theme:</h4>
 					<select id="themeSelect" class="theme-dropdown" style="width: 100%;">
 						<option value="theme-barrens">The Barrens (Purple)</option>
