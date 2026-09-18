@@ -2,6 +2,17 @@
 
 var WHAT_CHANGED = [
 	{
+		version: "v1.0.6",
+		date: "September 18, 2026",
+		category: "Website",
+		title: "UI & Cedric Reader",
+		changes: [
+			"Added a warning to enable JavaScript in some pages that depend heavily on JavaScript.",
+			"Disabled 1 useless switch status in cedric-reader.js"
+		]
+	},
+	//
+	{
 		version: "v1.0.5",
 		date: "September 17, 2026",
 		category: "Website",
