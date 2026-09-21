@@ -10,7 +10,25 @@
 		<link rel="icon" type="image/png" href="static/img/icon.png">
 		<link rel="stylesheet" href="static/styles.css">
 		<script src="static/js/theme-switcher.js"></script>
+		<script src="static/js/404.js" defer></script>
 		<title>404 - Page not found</title>
+
+		<style>
+			#suggestBox {
+				display: none;
+				width: 628px;
+				margin: 8px auto;
+				padding: 12px 32px;
+				border: 3px dashed var(--box-border);
+				background: rgba(48, 24, 48, 0.4);
+				color: #ffffff;
+				text-align: center;
+				font-size: 13pt;
+			}
+			@media screen and (max-width: 750px) {
+				#suggestBox { width: auto; border-left: 0; border-right: 0; }
+			}
+		</style>
 	</head>
 	<body>
 		<div id="header">
@@ -31,6 +49,8 @@
 			<h3>404 Resource Unavailable</h3>
 			The server couldn't locate the requested URI. The path may have been permanently moved, modified, or removed.
 		</div>
+
+		<div id="suggestBox"></div>
 
 		<div id="box">
 			<h3 id="Content">Return to safety</h3>
