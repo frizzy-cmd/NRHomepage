@@ -2,6 +2,16 @@
 
 var WHAT_CHANGED = [
 	{
+		version: "v1.0.7",
+		date: "September 21, 2026",
+		category: "Website",
+		title: "404 page",
+		changes: [
+			"Added fuzzy matching to the 404 page! If you mistype a url, it'll try to find a close match and suggest it to you.",
+		]
+	},
+	//
+	{
 		version: "v1.0.6",
 		date: "September 18, 2026",
 		category: "Website",
