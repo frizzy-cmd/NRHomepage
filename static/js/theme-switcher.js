@@ -234,7 +234,7 @@ if (document.readyState === 'loading') {
 // =========================================
 // +++++
 
-// try a diff approach.. #1
+// try a diff approach.. #2
 (function () {
 	var isMobile = false;
 	try {
@@ -243,23 +243,28 @@ if (document.readyState === 'loading') {
 
 	if (isMobile) return;
 
-	var navEntries;
+	function rollTheDice() {
+		var count = parseInt(sessionStorage.getItem('nr-navcount') || '0', 10) + 1;
+		sessionStorage.setItem('nr-navcount', String(count));
+
+		if (count % 5 === 0 && Math.random() < (1 / 6)) {
+			sessionStorage.setItem('nr-man-legit-entry', '1');
+			window.location.href = 'man.html';
+		}
+	}
+
 	try {
-		navEntries = performance.getEntriesByType('navigation');
-	} catch (e) {
-		console.warn("API unsupported. Skipping")
-		return; // api unsupported. js skip it
-	}
+		var navEntries = performance.getEntriesByType('navigation');
+		if (navEntries && navEntries[0] && navEntries[0].type === 'back_forward') {
+			rollTheDice();
+		}
+	} catch (e) {}
 
-	if (!navEntries || !navEntries[0] || navEntries[0].type !== 'back_forward') return;
-
-	var count = parseInt(sessionStorage.getItem('nr-navcount') || '0', 10) + 1;
-	sessionStorage.setItem('nr-navcount', String(count));
-
-	if (count % 5 === 0 && Math.random() < (1 / 6)) {
-		sessionStorage.setItem('nr-man-legit-entry', '1');
-		window.location.href = 'man.html';
-	}
+	window.addEventListener('pageshow', function (e) {
+		if (e.persisted) {
+			rollTheDice();
+		}
+	});
 })();
 
 
