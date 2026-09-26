@@ -2,6 +2,17 @@
 
 var WHAT_CHANGED = [
 	{
+		version: "v1.0.8",
+		date: "September 26, 2026",
+		category: "Website",
+		title: "Fallback Site",
+		changes: [
+			"Incase the main site is down (https://nightregion.teaa.workers.dev/), you can visit the fallback site at https://frizzy-cmd.github.io/Nightregion/",
+			"PLEASE keep in mind that this is a FALLBACK site. Some site features such as the One Message page and other stuff are not available due to Cloudflare issues."
+		]
+	},
+	//
+	{
 		version: "v1.0.7",
 		date: "September 21, 2026",
 		category: "Website",

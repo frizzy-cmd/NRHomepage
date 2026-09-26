@@ -9,7 +9,7 @@
 		<link rel="stylesheet" href="static/styles.css">
 		<script src="static/js/theme-switcher.js"></script>
 		<script src="static/js/settings.js" defer></script>
-        <script src="static/js/alert-sound.js"></script>
+		<script src="static/js/alert-sound.js"></script>
 		<script src="static/js/site-announcement.js" defer></script>
 		<title>Settings - Nightregion's Homepage</title>
 
@@ -62,8 +62,6 @@
 				font-size: 12pt;
 			}
 
-			/* in courtesy of twm cursor */
-			/* we hide the cursor option for mobile */
 			@media (max-width: 750px), (pointer: coarse) {
 				.cursor-setting-group {
 					display: none !important;
@@ -80,7 +78,6 @@
 				border: 3px solid #701538;
 				background: rgba(18, 6, 28, 0.9);
 				border-radius: 4px; 
-				/* CSS snippet taken from check.html lol */
 			}
 		</style>
 	</head>
@@ -98,24 +95,33 @@
 		</div>
 
 		<div id="box">
+			<!-- 1. Universe & Theme Selector -->
 			<div class="setting-group">
-				<div class="theme-picker">
-					<noscript>
-						<div id="noscriptWarn">
-							Sorry! To modify (and to save) the settings, you will need to enable JavaScript.
-						</div>
-					</noscript>
-			<!-- put them in sloppily bc idgaf... user fault for not enabling js (holy opsecccc) -->
+				<noscript>
+					<div id="noscriptWarn">
+						Sorry! To modify (and to save) the settings, you will need to enable JavaScript.
+					</div>
+				</noscript>
+
+				<!-- <h4 style="margin-bottom: 8px;">1. Theme:</h4>
+				<select id="universeSelect" class="wp-select" style="margin-bottom: 12px;">
+					<option value="oneshot">Default</option>
+					<option value="utdr">UTDR [Unstable / NOT RECOMMENDED]</option>
+				</select> -->
+				<!-- UNUSED TILL FURTHER NOTICE. VERY UNSTABLE. -->
+
+				<div id="oneShotThemeContainer">
 					<h4 style="margin-bottom: 8px;">1. Theme:</h4>
-					<select id="themeSelect" class="theme-dropdown" style="width: 100%;">
+					<select id="themeSelect" class="wp-select">
 						<option value="theme-barrens">The Barrens (Purple)</option>
 						<option value="theme-refuge">The Refuge (Pink/Red)</option>
-						<option value="theme-glen">The Glen (Green)</option>
+						<option value="theme-glen">The Glen (Emerald Green)</option>
 					</select>
 				</div>
 			</div>
 
-			<div class="setting-group">
+			<!-- 2. Background -->
+			<div class="setting-group" id="wallpaperGroup">
 				<h4>2. Background</h4>
 
 				<label class="option-label">
@@ -130,27 +136,24 @@
 
 				<label class="option-label">
 					<input type="radio" name="wpType" value="preset" id="wpPreset">
-					<span>Pick a preset wallpaper</span>
+					<span>Pick a preset wallpaper..</span>
 				</label>
 
 				<div id="presetOptionsContainer" style="display: none; padding-left: 20px;">
 					<label style="font-size: 11pt; color: #aaa;">Select preset wallpaper:</label>
 					<select id="wpPresetSelect" class="wp-select">
-						<!-- BARRENS -->
 						<optgroup label="Barrens">
 							<option value="static/img/wallpaper/barrensWP.jpg">Barrens - Default</option>
 							<option value="static/img/wallpaper/otherWP/Barrens/factoryBarrensWP.jpg">Barrens - Factory</option>
 							<option value="static/img/wallpaper/otherWP/Barrens/outpostBarrensWP.jpg">Barrens - Outpost</option>
 							<option value="static/img/wallpaper/otherWP/Barrens/rowbotNikoBarrensWP.jpg">Barrens - Rowbot & Niko</option>
 						</optgroup>
-						<!-- GLEN -->
 						<optgroup label="Glen">
 							<option value="static/img/wallpaper/glenWP.jpg">Glen - Default</option>
 							<option value="static/img/wallpaper/otherWP/Glen/calamusAndAlulaGlenWP.jpg">Glen - Calamus & Alula</option>
 							<option value="static/img/wallpaper/otherWP/Glen/glenShorelinesWP.jpg">Glen - Shorelines</option>
 							<option value="static/img/wallpaper/otherWP/Glen/messiahAndPoorMaizeGlenWP.jpg">Glen - Maize & Niko</option>
 						</optgroup>
-						<!-- REFUGE -->
 						<optgroup label="Refuge">
 							<option value="static/img/wallpaper/refugeWP.jpg">Refuge - Default</option>
 							<option value="static/img/wallpaper/otherWP/Refuge/libraryStrollRefugeWP.jpg">Refuge - Library Stroll</option>
@@ -159,14 +162,12 @@
 							<option value="static/img/wallpaper/otherWP/Refuge/nikoWithLingPlightPancakesRefugeWp.jpg">Refuge - Ling, Niko & Pancakes!</option>
 							<option value="static/img/wallpaper/otherWP/Refuge/secretRamClubRefugeWP.jpg">Refuge - Secret Ram Club</option>
 						</optgroup>
-						<!-- SOLSTICE -->
 						<optgroup label="Solstice">
 							<option value="static/img/wallpaper/otherWP/Solstice/cedricRuePrototypeSolsticeWP.jpg">Solstice - Cedric, Rue & Prototype</option>
 							<option value="static/img/wallpaper/otherWP/Solstice/incelbotAndPrototypeHolyAURASolsticeWP.jpg">Solstice - Prototype & Prophetbot</option>
 							<option value="static/img/wallpaper/otherWP/Solstice/messiahReflectionTWMSolsticeWP.jpg">Solstice - Reflection</option>
 							<option value="static/img/wallpaper/otherWP/Solstice/messiahBeautifulDrawingSolsticeWP.jpg">Solstice - Drawing</option>
 						</optgroup>
-						<!-- MISC -->
 						<optgroup label="Misc">
 							<option value="static/img/wallpaper/otherWP/Misc/asteroidMessiahWP.jpg">Misc - Asteroid</option>
 							<option value="static/img/wallpaper/otherWP/Misc/blankWP.jpg">Misc - Blank</option>
@@ -187,7 +188,7 @@
 				</div>
 
 				<div style="margin-top: 16px;">
-					<label style="font-size: 11pt; color: #aaa;">Wallpaper preview::</label>
+					<label style="font-size: 11pt; color: #aaa;">Wallpaper preview:</label>
 					<div id="wpPreview" class="preview-container">
 						<span>Preview:</span>
 					</div>
@@ -202,19 +203,13 @@
 				</label>
 			</div>
 
-						<div class="setting-group">
+			<div class="setting-group">
 				<h4>4. Accessibility</h4>
 
 				<label class="option-label">
 					<input type="checkbox" id="reducedMotionCheckbox">
 					<span>Reduce motion (animations, etc.)</span>
 				</label>
-
-				<!-- <label class="option-label">
-					<input type="checkbox" id="noAutoplayCheckbox">
-					<span>Don't auto-play next track in Audio Index</span>
-				</label> -->
-				<!-- TODO: FIX THIS SHIT LATER. DOESNT WORK IM LAZY -->
 
 				<label class="option-label">
 					<input type="checkbox" id="highContrastCheckbox">
@@ -247,18 +242,16 @@
 			<a href="legal.html">Legal</a> | 
 			<a href="https://github.com/frizzy-cmd/NRHomepage" target="_blank">Github Repository</a>
 		</div>
-			<script>
-			// Finally!!!!!!!! Use of <script> in a page.. lazy to put in settings.js
+
+		<script>
 			(function () {
 				var rmChk = document.getElementById('reducedMotionCheckbox');
-				// var naChk = document.getElementById('noAutoplayCheckbox');
 				var hcChk = document.getElementById('highContrastCheckbox');
 				var fsSel = document.getElementById('fontSizeSelect');
 				var dfChk = document.getElementById('dyslexiaFontCheckbox');
 
 				function loadA11y() {
 					rmChk.checked = localStorage.getItem('oneshot-reduced-motion') === 'true';
-					// naChk.checked = localStorage.getItem('oneshot-no-autoplay') === 'true';
 					hcChk.checked = localStorage.getItem('oneshot-high-contrast') === 'true';
 					fsSel.value = localStorage.getItem('oneshot-font-size') || 'medium';
 					dfChk.checked = localStorage.getItem('oneshot-dyslexia-font') === 'true';
@@ -270,7 +263,6 @@
 				}
 
 				rmChk.addEventListener('change', function () { saveBit('oneshot-reduced-motion', rmChk.checked); });
-				// naChk.addEventListener('change', function () { saveBit('oneshot-no-autoplay', naChk.checked); });
 				hcChk.addEventListener('change', function () { saveBit('oneshot-high-contrast', hcChk.checked); });
 				fsSel.addEventListener('change', function () { saveBit('oneshot-font-size', fsSel.value); });
 				dfChk.addEventListener('change', function () { saveBit('oneshot-dyslexia-font', dfChk.checked); });

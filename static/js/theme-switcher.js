@@ -1,3 +1,27 @@
+// (function () {
+// 	const savedTheme = localStorage.getItem('oneshot-theme') || 'theme-barrens';
+// 	document.documentElement.className = savedTheme;
+//
+// 	document.addEventListener('DOMContentLoaded', () => {
+// 		document.body.className = savedTheme;
+//
+// 		const themeSelect = document.getElementById('themeSelect');
+// 		if (themeSelect) {
+// 			themeSelect.value = savedTheme;
+// 			themeSelect.addEventListener('change', (e) => {
+// 				const newTheme = e.target.value;
+// 				document.body.className = newTheme;
+// 				document.documentElement.className = newTheme;
+// 				localStorage.setItem('oneshot-theme', newTheme);
+// 			});
+// 		}
+// 	});
+// })();
+
+// OLD DEPRECATED^^^^^^^^^^^^^
+// 6/9/2026 ive hired some workers for my site now :) new developers! they really like to comment
+// ^ shut up
+
 // +++++
 // =========================================
 // theme-switcher.js - Initial commit by Nightregion
@@ -105,7 +129,6 @@ if (document.readyState === 'loading') {
 }
 
 window.doTheThing = doTheThing;
-// +++ THEME SWITCHER END +++
 
 // +++++
 // =========================================
@@ -221,86 +244,3 @@ if (document.readyState === 'loading') {
 } else {
 	nrInitTracking();
 }
-// +++ ANALYTICS END +++
-
-
-// +++++
-// =========================================
-// man START - Initial commit 22/9/2026
-
-// Description:
-// Self explanatory if obj_room_main.js (see that)
-// 1 in 6 chance on every5th navigation to go to man.html
-// =========================================
-// +++++
-
-// try a diff approach.. #2
-(function () {
-	var isMobile = false;
-	try {
-		isMobile = window.matchMedia('(max-width: 750px)').matches || window.matchMedia('(pointer: coarse)').matches;
-	} catch (e) {}
-
-	if (isMobile) return;
-
-	function rollTheDice() {
-		var count = parseInt(sessionStorage.getItem('nr-navcount') || '0', 10) + 1;
-		sessionStorage.setItem('nr-navcount', String(count));
-
-		if (count % 5 === 0 && Math.random() < (1 / 6)) {
-			sessionStorage.setItem('nr-man-legit-entry', '1');
-			window.location.href = 'man.html';
-		}
-	}
-
-	try {
-		var navEntries = performance.getEntriesByType('navigation');
-		if (navEntries && navEntries[0] && navEntries[0].type === 'back_forward') {
-			rollTheDice();
-		}
-	} catch (e) {}
-
-	window.addEventListener('pageshow', function (e) {
-		if (e.persisted) {
-			rollTheDice();
-		}
-	});
-})();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// (function () {
-// 	const savedTheme = localStorage.getItem('oneshot-theme') || 'theme-barrens';
-// 	document.documentElement.className = savedTheme;
-//
-// 	document.addEventListener('DOMContentLoaded', () => {
-// 		document.body.className = savedTheme;
-//
-// 		const themeSelect = document.getElementById('themeSelect');
-// 		if (themeSelect) {
-// 			themeSelect.value = savedTheme;
-// 			themeSelect.addEventListener('change', (e) => {
-// 				const newTheme = e.target.value;
-// 				document.body.className = newTheme;
-// 				document.documentElement.className = newTheme;
-// 				localStorage.setItem('oneshot-theme', newTheme);
-// 			});
-// 		}
-// 	});
-// })();
-
-// OLD DEPRECATED^^^^^^^^^^^^^
-// 6/9/2026 ive hired some workers for my site now :) new developers! they really like to comment
-// ^ shut up
