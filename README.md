@@ -1,3 +1,19 @@
+# homepage!
+
+this readme only covers 1 thing abt the site but here you go anyway
+
+
+
+
+
+
+
+
+
+---
+
+
+
 # <img width="48" height="48" align="center" src="https://cdn.discordapp.com/emojis/1528790184831877200.webp?size=32"> Alula Editor
 **:0 A open-source OneShot save file generator/editor, for people who lost their save files (like me), to experiment, or to the modding community.**
 **I recommend you PLEASE do NOT use this tool if you haven't completed the full game w/ the Solstice route. There's nothing stopping you, but it's highly highly recommended to do so.**
@@ -25,10 +41,17 @@
 
 ---
 
-## More smartypants insights
-- Alula Editor parses browser inputs directly into valid Marshal 4.8 formats using bytelevel hex array mapping. By structuring the array allocations to match RGSS (Ruby Game Scripting System) constraints, it outputs valid saves entirely client-side w/o ext. dependencies.
+Alula Editor by [Nightregion](https://github.com/frizzy-cmd) | Base code by [hat_kid](https://github.com/thehatkid).
+Nightregion was here 19/7/2026 2:20 PM UTC+8
 
----
 
-Alula Editor by [Kip](https://github.com/frizzy-cmd) | Base code by [hat_kid](https://github.com/thehatkid).
-Kip was here 19/7/2026 2:20 PM UTC+8
+
+
+
+
+
+
+
+
+
+
